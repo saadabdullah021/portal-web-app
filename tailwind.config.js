@@ -8,13 +8,13 @@ export default {
   ],
   theme: {
     extend: {
-      colors: {
-        primary: "#1D4ED8", // blue
-        secondary: "#9333EA", // purple
-        accent: "#F59E0B", // amber
-      },
       fontFamily: {
-        sans: ["Inter", "sans-serif"],
+          sans: ["var(--font-dm-sans)", "sans-serif"], // default
+        dm: ["DM Sans", "sans-serif"],               // custom class
+        poppins: ["Poppins", "sans-serif"],    
+      },
+      colors: {
+       text: "#23262F", 
       },
     },
   },

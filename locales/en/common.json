@@ -1,0 +1,34 @@
+{
+  "navbar": {
+    "home": "Home",
+    "explore": "Explore",
+    "about": "About Us",
+    "support": "Support",
+    "login": "Login",
+    "language": "Language",
+    "signup": "Sign Up"
+  },
+  "footer": {
+    "rights": "All rights reserved.",
+    "privacy": "Privacy Policy",
+    "terms": "Terms & Conditions"
+  },
+  "buttons": {
+    "book_now": "Book Now",
+    "learn_more": "Learn More",
+    "search": "Search",
+    "submit": "Submit",
+    "cancel": "Cancel"
+  },
+  "search": {
+    "where": "Where are you going?",
+    "checkin": "Check-in",
+    "checkout": "Check-out",
+    "guests": "Guests"
+  },
+  "messages": {
+    "loading": "Loading...",
+    "no_results": "No results found.",
+    "error": "Something went wrong. Please try again."
+  }
+}
