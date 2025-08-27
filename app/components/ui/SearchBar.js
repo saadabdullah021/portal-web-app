@@ -1,6 +1,6 @@
 'use client';
 import { Navigation, UserRound, Calendar, Minus, Plus } from 'lucide-react';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import DateInput from './DateInput';
 
@@ -24,14 +24,13 @@ const SearchBar = ({ onSearch }) => {
   const travelersRef = useRef(null);
 
   // Dummy locations (replace with API later)
-  const dummyLocations = [
-    "Al Ula, Medina Province",
-    "Al Ulaiyah, Riyadh",
-    "Al Ulays, Jeddah",
-    "Al Ujeir, Dammam",
-    "Al Uqair, Eastern Province"
-  ];
-
+const dummyLocations = useMemo(() => [
+  "Al Ula, Medina Province",
+  "Al Ulaiyah, Riyadh",
+  "Al Ulays, Jeddah",
+  "Al Ujeir, Dammam",
+  "Al Uqair, Eastern Province"
+], []);
   // Responsive check
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 1024);

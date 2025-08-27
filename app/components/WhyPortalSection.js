@@ -101,7 +101,7 @@ const WhyPortalSection = () => {
               <span className="flex-shrink-0 inline-flex items-center justify-center px-3 py-[2px] bg-[#58C27D] text-[#FCFCFD] text-sm font-medium rounded-full">03</span>
               <div>
                 <h3 className="text-[24px] font-semibold text-[#23262F] mb-2">Always Transparent</h3>
-                <p className="text-[#777E90] text-sm font-normal max-w-sm font-poppins mx-auto">We lay out every detail upfront, so you know <br/> exactly what you're getting and can focus purely on enjoying your adventure.</p>
+                <p className="text-[#777E90] text-sm font-normal max-w-sm font-poppins mx-auto">We lay out every detail upfront, so you know <br/> exactly what you are getting and can focus purely on enjoying your adventure.</p>
               </div>
             </div>
 
