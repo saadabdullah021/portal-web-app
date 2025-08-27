@@ -6,11 +6,14 @@ import Link from 'next/link';
 import Image from "next/image";
 import { useTranslation } from "react-i18next";
 import i18n from "../../i18n/i18n"; // config import karo
+import NotificationDropdown from './ui/NotificationDropdown';
+import ProfileDropdown from './ui/ProfileDropdown';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLanguageOpen, setIsLanguageOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isNotifOpen, setIsNotifOpen] = useState(false);
   const { t } = useTranslation("common");
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
@@ -61,75 +64,50 @@ const Navbar = () => {
           <div className="hidden md:flex items-center space-x-4">
             
             {/* Support Link */}
-            <a href="#" className="text-gray-600 capitalize hover:text-purple-600 text-sm font-medium transition-colors duration-200">
+            <Link href="/login" className="text-gray-600 capitalize hover:text-purple-600 text-sm font-medium transition-colors duration-200">
            {t("navbar.support")}
-            </a>
+            </Link>
 
     
-           {/* Language Dropdown */}
-            <div className="relative">
-              <button
-                onClick={toggleLanguage}
-                className="flex items-center space-x-1 text-gray-600 hover:text-purple-600 p-2 rounded-md transition-colors duration-200"
-              >
-                <Globe className="h-4 w-4" />
-                <span className="text-sm capitalize font-medium">{t("navbar.language")}</span>
-                <ChevronDown className={`h-3 w-3 transition-transform duration-200 ${isLanguageOpen ? 'rotate-180' : ''}`} />
-              </button>
-              
-              {isLanguageOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-200 py-1 z-50">
-                  <button onClick={() => changeLanguage("en")} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600">
-                    English
-                  </button>
-                  <button onClick={() => changeLanguage("ar")} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600">
-                    العربية
-                  </button>
-                </div>
-              )}
-            </div>
+          
+     {/* Language Toggle Button */}
+<div className="relative">
+  <button
+    onClick={() => changeLanguage(i18n.language === "en" ? "ar" : "en")}
+    className="flex items-center space-x-1 text-gray-600 hover:text-purple-600 p-2 rounded-md transition-colors duration-200"
+  >
+    <Globe className="h-4 w-4" />
+    <span className="text-sm capitalize font-medium">{t("switchLang")}</span>
+  </button>
+</div>
+
 
             {/* Notification Bell */}
             <div className="relative">
-              <button className="p-2 text-gray-600 hover:text-purple-600  rounded-full transition-all duration-200">
+              <button
+               onClick={() => setIsNotifOpen(!isNotifOpen)}
+              className="p-2 text-gray-600 hover:text-purple-600  rounded-full transition-all duration-200">
                 <Bell className="h-5 w-5" />
                 <span className="absolute top-0 right-0 h-3 w-3 bg-[#58C27D] rounded-full"></span>
               </button>
+               {isNotifOpen && <NotificationDropdown />}
             </div>
 
-            {/* Profile Dropdown */}
-            <div className="relative">
-              <button
-                onClick={toggleProfile}
-                className="flex items-center space-x-2 p-1 rounded-full hover:bg-purple-50 transition-colors duration-200"
-              >
-                <div className="h-8 w-8 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
-                  <User className="h-4 w-4 text-white" />
-                </div>
-              </button>
-              
-              {isProfileOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-200 py-1 z-50">
-                  <div className="px-4 py-2 border-b border-gray-100">
-                    <p className="text-sm font-medium text-gray-900">John Doe</p>
-                    <p className="text-xs text-gray-500">john@example.com</p>
-                  </div>
-                  <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors duration-200">
-                    Profile Settings
-                  </a>
-                  <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors duration-200">
-                    Account
-                  </a>
-                  <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors duration-200">
-                    Billing
-                  </a>
-                  <hr className="my-1" />
-                  <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors duration-200">
-                    Sign Out
-                  </a>
-                </div>
-              )}
-            </div>
+          
+         {/* Profile Dropdown */}
+<div className="relative">
+  <button
+    onClick={toggleProfile}
+    className="flex items-center space-x-2 p-1 rounded-full hover:bg-purple-50 transition-colors duration-200"
+  >
+    <div className="h-8 w-8 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
+      <User className="h-4 w-4 text-white" />
+    </div>
+  </button>
+
+  {isProfileOpen && <ProfileDropdown />}
+</div>
+
           </div>
 
           {/* Mobile menu button */}
@@ -138,10 +116,13 @@ const Navbar = () => {
           
               {/* Mobile Notifications */}
          <div className="relative">
-              <button className="p-2 text-gray-600 hover:text-purple-600  rounded-full transition-all duration-200">
+              <button
+                onClick={() => setIsNotifOpen(!isNotifOpen)}
+              className="p-2 text-gray-600 hover:text-purple-600  rounded-full transition-all duration-200">
                 <Bell className="h-5 w-5" />
                 <span className="absolute top-0 right-0 h-3 w-3 bg-[#58C27D] rounded-full"></span>
               </button>
+                {isNotifOpen && <NotificationDropdown />}
             </div>
     <div className="relative">
               <button
@@ -153,27 +134,8 @@ const Navbar = () => {
                 </div>
               </button>
               
-              {isProfileOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-200 py-1 z-50">
-                  <div className="px-4 py-2 border-b border-gray-100">
-                    <p className="text-sm font-medium text-gray-900">John Doe</p>
-                    <p className="text-xs text-gray-500">john@example.com</p>
-                  </div>
-                  <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors duration-200">
-                    Profile Settings
-                  </a>
-                  <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors duration-200">
-                    Account
-                  </a>
-                  <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors duration-200">
-                    Billing
-                  </a>
-                  <hr className="my-1" />
-                  <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors duration-200">
-                    Sign Out
-                  </a>
-                </div>
-              )}
+           {isProfileOpen && <ProfileDropdown />}
+              
             </div>
 
             <button
@@ -193,28 +155,21 @@ const Navbar = () => {
          
               
               {/* Mobile Language Selector */}
-              <div className="px-3 py-2 space-y-4">
-                <button
-                  onClick={toggleLanguage}
-                  className="flex items-center space-x-2 w-full text-left text-gray-700 hover:text-purple-600"
-                >
-                  <Globe className="h-4 w-4" />
-               <span className="text-sm capitalize font-medium">{t("navbar.language")}</span>
-                  <ChevronDown className={`h-3 w-3 ml-auto transition-transform duration-200 ${isLanguageOpen ? 'rotate-180' : ''}`} />
-                </button>
-              {isLanguageOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-200 py-1 z-50">
-                  <button onClick={() => changeLanguage("en")} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600">
-                    English
-                  </button>
-                  <button onClick={() => changeLanguage("ar")} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600">
-                    العربية
-                  </button>
-                </div>
-              )}
+              <div className=" py-2 space-y-4">
+              {/* Language Toggle Button */}
+<div className="relative">
+  <button
+    onClick={() => changeLanguage(i18n.language === "en" ? "ar" : "en")}
+    className="flex items-center space-x-1 text-gray-600 hover:text-purple-600 py-2 rounded-md transition-colors duration-200"
+  >
+    <Globe className="h-4 w-4" />
+    <span className="text-sm capitalize font-medium">{t("switchLang")}</span>
+  </button>
+</div>
+
                       {/* Support Link */}
                       <div>
-       <Link href="#" className="text-gray-600 hover:text-purple-600 text-sm font-medium transition-colors duration-200">
+       <Link href="/login" className="text-gray-600 hover:text-purple-600 text-sm font-medium transition-colors duration-200">
               {t("navbar.support")}
             </Link>
                       </div>
