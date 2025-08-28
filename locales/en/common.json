@@ -1,0 +1,52 @@
+{
+  "switchLang": "English",
+  "navbar": {
+    "home": "Home",
+    "explore": "Explore",
+    "about": "About Us",
+    "support": "Support",
+    "login": "Login",
+    "language": "Language",
+    "signup": "Sign Up"
+  },
+  "footer": {
+    "rights": "All rights reserved.",
+    "privacy": "Privacy Policy",
+    "terms": "Terms & Conditions"
+  },
+  "buttons": {
+    "book_now": "Book Now",
+    "learn_more": "Learn More",
+    "search": "Search",
+    "submit": "Submit",
+    "cancel": "Cancel"
+  },
+  "search": {
+    "where": "Where are you going?",
+    "checkin": "Check-in",
+    "checkout": "Check-out",
+    "guests": "Guests"
+  },
+  "messages": {
+    "loading": "Loading...",
+    "no_results": "No results found.",
+    "error": "Something went wrong. Please try again."
+  },
+  "justForYou": {
+    "title": "Just For You",
+    "subtitle": "Discover properties tailored to your preferences",
+    "view_all": "View All"
+  },
+  "lastMinuteDeals": {
+    "title": "Last Minute Deals",
+    "subtitle": "Grab these exclusive offers before they're gone!",
+    "view_all": "View All Deals"
+  },
+  "nationalDayDeals": {
+    "title": "National Day Specials",
+    "subtitle": "Celebrate with exclusive offers and discounts",
+    "view_all": "View All Specials"
+  }
+
+
+}
