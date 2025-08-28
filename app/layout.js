@@ -1,20 +1,25 @@
-"use client";
 import "./globals.css";
-import { I18nextProvider } from "react-i18next";
-import i18n from "../i18n/i18n";
 import Navbar from "../app/components/Navbar";
 import Footer from "./components/Footer";
-// import Footer from "../components/Footer";
+import { Providers } from './providers';
+import I18nProvider from './components/I18nProvider';
+
+export const metadata = {
+  title: "Portal",
+  description: "Next.js project",
+};
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
-        <I18nextProvider i18n={i18n}>
-          <Navbar />
-          {children}
-     <Footer/>
-        </I18nextProvider>
+        <Providers>
+          <I18nProvider>
+            <Navbar />
+            {children}
+            <Footer/>
+          </I18nProvider>
+        </Providers>
       </body>
     </html>
   );
