@@ -9,11 +9,14 @@ import "react-international-phone/style.css";
 import HomeContent from "@/app/components/HomeContent";
 import { useTranslation } from "react-i18next";
 import { usePopup } from "@/app/contexts/PopupContext";
+import axios from "@/lib/axios";
 
 export default function SignUpPage() {
     const { t } = useTranslation('auth');
     const { popups, closePopup, openPopup } = usePopup();
     const [phone, setPhone] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
 
     const handleClosePopup = () => {
         closePopup('signup');
@@ -21,10 +24,34 @@ export default function SignUpPage() {
 
     const handleLoginClick = () => {
         closePopup('signup');
-        // Login page pe navigate aur login popup open
-        setTimeout(() => {
-            openPopup('login');
-        }, 100);
+        openPopup('login');
+    };
+
+    const handleSubmit = async () => {
+        if (!phone) {
+            setError("Please enter your phone number");
+            return;
+        }
+
+        setLoading(true);
+        setError("");
+
+        try {
+            const payload = {
+                otp_value: phone,
+                otp_type: 'sms',
+                user_type: 'guest',
+                request_type: 'sign_up'
+            };
+
+            await axios.post('/send-otp', payload);
+            closePopup('signup');
+            openPopup('otpVerification');
+        } catch (error) {
+            setError(error.response?.data?.message || "Failed to send OTP");
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -36,12 +63,10 @@ export default function SignUpPage() {
                         className="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
                         onClick={handleClosePopup}
                     >
-                        {/* Modal Container */}
                         <div
                             className="bg-white rounded-2xl shadow-xl w-[540px] h-[400px] p-10 relative"
                             onClick={(e) => e.stopPropagation()}
                         >
-                            {/* Close Button */}
                             <button
                                 onClick={handleClosePopup}
                                 className="absolute -top-4 -right-0 lg:-right-4 bg-white rounded-full shadow-md text-gray-500 hover:text-gray-700 p-1 transition"
@@ -49,7 +74,6 @@ export default function SignUpPage() {
                                 <X size={20} />
                             </button>
 
-                            {/* Heading */}
                             <h2 className="text-[32px] lg:text-[40px] font-dm-sans text-[#141416] font-bold text-center mb-2">
                                 {t('signup.title') || 'Sign up to Portal'}
                             </h2>
@@ -57,7 +81,6 @@ export default function SignUpPage() {
                                 {t('signup.subtitle') || 'Lorem ipsum dolor imit'}
                             </p>
 
-                            {/* Google & Apple Buttons */}
                             <div className="flex gap-3 justify-center mb-4">
                                 <button className="flex items-center gap-2 font-bold text-[16px] font-dm-sans px-6 py-2.5 bg-[#3B71FE] text-[#FCFCFD] rounded-full hover:bg-blue-700 transition">
                                     <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -81,7 +104,6 @@ export default function SignUpPage() {
                                 </button>
                             </div>
 
-                            {/* Or continue with phone */}
                             <div className="text-center text-[#777E90] text-xs mb-4">
                                 {t('signup.or_continue') || 'Or continue with phone'}
                             </div>
@@ -89,7 +111,6 @@ export default function SignUpPage() {
                             <div
                              dir="ltr" 
                             className="flex items-center gap-2 border border-[#E6E8EC] rounded-full mx-auto max-w-xs px-3 py-1 mt-6 shadow-sm">
-                                {/* Phone Input */}
                                 <PhoneInput
                                     defaultCountry="sa"
                                     value={phone}
@@ -99,13 +120,25 @@ export default function SignUpPage() {
                                     placeholder="Enter your phone number"
                                 />
 
-                                {/* Submit Button */}
-                                <button className="bg-blue-600 text-white justify-center w-6 h-6 flex items-center rounded-full hover:bg-blue-700 transition">
-                                    <ArrowRightIcon size={16} />
+                                <button 
+                                    onClick={handleSubmit}
+                                    disabled={loading}
+                                    className="bg-blue-600 text-white justify-center w-6 h-6 flex items-center rounded-full hover:bg-blue-700 transition disabled:opacity-50"
+                                >
+                                    {loading ? (
+                                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                    ) : (
+                                        <ArrowRightIcon size={16} />
+                                    )}
                                 </button>
                             </div>
 
-                            {/* Already have an account? */}
+                            {error && (
+                                <div className="text-red-500 text-xs text-center mt-2">
+                                    {error}
+                                </div>
+                            )}
+
                             <div className="text-center mt-6 text-[#353945] text-xs">
                                 {t('signup.already_account') || 'Already have an account?'} {" "}
                                 <Link href="/auth/login">
