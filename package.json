@@ -20,7 +20,8 @@
     "react-datepicker": "^8.6.0",
     "react-dom": "19.1.0",
     "react-i18next": "^15.6.1",
-    "react-redux": "^9.2.0"
+    "react-redux": "^9.2.0",
+    "react-international-phone": "^4.6.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

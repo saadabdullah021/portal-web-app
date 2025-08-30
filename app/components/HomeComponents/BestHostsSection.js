@@ -2,8 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { MoveLeft, MoveRight, ChevronDown } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import dummyImage from '../../public/images/bestHost.png';
-import hostDummyImage from '../../public/images/hostImage.png';
+import dummyImage from '../../../public/images/bestHost.png';
+import hostDummyImage from '../../../public/images/hostImage.png';
 import Image from 'next/image';
 
 // Dummy host images - replace with your actual images
@@ -12,8 +12,11 @@ const dummyHostImage = dummyImage;
 const BestHostsSection = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
+   const [selected, setSelected] = useState("month");
+  const [open, setOpen] = useState(false);
   const { t } = useTranslation('common');
 
+const options = ["month", "year", "week"];
 
   // Sample hosts data - replace with API data
   const hosts = [
@@ -158,12 +161,40 @@ const BestHostsSection = () => {
           <h2 className="heading">
             Best hosts of the
           </h2>
-          <div className="flex items-center gap-2   cursor-pointer">
-            <span className="text-4xl  font-bold md:text-5xl font-dm-sans text-[#3B71FE]">
-              month
-            </span>
-            <ChevronDown className="w-5 h-5 text-[#3B71FE] mt-2" />
-          </div>
+      <div className="relative inline-block text-left">
+      {/* Trigger */}
+      <div
+        className="flex items-center gap-2 cursor-pointer select-none"
+        onClick={() => setOpen(!open)}
+      >
+        <span className="text-4xl font-bold md:text-5xl font-dm-sans text-[#3B71FE]">
+          {selected}
+        </span>
+        <ChevronDown
+          className={`w-5 h-5 text-[#3B71FE] mt-2 transition-transform ${
+            open ? "rotate-180" : ""
+          }`}
+        />
+      </div>
+
+      {/* Dropdown Options */}
+      {open && (
+        <div className="absolute mt-2 bg-white border border-gray-200 rounded-lg shadow-lg w-40 p-2 z-10">
+          {options.map((option) => (
+            <div
+              key={option}
+              onClick={() => {
+                setSelected(option);
+                setOpen(false);
+              }}
+              className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg cursor-pointer"
+            >
+              {option}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
         </div>
 
         {/* Desktop Navigation Arrows */}
@@ -211,7 +242,7 @@ const BestHostsSection = () => {
 
       {/* Mobile Slider */}
       <div className="md:hidden relative">
-        <div className="overflow-hidden rounded-2xl">
+        <div className="overflow-hidden pb-2 rounded-2xl">
           <div
             className="flex transition-transform duration-500 ease-in-out"
             style={{ transform: `translateX(-${currentSlide * 100}%)` }}
@@ -225,7 +256,7 @@ const BestHostsSection = () => {
         </div>
 
         {/* Mobile Navigation */}
-        <div className="flex justify-between items-center mt-8">
+        <div className="flex justify-center gap-4 items-center mt-8">
           <button
             onClick={prevSlide}
             disabled={currentSlide === 0}
@@ -239,20 +270,7 @@ const BestHostsSection = () => {
             <MoveLeft className="w-5 h-5 text-gray-700" />
           </button>
           
-          <div className="flex gap-2">
-            {hosts.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentSlide(index)}
-                className={`h-2 rounded-full transition-all duration-200 ${
-                  currentSlide === index 
-                    ? "bg-gray-800 w-8" 
-                    : "bg-gray-300 w-2 hover:bg-gray-400"
-                }`}
-                aria-label={`Go to host ${index + 1}`}
-              />
-            ))}
-          </div>
+       
           
           <button
             onClick={nextSlide}
