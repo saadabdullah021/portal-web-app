@@ -1,9 +1,8 @@
 'use client'
 import React, { useState, useRef, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, Play, Pause, Star, MoveLeft, MoveRight } from 'lucide-react';
-import hostImage from '../../public/images/hostImage.png';
-import Image from 'next/image';
-import AuthorCard from './ui/AuthorCard';
+import {  Play, Pause, MoveLeft, MoveRight } from 'lucide-react';
+
+import AuthorCard from '../ui/AuthorCard';
 const WhyPortalSection = () => {
   const [currentVideo, setCurrentVideo] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -72,7 +71,7 @@ const WhyPortalSection = () => {
           <h2 className="text-4xl lg:text-5xl font-bold text-[#23262F]  font-dm-sans mb-4">
             Why Portal?
           </h2>
-          <p className="text-lg text-gray-600 max-w-md mx-auto">
+          <p className="text-lg text-[#777E90] max-w-full lg:max-w-lg lg:text-2xl mx-auto">
       Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent iaculis leo sit amet.
           </p>
         </div>

@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
-import Card from './ui/Card'; 
-import dummyLocation from '../../public/images/dummyLocation.png';
+import Card from '../ui/Card'; 
+import dummyLocation from '../../../public/images/dummyLocation.png';
 
 const ExploreNearby = ({ places = [] }) => {
   // Default Dummy Data
@@ -23,10 +23,10 @@ const ExploreNearby = ({ places = [] }) => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-10">
-          <h2 className="text-4xl lg:text-5xl font-bold text-[#23262F]  font-dm-sans mb-4">
+          <h2 className="text-4xl lg:text-5xl font-bold text-[#23262F]  font-dm-sans mb-5">
             Explore nearby
           </h2>
-          <p className="text-base sm:text-lg text-gray-500">
+          <p className="text-lg lg:text-2xl text-[#777E90] ">
             10,789 beautiful places to go
           </p>
         </div>

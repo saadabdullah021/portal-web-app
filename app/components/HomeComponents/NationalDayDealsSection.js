@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { MoveLeft, MoveRight, Star } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import Image from "next/image";
-import justForYou from "../../public/images/justforyou.png";
+import justForYou from "../../../public/images/justforyou.png";
 
 const NationalDayDealsSection = () => {
   const { t } = useTranslation("common");
@@ -53,19 +53,19 @@ const prevSlide = () => {
 };
 
   const PropertyCard = ({ property }) => (
-    <div className="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 flex-shrink-0 w-full md:w-auto">
+    <div className="bg-white rounded-3xl overflow-hidden shadow-sm  transition-all duration-300 transform  flex-shrink-0 w-full md:w-auto">
       <div className="relative">
         <div className="aspect-[4/3] relative overflow-hidden">
           <Image
             src={property.image}
             alt={property.title}
-            className="fill"
+            className="w-full h-full object-cover transition-transform duration-500"
             loading="lazy"
           />
         </div>
 
         <div className="absolute top-4 left-4">
-          <span className="bg-[#FCFCFD] font-poppins text-black text-xs font-bold p-2 rounded shadow-md">
+          <span className="bg-[#FCFCFD] font-poppins text-[#23262F] text-xs font-bold p-2 rounded ">
             {property.badge}
           </span>
         </div>
@@ -100,14 +100,14 @@ const prevSlide = () => {
   );
 
   return (
-    <section className="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+    <section className="lg:py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
       {/* Section Heading */}
       <div className="mb-12 flex items-start justify-between">
         <div>
           <h2 className="heading mb-4">
             {t("nationalDayDeals.title")}
           </h2>
-          <p className="text-gray-600 text-xl font-normal">
+          <p className="text-[#777E90] text-lg lg:text-2xl font-normal">
             Lorem ipsum dolor imit
           </p>
         </div>
@@ -157,13 +157,13 @@ const prevSlide = () => {
 
       {/* ✅ Mobile Slider Same as Before */}
       <div className="md:hidden relative">
-        <div className="overflow-hidden rounded-2xl">
+        <div className="overflow-hidden pb-2 rounded-2xl">
           <div
             className="flex transition-transform duration-500 ease-in-out"
             style={{ transform: `translateX(-${currentSlide * 100}%)` }}
           >
             {properties.map((property) => (
-              <div key={property.id} className="w-full px-2 flex-shrink-0">
+              <div key={property.id} className="w-full  flex-shrink-0">
                 <PropertyCard property={property} />
               </div>
             ))}
@@ -171,7 +171,7 @@ const prevSlide = () => {
         </div>
 
         {/* Mobile Navigation */}
-        <div className="flex justify-between items-center mt-6">
+        <div className="flex gap-4 items-center mt-6">
           <button
             onClick={prevSlide}
             className=" border border-gray-200 rounded-full p-3 "
@@ -180,19 +180,7 @@ const prevSlide = () => {
             <MoveLeft className="w-5 h-5 text-gray-700" />
           </button>
 
-          {/* Slide Indicators */}
-          <div className="flex gap-2">
-            {properties.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentSlide(index)}
-                className={`w-2 h-2 rounded-full transition-all duration-200 ${
-                  currentSlide === index ? "bg-gray-800 w-8" : "bg-gray-300"
-                }`}
-                aria-label={`Go to deal ${index + 1}`}
-              />
-            ))}
-          </div>
+      
 
           <button
             onClick={nextSlide}

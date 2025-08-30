@@ -134,21 +134,7 @@ const BrowseCategorySection = () => {
             <MoveLeft className="w-5 h-5 text-gray-700" />
           </button>
 
-          {/* Indicators */}
-          <div className="flex gap-2">
-            {Array.from({ length: maxSlide + 1 }).map((_, index) => (
-              <button
-                key={index}
-                onClick={() => goToSlide(index)}
-                className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                  currentSlide === index 
-                    ? 'bg-blue-500 scale-125' 
-                    : 'bg-gray-300 hover:bg-gray-400'
-                }`}
-                aria-label={`Go to slide ${index + 1}`}
-              />
-            ))}
-          </div>
+  
 
           {/* Next */}
           <button

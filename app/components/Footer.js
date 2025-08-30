@@ -23,52 +23,52 @@ export default function Footer() {
           </div>
 
           {/* Menu Items */}
-          <div className="grid grid-cols-2 gap-x-16 gap-y-4 text-center md:grid-cols-4 md:text-left">
+          <div className="grid grid-cols-2 font-dm-sans font-bold gap-x-16 gap-y-4 text-center md:grid-cols-4 md:text-left">
             <Link
               href="#"
-              className="text-sm text-gray-600 transition hover:text-gray-900"
+              className="text-sm text-[#777E90] transition hover:text-blue-800"
             >
               Menu Item
             </Link>
             <Link
               href="#"
-              className="text-sm text-gray-600 transition hover:text-gray-900"
+              className="text-sm text-[#777E90] transition hover:text-blue-800"
             >
               Menu Item
             </Link>
             <Link
               href="#"
-              className="text-sm text-gray-600 transition hover:text-gray-900"
+              className="text-sm text-[#777E90] transition hover:text-blue-800"
             >
               Menu Item
             </Link>
             <Link
               href="#"
-              className="text-sm text-gray-600 transition hover:text-gray-900"
+              className="text-sm text-[#777E90] transition hover:text-blue-800"
             >
               Menu Item
             </Link>
             <Link
               href="#"
-              className="text-sm text-gray-600 transition hover:text-gray-900"
+              className="text-sm text-[#777E90] transition hover:text-blue-800"
             >
               Menu Item
             </Link>
             <Link
               href="#"
-              className="text-sm text-gray-600 transition hover:text-gray-900"
+              className="text-sm text-[#777E90] transition hover:text-blue-800"
             >
               Menu Item
             </Link>
             <Link
               href="#"
-              className="text-sm text-gray-600 transition hover:text-gray-900"
+              className="text-sm text-[#777E90] transition hover:text-blue-800"
             >
               Menu Item
             </Link>
             <Link
               href="#"
-              className="text-sm text-gray-600 transition hover:text-gray-900"
+              className="text-sm text-[#777E90] transition hover:text-blue-800"
             >
               Menu Item
             </Link>
@@ -77,7 +77,7 @@ export default function Footer() {
 
         {/* Bottom Bar */}
         <div className="mt-10  pt-6 text-center md:text-left">
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-[#777E90] font-bold font-dm-sans">
             Copyright © 2025 Portal LLC.
           </p>
         </div>
