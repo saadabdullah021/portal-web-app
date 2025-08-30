@@ -2,7 +2,7 @@
 'use client';
 import React from 'react';
 import Image from 'next/image';
-import { Star } from 'lucide-react';
+
 import hostImage from '../../../public/images/hostImage.png';
 
 const AuthorCard = ({ name, rating = "5.0", position }) => {
@@ -21,7 +21,10 @@ const AuthorCard = ({ name, rating = "5.0", position }) => {
       <div className="text-gray-800">
         <p className="font-medium text-[16px]">{name}</p>
         <div className="flex items-center space-x-1">
-          <Star className="text-yellow-500 w-4 h-4" fill="yellow" />
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fillRule="evenodd" clipRule="evenodd" d="M7.26769 0.771504L8.34956 2.90038L10.7783 3.24313C11.9161 3.40365 12.4362 4.80771 11.5591 5.63743L9.81456 7.28626L10.2251 9.60958C10.4354 10.7998 9.17219 11.5991 8.17749 11.0923L5.99989 9.98149L3.82294 11.0919C2.82677 11.6004 1.56462 10.7984 1.77462 9.60963L2.18521 7.28626L0.440938 5.63766C-0.436791 4.80734 0.0851323 3.40358 1.22135 3.24315L3.6503 2.90036L4.73271 0.771504C5.25549 -0.257123 6.745 -0.257213 7.26769 0.771504Z" fill="#FFD166"/>
+</svg>
+
           <span className="text-xs font-semibold">{rating}</span>
         </div>
       </div>

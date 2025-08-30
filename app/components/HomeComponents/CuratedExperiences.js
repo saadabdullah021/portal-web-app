@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import justForYou from "../../public/images/justforyou.png";
-import curatedImage from "../../public/images/curatedImage.png";
+import justForYou from "../../../public/images/justforyou.png";
+import curatedImage from "../../../public/images/curatedImage.png";
 import { Loader } from 'lucide-react';
 const CuratedExperiences = () => {
   // Initial experiences data
@@ -88,7 +88,7 @@ const CuratedExperiences = () => {
           {visibleExperiences.map((experience) => (
             <div
               key={experience.id}
-              className="group cursor-pointer overflow-hidden rounded-2xl  hover:shadow-sm transition-all duration-300 hover:scale-[1.02]"
+              className=" overflow-hidden rounded-2xl   transition-all duration-300 "
             >
               {/* Image Container */}
        <div className="relative overflow-hidden 

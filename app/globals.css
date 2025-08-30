@@ -18,19 +18,23 @@
   --font-poppins: var(--font-poppins);
   --font-mono: var(--font-mono);
 }
+@layer base {
+  input[type=number]::-webkit-inner-spin-button,
+  input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-    --text-color:#23262F;
+  input[type=number] {
+    -moz-appearance: textfield;
   }
 }
 
+
 body {
   background: var(--background);
-  color: var(--foreground); /* default text color */
-  font-family: var(--font-poppins); /* Default font = DM Sans */
+  color: var(--foreground);
+  font-family: var(--font-poppins);
 }
 
 .heading {
@@ -75,12 +79,52 @@ body {
 }
 
 .wave-line path {
-  stroke: gray; /* red-700 */
+  stroke: #E6E8EC;
   stroke-width: 2;
-  stroke-dasharray: 6 6; /* dotted effect */
+  stroke-dasharray: 6 6;
   fill: none;
 }
 
 
+/* react-international-phone ke default borders/outline remove karne ke liye */
+.react-international-phone-input-container {
+  border: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  width: 100% !important;
+}
 
-/* Date picker */
+.react-international-phone-input-container input {
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  background: transparent !important;
+  font-size: 14px;
+  color: #777E90; /* design ke hisaab se text color */
+}
+
+/* Remove border/outline from flag dropdown */
+.react-international-phone-country-selector-button {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* Make flag image fully rounded */
+.react-international-phone-country-selector-button img {
+  /* fully rounded */
+  border: none !important;
+  box-shadow: none !important;
+  
+  
+  
+  
+}
+
+/* Optional: hover effect remove */
+.react-international-phone-country-selector-button:hover {
+  background: transparent !important;
+}

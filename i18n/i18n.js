@@ -17,10 +17,12 @@ i18n
       en: {
         common: require("../locales/en/common.json"),
         hero: require("../locales/en/hero.json"), // ✅ add this
+        auth: require("../locales/en/auth.json"), // ✅ add this
       },
       ar: {
         common: require("../locales/ar/common.json"),
         hero: require("../locales/ar/hero.json"), // ✅ add this
+        auth: require("../locales/ar/auth.json"), // ✅ add this
       },
     },
   });

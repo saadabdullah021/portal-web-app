@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
-import {  MapPin, Camera, Waves, MoveLeft, MoveRight } from 'lucide-react';
-import summerHoliday from '../../public/images/Holiday_Summer.png';
+import {   MoveLeft, MoveRight } from 'lucide-react';
+import summerHoliday from '../../../public/images/Holiday_Summer.png';
 import Image from 'next/image';
 const AdventureSection = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -120,7 +120,7 @@ const AdventureSection = () => {
       <h1 className="text-4xl lg:text-5xl font-bold text-[#23262F]  font-dm-sans mb-4 tracking-tight">
         Let&apos;s go on an adventure
       </h1>
-      <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+      <p className="text-lg md:text-2xl text-[#777E90] max-w-2xl mx-auto leading-relaxed">
         Find and book a great memorable stay
       </p>
     </div>
@@ -169,21 +169,7 @@ const AdventureSection = () => {
         <MoveLeft className="w-5 h-5 text-gray-700" />
       </button>
 
-      {/* Indicators */}
-      <div className="flex gap-2">
-        {Array.from({ length: maxSlide + 1 }).map((_, index) => (
-          <button
-            key={index}
-            onClick={() => goToSlide(index)}
-            className={`w-3 h-3 rounded-full transition-all duration-300 ${
-              currentSlide === index 
-                ? 'bg-blue-500 scale-125' 
-                : 'bg-gray-300 hover:bg-gray-400'
-            }`}
-            aria-label={`Go to slide ${index + 1}`}
-          />
-        ))}
-      </div>
+    
 
       {/* Next */}
       <button
