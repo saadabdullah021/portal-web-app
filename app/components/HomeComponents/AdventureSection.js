@@ -3,7 +3,10 @@ import { useState, useEffect } from 'react';
 import {   MoveLeft, MoveRight } from 'lucide-react';
 import summerHoliday from '../../../public/images/Holiday_Summer.png';
 import Image from 'next/image';
+import { useTranslation } from 'react-i18next';
 const AdventureSection = () => {
+    const { t, i18n } = useTranslation("home");
+   const isRTL = i18n.language === "ar";
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
@@ -118,10 +121,12 @@ const AdventureSection = () => {
     {/* Header */}
     <div className="mb-12 text-center"> {/* ⬅️ center align header */}
       <h1 className="text-4xl lg:text-5xl font-bold text-[#23262F]  font-dm-sans mb-4 tracking-tight">
-        Let&apos;s go on an adventure
+        {/* Let&apos;s go on an adventure */}
+      {t('advanture.title')}
       </h1>
       <p className="text-lg md:text-2xl text-[#777E90] max-w-2xl mx-auto leading-relaxed">
-        Find and book a great memorable stay
+        {t('advanture.subtitle')}
+
       </p>
     </div>
 
@@ -166,7 +171,11 @@ const AdventureSection = () => {
         }`}
         aria-label="Previous adventure"
       >
-        <MoveLeft className="w-5 h-5 text-gray-700" />
+       {isRTL ? (
+                  <MoveRight className="w-5 h-5 text-gray-700" /> // ✅ flip for RTL
+                ) : (
+                  <MoveLeft className="w-5 h-5 text-gray-700" />
+                )}  
       </button>
 
     
@@ -180,7 +189,11 @@ const AdventureSection = () => {
         }`}
         aria-label="Next adventure"
       >
-          <MoveRight className="w-5 h-5 text-gray-700" />
+        {isRTL ? (
+                           <MoveLeft className="w-5 h-5 text-gray-700" /> // ✅ flip for RTL
+                         ) : (
+                           <MoveRight className="w-5 h-5 text-gray-700" />
+                         )}
       </button>
     </div>
   </div>

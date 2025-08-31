@@ -26,7 +26,9 @@ const HeroSection = () => {
           <h1 className="text-[48px] font-bold leading-[56px] lg:leading-[110px]  font-dm-sans text-[#23262F] sm:text-[60px] lg:text-[98px]">
              <Trans i18nKey="title" ns="hero" />
           </h1>
-          <p className="mt-4 text-lg font-medium lg:font-normal max-w-xs lg:max-w-full text-center lg:text-left mx-auto lg:mx-0  lg:text-2xl text-[#23262F] ">{subtitle}</p>
+          <p className="mt-4 text-lg font-medium lg:font-normal max-w-xs lg:max-w-full text-center lg:text-left mx-auto lg:mx-0  lg:text-2xl text-[#23262F] ">
+            {t('subtitle')}
+          </p>
         </div>
 
         {/* ✅ Reusable SearchBar Component */}

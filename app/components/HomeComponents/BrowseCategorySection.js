@@ -2,8 +2,11 @@
 import React, { useState, useEffect } from 'react';
 import * as Icons from 'lucide-react'; // ✅ saare icons import
 import { MoveLeft, MoveRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const BrowseCategorySection = () => {
+     const { t, i18n } = useTranslation("home");
+    const isRTL = i18n.language === "ar";
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
@@ -72,10 +75,10 @@ const BrowseCategorySection = () => {
         {/* Header */}
         <div className="text-center mb-8 sm:mb-12">
           <h2 className="text-4xl lg:text-5xl font-bold text-[#23262F]  font-dm-sans mb-2 sm:mb-4">
-            Browse by category
+            {t('Browse.title')}
           </h2>
           <p className="text-gray-500 text-sm sm:text-base lg:text-lg max-w-md mx-auto">
-            Lorem ipsum dolor limit
+            {t('Browse.subtitle')}
           </p>
         </div>
 
@@ -131,7 +134,11 @@ const BrowseCategorySection = () => {
             }`}
             aria-label="Previous category"
           >
-            <MoveLeft className="w-5 h-5 text-gray-700" />
+           {isRTL ? (
+                  <MoveRight className="w-5 h-5 text-gray-700" /> // ✅ flip for RTL
+                ) : (
+                  <MoveLeft className="w-5 h-5 text-gray-700" />
+                )}  
           </button>
 
   
@@ -145,7 +152,11 @@ const BrowseCategorySection = () => {
             }`}
             aria-label="Next category"
           >
-            <MoveRight className="w-5 h-5 text-gray-700" />
+     {isRTL ? (
+                           <MoveLeft className="w-5 h-5 text-gray-700" /> // ✅ flip for RTL
+                         ) : (
+                           <MoveRight className="w-5 h-5 text-gray-700" />
+                         )}
           </button>
         </div>
       </div>

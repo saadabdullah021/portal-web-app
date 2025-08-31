@@ -5,7 +5,8 @@ import {  useTranslation } from 'react-i18next';
 import Image from "next/image";
 import justForYou from '../../../public/images/justforyou.png'; 
 const JustForYouSection = () => {
-     const { t } = useTranslation('common'); 
+       const { t, i18n } = useTranslation("home");
+      const isRTL = i18n.language === "ar";
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -43,7 +44,7 @@ const JustForYouSection = () => {
   };
 
   const PropertyCard = ({ property }) => (
-    <div className="bg-white rounded-3xl overflow-hidden shadow-sm  transition-all duration-300 transform  flex-shrink-0 w-full md:w-auto">
+    <div className="bg-white -z-10 rounded-3xl overflow-hidden shadow-sm  transition-all duration-300 transform  flex-shrink-0 w-full md:w-auto">
       <div className="relative">
         <div className="aspect-[4/3] relative overflow-hidden">
           <Image
@@ -98,7 +99,7 @@ const JustForYouSection = () => {
                                   {t('justForYou.title')}
 
         </h2>
-        <p className="text-[#777E90] text-lg lg:text-2xl font-normal">Lorem ipsum dolor imit</p>
+        <p className="text-[#777E90] text-lg lg:text-2xl font-normal">{t('justForYou.subtitle')} </p>
       </div>
 
       {/* Desktop Layout */}
@@ -130,7 +131,11 @@ const JustForYouSection = () => {
             className=" border border-gray-200 rounded-full p-3 "
             aria-label="Previous deal"
           >
-            <MoveLeft className="w-5 h-5 text-gray-700" />
+                        {isRTL ? (
+                            <MoveRight className="w-5 h-5 text-gray-700" /> // ✅ flip for RTL
+                          ) : (
+                            <MoveLeft className="w-5 h-5 text-gray-700" />
+                          )}  
           </button>
 
   
@@ -140,7 +145,11 @@ const JustForYouSection = () => {
             className=" border border-gray-200 rounded-full p-3"
             aria-label="Next deal"
           >
-            <MoveRight className="w-5 h-5 text-gray-700" />
+           {isRTL ? (
+                                       <MoveLeft className="w-5 h-5 text-gray-700" /> // ✅ flip for RTL
+                                     ) : (
+                                       <MoveRight className="w-5 h-5 text-gray-700" />
+                                     )}
           </button>
         </div>
       </div>

@@ -2,8 +2,10 @@
 import React from 'react';
 import Card from '../ui/Card'; 
 import dummyLocation from '../../../public/images/dummyLocation.png';
+import { useTranslation } from 'react-i18next';
 
 const ExploreNearby = ({ places = [] }) => {
+  const { t } = useTranslation('home');
   // Default Dummy Data
   const defaultPlaces = [
     { id: 1, name: 'Ad Diriyah, Riyadh', duration: '15 minutes drive', price: '1480', image: dummyLocation },
@@ -24,10 +26,10 @@ const ExploreNearby = ({ places = [] }) => {
         {/* Header */}
         <div className="text-center mb-10">
           <h2 className="text-4xl lg:text-5xl font-bold text-[#23262F]  font-dm-sans mb-5">
-            Explore nearby
+            {t('explore.title')}
           </h2>
           <p className="text-lg lg:text-2xl text-[#777E90] ">
-            10,789 beautiful places to go
+            10,789 {t('explore.subtitle')}
           </p>
         </div>
 

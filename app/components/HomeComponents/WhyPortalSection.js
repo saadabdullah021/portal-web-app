@@ -3,10 +3,13 @@ import React, { useState, useRef, useEffect } from 'react';
 import {  Play, Pause, MoveLeft, MoveRight } from 'lucide-react';
 
 import AuthorCard from '../ui/AuthorCard';
+import { useTranslation } from 'react-i18next';
 const WhyPortalSection = () => {
   const [currentVideo, setCurrentVideo] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const videoRef = useRef(null);
+     const { t, i18n } = useTranslation("home");
+    const isRTL = i18n.language === "ar";
 
   const videos = [
     {
@@ -69,10 +72,10 @@ const WhyPortalSection = () => {
         {/* Header */}
         <div className="text-center mb-16">
           <h2 className="text-4xl lg:text-5xl font-bold text-[#23262F]  font-dm-sans mb-4">
-            Why Portal?
+            {t('whyportal.title')}
           </h2>
           <p className="text-lg text-[#777E90] max-w-full lg:max-w-lg lg:text-2xl mx-auto">
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent iaculis leo sit amet.
+            {t('whyportal.subtitle')}
           </p>
         </div>
 
@@ -83,31 +86,43 @@ const WhyPortalSection = () => {
             <div className="flex items-start flex-col space-y-4">
               <span className="flex-shrink-0 inline-flex items-center justify-center px-3 py-[2px] bg-[#8BC5E5] text-[#FCFCFD] text-sm font-medium rounded-full">01</span>
               <div>
-                <h3 className="text-[24px] font-semibold text-[#23262F] mb-2">Tailored for Flexible Living</h3>
-                <p className="text-[#777E90] text-sm font-normal max-w-sm font-poppins mx-auto">Portal helps you unearth incredible trips that <br/> adapt to your schedule and preferences, making spontaneity a breeze.</p>
+                <h3 className="text-[24px] font-semibold text-[#23262F] mb-2"> 
+                  {t('whyportal.reasons.step1.title')}
+                </h3>
+                <p className="text-[#777E90] text-sm font-normal max-w-sm font-poppins mx-auto">
+                  {t('whyportal.reasons.step1.description')}
+                </p>
               </div>
             </div>
 
          <div className="flex items-start flex-col space-y-4">
               <span className="flex-shrink-0 inline-flex items-center justify-center px-3 py-[2px] bg-[#92A5EF] text-[#FCFCFD] text-sm font-medium rounded-full">02</span>
               <div>
-                <h3 className="text-[24px] font-semibold text-[#23262F] mb-2">Assured Travel Experiences</h3>
-                <p className="text-[#777E90] text-sm font-normal max-w-sm font-poppins mx-auto">With genuine reviews and secure bookings, we <br/> empower you to explore with peace of mind, every time.</p>
+                <h3 className="text-[24px] font-semibold text-[#23262F] mb-2">
+                  {t('whyportal.reasons.step2.title')}
+                </h3>
+                <p className="text-[#777E90] text-sm font-normal max-w-sm font-poppins mx-auto">
+                  {t('whyportal.reasons.step2.description')}
+                </p>
               </div>
             </div>
 
                  <div className="flex items-start flex-col space-y-4">
               <span className="flex-shrink-0 inline-flex items-center justify-center px-3 py-[2px] bg-[#58C27D] text-[#FCFCFD] text-sm font-medium rounded-full">03</span>
               <div>
-                <h3 className="text-[24px] font-semibold text-[#23262F] mb-2">Always Transparent</h3>
-                <p className="text-[#777E90] text-sm font-normal max-w-sm font-poppins mx-auto">We lay out every detail upfront, so you know <br/> exactly what you are getting and can focus purely on enjoying your adventure.</p>
+                <h3 className="text-[24px] font-semibold text-[#23262F] mb-2">
+                  {t('whyportal.reasons.step3.title')}
+                </h3>
+                <p className="text-[#777E90] text-sm font-normal max-w-sm font-poppins mx-auto">
+                  {t('whyportal.reasons.step3.description')}
+                </p>
               </div>
             </div>
 
             {/* CTA */}
             <div className="pt-4">
               <button className="bg-[#3B71FE] hover:bg-blue-700 text-white font-bold px-6 py-3 rounded-[90px] transition-colors duration-200 transform text-[16px]">
-                Start your search
+                {t('buttons.Start your search')}
               </button>
             </div>
           </div>
@@ -136,18 +151,27 @@ const WhyPortalSection = () => {
                   )}
                 </button>
                 
-                <div className="flex space-x-2">
+                <div className="flex space-x-3">
                   <button
                     onClick={prevVideo}
                     className="border-[2px] border-[#E6E8EC] rounded-[40px] p-3"
                   >
-               <MoveLeft className="w-5 h-5 text-[#E6E8EC]" />
+                {isRTL ? (
+                                 <MoveRight className="w-5 h-5 text-[#E6E8EC]" /> // ✅ flip for RTL
+                               ) : (
+                                 <MoveLeft className="w-5 h-5 text-[#E6E8EC]" />
+                               )}  
                   </button>
                   <button
                     onClick={nextVideo}
                     className="border-[2px] border-[#E6E8EC] rounded-full p-3"
                   >
-                       <MoveRight className="w-5 h-5 text-[#E6E8EC]" />
+                     
+                        {isRTL ? (
+                                                    <MoveLeft className="w-5 h-5  text-[#E6E8EC]" /> // ✅ flip for RTL
+                                                  ) : (
+                                                    <MoveRight className="w-5 h-5  text-[#E6E8EC]" />
+                                                  )}
                   </button>
                 </div>
               </div>

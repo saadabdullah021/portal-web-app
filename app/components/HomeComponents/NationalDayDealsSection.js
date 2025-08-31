@@ -6,7 +6,8 @@ import Image from "next/image";
 import justForYou from "../../../public/images/justforyou.png";
 
 const NationalDayDealsSection = () => {
-  const { t } = useTranslation("common");
+  const { t, i18n } = useTranslation("home");
+   const isRTL = i18n.language === "ar";
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -108,7 +109,7 @@ const prevSlide = () => {
             {t("nationalDayDeals.title")}
           </h2>
           <p className="text-[#777E90] text-lg lg:text-2xl font-normal">
-            Lorem ipsum dolor imit
+            {t("nationalDayDeals.subtitle")}
           </p>
         </div>
         {/* Desktop Navigation Arrows */}
@@ -121,7 +122,11 @@ const prevSlide = () => {
             }`}
             aria-label="Previous deal"
           >
-            <MoveLeft className="w-5 h-5 text-gray-700" />
+               {isRTL ? (
+                        <MoveRight className="w-5 h-5 text-gray-700" /> // ✅ flip for RTL
+                      ) : (
+                        <MoveLeft className="w-5 h-5 text-gray-700" />
+                      )}
           </button>
           <button
             onClick={nextSlide}
@@ -133,7 +138,11 @@ const prevSlide = () => {
             }`}
             aria-label="Next deal"
           >
-            <MoveRight className="w-5 h-5 text-gray-700" />
+           {isRTL ? (
+                      <MoveLeft className="w-5 h-5 text-gray-700" /> // ✅ flip for RTL
+                    ) : (
+                      <MoveRight className="w-5 h-5 text-gray-700" />
+                    )}
           </button>
         </div>
       </div>
@@ -177,7 +186,11 @@ const prevSlide = () => {
             className=" border border-gray-200 rounded-full p-3 "
             aria-label="Previous deal"
           >
-            <MoveLeft className="w-5 h-5 text-gray-700" />
+           {isRTL ? (
+                      <MoveRight className="w-5 h-5 text-gray-700" /> // ✅ flip for RTL
+                    ) : (
+                      <MoveLeft className="w-5 h-5 text-gray-700" />
+                    )}
           </button>
 
       
@@ -187,7 +200,11 @@ const prevSlide = () => {
             className=" border border-gray-200 rounded-full p-3"
             aria-label="Next deal"
           >
-            <MoveRight className="w-5 h-5 text-gray-700" />
+         {isRTL ? (
+                    <MoveLeft className="w-5 h-5 text-gray-700" /> // ✅ flip for RTL
+                  ) : (
+                    <MoveRight className="w-5 h-5 text-gray-700" />
+                  )}
           </button>
         </div>
       </div>
