@@ -10,6 +10,8 @@ import AuthNavbar from "./components/AuthNavbar";
 import Footer from "./components/Footer";
 import { PopupProvider } from "./contexts/PopupContext";
 import { Providers } from './providers';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function RootLayout({ children }) {
   const pathname = usePathname();
@@ -28,6 +30,23 @@ export default function RootLayout({ children }) {
               {isAuthRoute ? <AuthNavbar /> : <Navbar />}
               <main>{children}</main>
               {!isAuthRoute && <Footer />}
+              <ToastContainer
+                position="top-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+                toastStyle={{
+                  borderRadius: '12px',
+                  fontSize: '14px',
+                  fontWeight: '500'
+                }}
+              />
             </PopupProvider>
           </I18nextProvider>
         </Providers>
