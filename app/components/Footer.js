@@ -3,7 +3,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import logo from "../../public/portal-logo.svg"; // apna logo yahan daalna
+import { useTranslation } from "react-i18next";
 export default function Footer() {
+  const { t } = useTranslation('home');
   return (
     <footer className="w-full border-t bg-white">
       <div className="mx-auto max-w-7xl px-6 lg:px-22 py-10">
@@ -78,7 +80,7 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="mt-10  pt-6 text-center md:text-left">
           <p className="text-sm text-[#777E90] font-bold font-dm-sans">
-            Copyright © 2025 Portal LLC.
+            {t('footer.rights')}
           </p>
         </div>
       </div>

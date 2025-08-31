@@ -12,7 +12,7 @@ import ProfileDropdown from "./ui/ProfileDropdown";
 const Navbar = () => {
   
   const [activeDropdown, setActiveDropdown] = useState(null); // "notif" | "profile" | null
-  const { t } = useTranslation("common");
+  const { t } = useTranslation("home");
 
 
   const dropdownRef = useRef(null);

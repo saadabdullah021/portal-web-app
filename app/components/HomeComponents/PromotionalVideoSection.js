@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useRef, useEffect } from 'react';
 import { Play, Pause, Volume2, VolumeX, Maximize } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const PromotionalVideoSection = () => {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -10,6 +11,7 @@ const PromotionalVideoSection = () => {
   const [showControls, setShowControls] = useState(true);
   const videoRef = useRef(null);
   const progressRef = useRef(null);
+  const { t } = useTranslation('home');
 
   // Handle play/pause
   const togglePlay = () => {
@@ -104,14 +106,14 @@ const PromotionalVideoSection = () => {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 sm:mb-12">
           <div>
             <p className="text-xs sm:text-sm font-medium text-gray-500 uppercase tracking-wider mb-2">
-              SUBTITLE
+              {t('promotionalvideo.subtitle')}
             </p>
             <h2 className="heading leading-tight">
-              Promotional video goes<br />here
+              {t('promotionalvideo.title')}
             </h2>
           </div>
           <button className="bg-[#3B71FE] hover:bg-blue-700 text-white font-bold px-6 py-3 rounded-[90px] transition-colors duration-200 transform text-[16px]">
-                Book Now
+            {t('buttons.book_now')}
               </button>
         </div>
 

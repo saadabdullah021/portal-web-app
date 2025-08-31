@@ -1,0 +1,129 @@
+{
+  "switchLang": "English",
+  "navbar": {
+    "home": "Home",
+    "explore": "Explore",
+    "about": "About Us",
+    "support": "Support",
+    "login": "Login",
+    "language": "Language",
+    "signup": "Sign Up"
+  },
+  "footer": {
+    "rights": "Copyright © 2025 Portal LLC.",
+    "privacy": "Privacy Policy",
+    "terms": "Terms & Conditions"
+  },
+  "buttons": {
+    "book_now": "Book Now",
+    "learn_more": "Learn More",
+    "search": "Search",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "load more": "Load More",
+    "Start your search": "Start your search",
+    "messages": "Messages",
+    "Bookings": "Bookings",
+    "Wishlist": "Wishlist",
+    "Settings": "Settings",
+    "Logout": "Logout",
+    "Support": "Support"
+  },
+  "search": {
+    "where": "Where are you going?",
+    "checkin": "Check-in",
+    "checkout": "Check-out",
+    "guests": "Guests"
+  },
+  "messages": {
+    "loading": "Loading...",
+    "no_results": "No results found.",
+    "error": "Something went wrong. Please try again."
+  },
+  "justForYou": {
+    "title": "Just For You",
+    "subtitle": "Discover properties tailored to your preferences",
+    "view_all": "View All"
+  },
+  "lastMinuteDeals": {
+    "title": "Last Minute Deals",
+    "subtitle": "Grab these exclusive offers before they're gone!",
+    "view_all": "View All Deals"
+  },
+  "nationalDayDeals": {
+    "title": "National Day Specials",
+    "subtitle": "Celebrate with exclusive offers and discounts",
+    "view_all": "View All Specials"
+  },
+  "howItWorks": {
+    "title": "How It Works",
+    "subtitle": "Keep calm & travel on",
+    "step1": {
+      "title": "Search",
+      "description": "Find your perfect stay from our wide range of properties."
+    },
+    "step2": {
+      "title": "Book",
+      "description": "Easily book your chosen property with our secure system."
+    },
+    "step3": {
+      "title": "Enjoy",
+      "description": "Experience a memorable stay with top-notch amenities."
+    }
+  },
+  "curatedExperiences": {
+    "title": "Curated Experiences",
+    "subtitle": "Handpicked stays for unique experiences",
+    "properties": "Properties"
+  },
+  "advanture": {
+    "title": "Let's go on an adventure",
+    "subtitle": "Find and book a great memorable stay",
+    "view_all": "Explore All Adventures"
+  },
+  "Browse": {
+    "title": "Browse by category",
+    "subtitle": "Find the perfect stay that suits your style",
+    "view_all": "View All Property Types"
+  },
+  "explore": {
+    "title": "Explore Nearby",
+    "subtitle": "beautiful places to go",
+    "view_all": "See All"
+  },
+"besthost": {
+  "title": "Best hosts of the",
+  "subtitle": "{{period}}", 
+  "view_all": "Learn More",
+  "options": {
+    "month": "Month",
+    "year": "Year"
+  }
+},
+"whyportal": {
+  "title": "Why Portal?",
+  "subtitle": "Experience the difference with Portal",
+  "reasons": {
+    "step1": {
+      "title": "Tailored for Flexible Living",
+      "description": "Portal helps you unearth incredible trips that adapt to your schedule and preferences, making spontaneity a breeze."
+    },
+    "step2": {
+      "title": "Assured Travel Experiences",
+      "description": "With genuine reviews and secure bookings, we empower you to explore with peace of mind, every time."
+    },
+    "step3": {
+      "title": "Always Transparent",
+      "description": "We lay out every detail upfront, so you know exactly what you are getting and can focus purely on enjoying your adventure."
+    }
+  }
+
+
+  },
+  "promotionalvideo": {
+    "title": "Promotional video goes here",
+    "subtitle": "SUBTITLE"
+  }
+
+
+}

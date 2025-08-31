@@ -8,7 +8,8 @@ import Image from 'next/image';
 const LastMinuteDealsSection = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
-  const { t } = useTranslation('common');
+   const { t, i18n } = useTranslation("home");
+  const isRTL = i18n.language === "ar";
 
   const placeholderImage = justForYou;
 
@@ -149,7 +150,9 @@ const LastMinuteDealsSection = () => {
           <h2 className="heading mb-4">
             {t('lastMinuteDeals.title')}
           </h2>
-          <p className="text-[#777E90] text-lg lg:text-2xl">Lorem ipsum dolor imit</p>
+          <p className="text-[#777E90] text-lg lg:text-2xl">
+            {t('lastMinuteDeals.subtitle')}
+          </p>
         </div>
 
         {/* Desktop Navigation Arrows */}
@@ -161,7 +164,11 @@ const LastMinuteDealsSection = () => {
               }`}
             aria-label="Previous deal"
           >
+                      {isRTL ? (
+            <MoveRight className="w-5 h-5 text-gray-700" /> // ✅ flip for RTL
+          ) : (
             <MoveLeft className="w-5 h-5 text-gray-700" />
+          )}
           </button>
           <button
             onClick={nextSlide}
@@ -170,7 +177,11 @@ const LastMinuteDealsSection = () => {
               }`}
             aria-label="Next deal"
           >
+                {isRTL ? (
+            <MoveLeft className="w-5 h-5 text-gray-700" /> // ✅ flip for RTL
+          ) : (
             <MoveRight className="w-5 h-5 text-gray-700" />
+          )}
           </button>
         </div>
       </div>
@@ -214,14 +225,22 @@ const LastMinuteDealsSection = () => {
             className=" border border-gray-200 rounded-full p-3 "
             aria-label="Previous deal"
           >
+             {isRTL ? (
+            <MoveRight className="w-5 h-5 text-gray-700" />
+          ) : (
             <MoveLeft className="w-5 h-5 text-gray-700" />
+          )}
           </button>
           <button
             onClick={nextSlide}
             className=" border border-gray-200 rounded-full p-3"
             aria-label="Next deal"
           >
+                 {isRTL ? (
+            <MoveLeft className="w-5 h-5 text-gray-700" />
+          ) : (
             <MoveRight className="w-5 h-5 text-gray-700" />
+          )}
           </button>
         </div>
       </div>

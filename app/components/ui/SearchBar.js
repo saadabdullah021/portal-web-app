@@ -5,32 +5,32 @@ import { useTranslation } from 'react-i18next';
 import DateInput from './DateInput';
 
 const SearchBar = ({ onSearch }) => {
-  const { t } = useTranslation('hero');
+   const { i18n, t } = useTranslation("hero");
   const [location, setLocation] = useState('');
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
   const [isMobile, setIsMobile] = useState(false);
 
-  // For dropdown (Location)
-  const [suggestions, setSuggestions] = useState([]);
-  const [showDropdown, setShowDropdown] = useState(false);
-
-  // Travelers popup
-  const [showTravelers, setShowTravelers] = useState(false);
+  // Travelers state
   const [adults, setAdults] = useState(0);
   const [children, setChildren] = useState(0);
   const [infants, setInfants] = useState(0);
 
-  const travelersRef = useRef(null);
+  // 🔥 Track active dropdown: "location" | "travelers" | null
+  const [activeDropdown, setActiveDropdown] = useState(null); // 🔥 new line
 
-  // Dummy locations (replace with API later)
-const dummyLocations = useMemo(() => [
-  "Al Ula, Medina Province",
-  "Al Ulaiyah, Riyadh",
-  "Al Ulays, Jeddah",
-  "Al Ujeir, Dammam",
-  "Al Uqair, Eastern Province"
-], []);
+  const travelersRef = useRef(null);
+  const locationRef = useRef(null); // 🔥 new line
+
+  // Dummy locations
+  const dummyLocations = useMemo(() => [
+    "Al Ula, Medina Province",
+    "Al Ulaiyah, Riyadh",
+    "Al Ulays, Jeddah",
+    "Al Ujeir, Dammam",
+    "Al Uqair, Eastern Province"
+  ], []);
+
   // Responsive check
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 1024);
@@ -39,7 +39,8 @@ const dummyLocations = useMemo(() => [
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Debounced filter from dummy data
+  // Debounced filter for location
+  const [suggestions, setSuggestions] = useState([]);
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
       if (location.length > 1) {
@@ -47,21 +48,24 @@ const dummyLocations = useMemo(() => [
           item.toLowerCase().includes(location.toLowerCase())
         );
         setSuggestions(filtered);
-        setShowDropdown(true);
+        setActiveDropdown("location"); // 🔥 show location dropdown
       } else {
         setSuggestions([]);
-        setShowDropdown(false);
+        if (activeDropdown === "location") setActiveDropdown(null); // 🔥 close if empty
       }
     }, 300);
 
     return () => clearTimeout(delayDebounce);
   }, [location, dummyLocations]);
 
-  // Close popup when clicking outside
+  // Close when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (travelersRef.current && !travelersRef.current.contains(event.target)) {
-        setShowTravelers(false);
+      if (
+        travelersRef.current && !travelersRef.current.contains(event.target) &&
+        locationRef.current && !locationRef.current.contains(event.target)
+      ) {
+        setActiveDropdown(null); // 🔥 close all dropdowns
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -70,7 +74,7 @@ const dummyLocations = useMemo(() => [
 
   const handleSelect = (place) => {
     setLocation(place);
-    setShowDropdown(false);
+    setActiveDropdown(null); // 🔥 close after selecting
   };
 
   const totalTravelers = adults + children + infants;
@@ -93,36 +97,59 @@ const dummyLocations = useMemo(() => [
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
         
         {/* Location */}
-        <div className="lg:col-span-1 relative">
-          <div className="lg:bg-transparent bg-white/60 rounded-xl p-3 lg:p-0">
-            <div className="flex items-start space-x-2">
-              <Navigation color="#B1B5C3" size={20} className=" lg:mt-3" />
-              <div className="flex flex-col w-full">
-                <label className="text-lg lg:text-xl font-semibold pl-2 pt-2 mb-1 hidden lg:block">
-                  {t('locationLabel')}
-                </label>
-                <input
-                  type="text"
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                  onFocus={() => location.length > 1 && setShowDropdown(true)}
-                  placeholder={isMobile ? t('locationPlaceholderMobile') : t('locationPlaceholderDesktop')}
-                  className="w-full bg-transparent border-none rounded-md px-3 outline-none placeholder-gray-700 lg:placeholder-gray-400"
-                />
-              </div>
-            </div>
-          </div>
+        <div className="lg:col-span-1 relative" ref={locationRef}> {/* 🔥 new line */}
+         <div
+    className={`rounded-xl p-3 lg:p-0 
+      ${activeDropdown === "location" ? " " : "lg:bg-transparent"} 
+      bg-white/60 lg:bg-transparent `}
+  >
+    <div
+      className="flex items-start gap-2 cursor-pointer"
+      onClick={() =>
+        setActiveDropdown(activeDropdown === "location" ? null : "location")
+      } // 👈 toggle dropdown on click
+    >
+      <Navigation color="#B1B5C3" size={24} className="lg:mt-4" />
+      <div className="flex flex-col w-full">
+        <label className="text-lg lg:text-[24px] text-[#23262F] font-semibold pl-2 pt-2 mb-1 hidden lg:block">
+          {t("locationLabel")}
+        </label>
+        <input
+          type="text"
+          value={location}
+          onChange={(e) => setLocation(e.target.value)}
+          onFocus={() =>
+            setActiveDropdown("location")
+          } // 👈 also works with focus
+          placeholder={
+            isMobile
+              ? t("locationPlaceholderMobile")
+              : t("locationPlaceholderDesktop")
+          }
+          className="w-full bg-transparent border-none rounded-md px-3 lg:placeholder-[#777E90] outline-none placeholder-[#23262F] placeholder:font-medium placeholder:text-[16px]"
+        />
+      </div>
+    </div>
+  </div>
 
           {/* Suggestions dropdown */}
-          {showDropdown && suggestions.length > 0 && (
-            <div className="absolute z-50 bg-[#FCFCFD] shadow-lg rounded-3xl bottom-18 lg:bottom-24 max-h-[300px] w-full lg:min-w-[500px] overflow-y-auto p-3">
+          {activeDropdown === "location" && suggestions.length > 0 && ( 
+            <div className="absolute z-100 bg-[#FCFCFD] shadow-xl rounded-3xl top-full max-h-[300px] w-full lg:min-w-[500px] overflow-y-auto p-3">
               {suggestions.map((item, idx) => (
                 <div
                   key={idx}
                   onClick={() => handleSelect(item)}
                   className="px-4 py-3 cursor-pointer hover:bg-[#F4F5F6] flex items-center space-x-2 rounded-xl"
                 >
-                  <Navigation size={16} className="text-gray-400" />
+                  <span className='bg-[#FCFCFD] border-[#E6E8EC] border-[1px] rounded-full w-8 h-8 flex items-center justify-center'>
+                    {/* icon */}
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fillRule="evenodd" clipRule="evenodd" d="M12.6665 13.3333C13.0347 13.3333 13.3332 13.0348 13.3332 12.6666C13.3332 12.2984 13.0347 12 12.6665 12C12.2983 12 11.9998 12.2984 11.9998 12.6666C11.9998 13.0348 12.2983 13.3333 12.6665 13.3333ZM12.6665 14.6666C13.7711 14.6666 14.6665 13.7712 14.6665 12.6666C14.6665 11.5621 13.7711 10.6666 12.6665 10.6666C11.5619 10.6666 10.6665 11.5621 10.6665 12.6666C10.6665 13.7712 11.5619 14.6666 12.6665 14.6666Z" fill="#777E91"/>
+<path fillRule="evenodd" clipRule="evenodd" d="M10.3332 2.66671C9.4127 2.66671 8.6665 3.4129 8.6665 4.33337V11.6667C8.6665 13.3236 7.32336 14.6667 5.6665 14.6667C4.00965 14.6667 2.6665 13.3236 2.6665 11.6667V6.66671C2.6665 6.29852 2.96498 6.00004 3.33317 6.00004C3.70136 6.00004 3.99984 6.29852 3.99984 6.66671V11.6667C3.99984 12.5872 4.74603 13.3334 5.6665 13.3334C6.58698 13.3334 7.33317 12.5872 7.33317 11.6667V4.33337C7.33317 2.67652 8.67632 1.33337 10.3332 1.33337C11.99 1.33337 13.3332 2.67652 13.3332 4.33337V8.66671C13.3332 9.0349 13.0347 9.33337 12.6665 9.33337C12.2983 9.33337 11.9998 9.0349 11.9998 8.66671V4.33337C11.9998 3.4129 11.2536 2.66671 10.3332 2.66671Z" fill="#777E91"/>
+<path d="M2.75762 1.65387C3.01488 1.21287 3.65208 1.21287 3.90933 1.65387L5.08197 3.66412C5.34123 4.10856 5.02065 4.6667 4.50612 4.6667H2.16083C1.64631 4.6667 1.32573 4.10855 1.58498 3.66412L2.75762 1.65387Z" fill="#777E91"/>
+</svg>
+
+                  </span>
                   <span className="text-[16px] font-medium text-[#23262F]">{item}</span>
                 </div>
               ))}
@@ -154,97 +181,97 @@ const dummyLocations = useMemo(() => [
           </div>
         </div>
 
-        {/* Travelers + Search */}
-        <div className="lg:col-span-1 flex flex-col lg:flex-row lg:items-center lg:space-x-4 space-y-4 lg:space-y-0 relative" ref={travelersRef}>
-          <div className="lg:flex-1">
-            <div 
-              className="lg:bg-transparent bg-white/60 rounded-xl p-3 lg:p-0 cursor-pointer"
-              onClick={() => setShowTravelers(!showTravelers)}
+        {/* Travelers */}
+        <div className="lg:col-span-1 flex flex-col lg:flex-row lg:items-center lg:space-x-4 space-y-4 lg:space-y-0 relative pt-1" ref={travelersRef}>
+    <div
+    className={`lg:flex-1 rounded-xl p-3 lg:p-0 cursor-pointer 
+      ${activeDropdown === "travelers" ? " " : "lg:bg-transparent"} 
+      bg-white/60 lg:bg-transparent`}
+    onClick={() =>
+      setActiveDropdown(activeDropdown === "travelers" ? null : "travelers")
+    }
+  >
+            <div
             >
               <div className="flex items-start space-x-2">
-                <UserRound color='#B1B5C3' size={20} className='mt-0 lg:mt-2'/>
+                <UserRound color='#B1B5C3' size={24} className='mt-0 lg:mt-2.5'/>
                 <div className="flex flex-col w-full">
-                  <label className="text-lg lg:text-xl font-semibold pl-2 pt-2 lg:pt-1 mb-1 hidden lg:block">
+                  <label className="text-lg lg:text-[24px] font-semibold pl-2 pt-2 lg:pt-1 mb-1 hidden lg:block">
                     {t('travelers')}
                   </label>
-                  <span className="px-3 text-gray-700">
-                    {totalTravelers > 0 ? `${totalTravelers} Guests` : t('guestsPlaceholder')}
+                  <span className="px-3 text-[#23262F] lg:text-[#777E90] text-[16px] font-medium">
+                    {totalTravelers > 0 ? `${totalTravelers} ${t('guestsPlaceholder')} ` : t('guestsPlaceholder')}
                   </span>
                 </div>
               </div>
             </div>
 
             {/* Travelers Popup */}
-            {showTravelers && (
-              <div className="absolute z-50 bg-[#FCFCFD] shadow-lg lg:right-14 bottom-64 lg:bottom-24 rounded-3xl  max-h-[300px] w-full lg:min-w-[420px] overflow-y-auto p-8 space-y-6">
-                
+            {activeDropdown === "travelers" && ( 
+              <div
+              onClick={(e) => e.stopPropagation()} 
+              className={`absolute z-50 bg-[#FCFCFD] shadow-xl bottom-36 lg:-bottom-72 rounded-3xl max-h-[300px] w-full lg:min-w-[420px] overflow-y-auto p-8 space-y-6
+                ${i18n.language === "ar" ? " lg:-right-32" : " lg:right-32 "}
+                `}
+              >
                 {/* Adults */}
                 <div className="flex items-center justify-between border-b pb-3 border-gray-300">
-                  <div >
-                    <p className="font-medium text-[16px]  text-gray-900">Adults</p>
-                    <p className="text-[12px] font-normal text-gray-500">Ages 13 and above</p>
+                  <div>
+                    <p className="font-medium text-[16px] text-gray-900">
+                      {t('Adults')}
+
+                    </p>
+                    <p className="text-[12px] text-gray-500">
+                      {t('Ages 13 and above')}
+                    </p>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <button 
-                      onClick={() => setAdults(Math.max(0, adults - 1))}
-                      className="w-6 h-6 flex items-center justify-center border-[2px] rounded-full text-[#B1B5C3] hover:bg-gray-100"
-                    >
-                      <Minus size={16}/>
+                    <button onClick={() => setAdults(Math.max(0, adults - 1))} className="w-6 h-6 flex items-center justify-center border-[2px] border-[#B1B5C3] rounded-full">
+                      <Minus size={16} color='#B1B5C3'/>
                     </button>
                     <span className="w-4 text-center text-[16px] font-medium text-[#23262F]">{adults}</span>
-                    <button 
-                      onClick={() => setAdults(adults + 1)}
-                      className="w-6 h-6 flex items-center justify-center border-[2px] rounded-full text-[#B1B5C3] hover:bg-gray-100"
-                    >
-                      <Plus size={16}/>
+                    <button onClick={() => setAdults(adults + 1)} className="w-6 h-6 flex items-center justify-center border-[2px] border-[#B1B5C3] rounded-full">
+                      <Plus size={16} color='#B1B5C3'/>
                     </button>
-                
                   </div>
-                  
                 </div>
-
                 {/* Children */}
                 <div className="flex items-center justify-between border-b pb-3 border-gray-300">
                   <div>
-                    <p className="font-medium text-[16px]  text-gray-900">Children</p>
-                    <p className="text-[12px] font-normal text-gray-500">Ages 2 – 12</p>
+                    <p className="font-medium text-[16px] text-gray-900">
+                      {t('Children')}
+                    </p>
+                    <p className="text-[12px] text-gray-500">
+                      {t('Ages 2 - 12')}
+                    </p>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <button 
-                      onClick={() => setChildren(Math.max(0, children - 1))}
-                      className="w-6 h-6 flex items-center justify-center border-[2px] rounded-full text-[#B1B5C3] hover:bg-gray-100"
-                    >
-                      <Minus size={16}/>
+                    <button onClick={() => setChildren(Math.max(0, children - 1))} className="w-6 h-6 border-[2px] border-[#B1B5C3] rounded-full">
+                      <Minus size={16} color='#B1B5C3'/>
                     </button>
                     <span className="w-4 text-center text-[16px] font-medium text-[#23262F]">{children}</span>
-                    <button 
-                      onClick={() => setChildren(children + 1)}
-                      className="w-6 h-6 flex items-center justify-center border-[2px] rounded-full text-[#B1B5C3] hover:bg-gray-100"
-                    >
-                      <Plus size={16}/>
+                    <button onClick={() => setChildren(children + 1)} className="w-6 h-6 border-[2px] border-[#B1B5C3] rounded-full">
+                      <Plus size={16} color='#B1B5C3'/>
                     </button>
                   </div>
                 </div>
-
                 {/* Infants */}
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-medium text-[16px]  text-gray-900">Infants</p>
-                    <p className="text-[12px] font-normal text-gray-500">Under 2 years</p>
+                    <p className="font-medium text-[16px] text-gray-900">
+                      {t('Infants')}
+                    </p>
+                    <p className="text-[12px] text-gray-500">
+                      {t('Under 2 years')}
+                    </p>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <button 
-                      onClick={() => setInfants(Math.max(0, infants - 1))}
-                      className="w-6 h-6 flex items-center justify-center border-[2px] rounded-full text-[#B1B5C3] hover:bg-gray-100"
-                    >
-                      <Minus size={16}/>
+                    <button onClick={() => setInfants(Math.max(0, infants - 1))} className="w-6 h-6 border-[2px] border-[#B1B5C3] rounded-full">
+                      <Minus size={16} color='#B1B5C3'/>
                     </button>
                     <span className="w-4 text-center text-[16px] font-medium text-[#23262F]">{infants}</span>
-                    <button 
-                      onClick={() => setInfants(infants + 1)}
-                      className="w-6 h-6 flex items-center justify-center border-[2px] rounded-full text-[#B1B5C3] hover:bg-gray-100"
-                    >
-                      <Plus size={16}/>
+                    <button onClick={() => setInfants(infants + 1)} className="w-6 h-6 border-[2px] border-[#B1B5C3] rounded-full">
+                      <Plus size={16} color='#B1B5C3'/>
                     </button>
                   </div>
                 </div>
@@ -255,15 +282,15 @@ const dummyLocations = useMemo(() => [
           {/* Button */}
           <button 
             onClick={handleSearch}
-            className="w-full lg:w-auto bg-[#3B71FE] hover:bg-blue-700 transition-colors duration-200 rounded-full py-4 lg:p-4 px-6 flex items-center justify-center"
+            className="w-full lg:w-auto bg-[#3B71FE] hover:bg-blue-700 rounded-full py-4 lg:p-4 px-6 flex items-center justify-center"
           >
             <span className="text-white font-medium lg:hidden">{t('search')}</span>
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white hidden lg:block" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
-            </svg>
+      <svg width="24" height="24" className='hidden lg:block' viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fillRule="evenodd" clipRule="evenodd" d="M14.9056 16.3199C13.551 17.3729 11.8487 18 10 18C5.58172 18 2 14.4183 2 10C2 5.58172 5.58172 2 10 2C14.4183 2 18 5.58172 18 10C18 11.8487 17.3729 13.551 16.3199 14.9056L21.7071 20.2929C22.0976 20.6834 22.0976 21.3166 21.7071 21.7071C21.3166 22.0976 20.6834 22.0976 20.2929 21.7071L14.9056 16.3199ZM16 10C16 13.3137 13.3137 16 10 16C6.68629 16 4 13.3137 4 10C4 6.68629 6.68629 4 10 4C13.3137 4 16 6.68629 16 10Z" fill="#FCFCFD"/>
+</svg>
+
           </button>
         </div>
-
       </div>
     </div>
   );

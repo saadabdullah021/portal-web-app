@@ -5,7 +5,9 @@ import Image from 'next/image';
 import justForYou from "../../../public/images/justforyou.png";
 import curatedImage from "../../../public/images/curatedImage.png";
 import { Loader } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 const CuratedExperiences = () => {
+  const { t } = useTranslation('home');
   // Initial experiences data
   const allExperiences = [
     {
@@ -76,10 +78,10 @@ const CuratedExperiences = () => {
         {/* Header */}
         <div className="text-center mb-12">
           <h2 className="text-4xl lg:text-5xl font-bold text-[#23262F]  font-dm-sans mb-4">
-            Curated Experiences
+            {t('curatedExperiences.title')}
           </h2>
           <p className="text-gray-500 text-base md:text-lg">
-            Lorem ipsum dolor imit
+            {t('curatedExperiences.subtitle')}
           </p>
         </div>
 
@@ -112,7 +114,7 @@ const CuratedExperiences = () => {
                   {experience.title}
                 </h3>
                 <p className="text-[#777E90] font-normal font-poppins text-sm md:text-base text-center">
-                  {experience.properties} properties
+                  {experience.properties} {t('curatedExperiences.properties')}
                 </p>
               </div>
             </div>
@@ -136,7 +138,9 @@ const CuratedExperiences = () => {
                 <>
     <Loader size={18} />
                 
-                  <span className='font-bold text-sm text-black'>Load more</span>
+                  <span className='font-bold text-sm text-black'>
+{t('buttons.load more')}
+                  </span>
                 </>
               )}
             </button>

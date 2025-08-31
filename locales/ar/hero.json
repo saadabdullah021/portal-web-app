@@ -1,6 +1,7 @@
 
 {
   "title": "احجز، ابقَ، وتجول",
+  "subtitle": "ابحث عن إقامتك القادمة من بين أكثر من مليون إعلان في أكثر من 200 دولة.",
   "locationLabel": "الموقع",
   "locationPlaceholderMobile": "الموقع",
   "locationPlaceholderDesktop": "إلى أين تريد الذهاب؟",
@@ -8,5 +9,12 @@
   "checkOut": "تسجيل الخروج",
   "travelers": "المسافرون",
   "guestsPlaceholder": "الضيوف",
-  "search": "ابحث"
+  "search": "ابحث",
+  "Adults": "البالغون",
+  "Children": "الأطفال",
+  "Infants": "الرضع",
+  "Ages 13 and above": "الأعمار 13 وما فوق",
+  "Ages 2 - 12": "2 - 12 الأعمار",
+  "Under 2 years": "تحت 2 سنوات"
+
 }

@@ -3,16 +3,20 @@ import React from "react";
 
 import shapeBg from "../../../public/images/shape bg.png";
 import Image from "next/image";
+import { useTranslation } from "react-i18next";
 
 const HowItWorks = () => {
+  const { t } = useTranslation("home");
   return (
     <section className="relative w-full py-20 bg-white">
       {/* Heading */}
       <div className="text-center mb-16">
         <h2 className="text-4xl md:text-5xl font-dm-sans font-bold text-[#23262F]">
-          How it works
+          {t("howItWorks.title")}
         </h2>
-        <p className="mt-2 text-gray-500 text-lg">Keep calm & travel on</p>
+        <p className="mt-2 text-gray-500 text-lg">
+          {t("howItWorks.subtitle")}
+        </p>
       </div>
 
       {/* Steps + CSS dotted connector */}
@@ -54,10 +58,11 @@ const HowItWorks = () => {
           </section>
 
           {/* Text */}
-          <h3 className="text-2xl font-semibold text-[#23262F]">Browse</h3>
+          <h3 className="text-2xl font-semibold text-[#23262F]">
+            {t("howItWorks.step1.title")}
+          </h3>
           <p className="mt-2 text-sm text-[#777E90] font-normal text-center max-w-xs">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent
-            iaculis leo sit amet
+            {t("howItWorks.step1.description")}
           </p>
         </div>
 
@@ -91,10 +96,11 @@ const HowItWorks = () => {
           </section>
 
           {/* Text */}
-          <h3 className="text-2xl font-semibold text-[#23262F]">Book</h3>
+          <h3 className="text-2xl font-semibold text-[#23262F]">
+            {t("howItWorks.step2.title")}
+          </h3>
           <p className="mt-2 text-sm text-[#777E90] font-normal text-center max-w-xs">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent
-            iaculis leo sit amet
+            {t("howItWorks.step2.description")}
           </p>
         </div>
 
@@ -113,7 +119,7 @@ const HowItWorks = () => {
             </div>
 
             {/* Main tilted card */}
-            <div className="relative w-[130px] h-[160px] flex justify-center items-center bg-[#3f3f42]/5 rounded-3xl shadow-3xl -rotate-[165deg] -mt-12">
+            <div  className="relative w-[130px] h-[160px] flex justify-center items-center bg-[#3f3f42]/5 rounded-3xl shadow-3xl -rotate-[165deg] -mt-12">
               <div className="z-30 relative w-[130px] h-[160px] flex justify-center items-center bg-[#FCFCFD] rounded-3xl shadow mt-4">
                 <div className="w-16 h-16 rounded-[48px] bg-[#92A5EF] flex items-center justify-center rotate-165">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -127,10 +133,11 @@ const HowItWorks = () => {
           </section>
 
           {/* Text */}
-          <h3 className="text-2xl font-semibold text-[#23262F]">Enjoy</h3>
+          <h3 className="text-2xl font-semibold text-[#23262F]">
+            {t("howItWorks.step3.title")}
+          </h3>
           <p className="mt-2 text-sm text-[#777E90] font-normal text-center max-w-xs">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent
-            iaculis leo sit amet
+           {t("howItWorks.step3.description")}  
           </p>
         </div>
 

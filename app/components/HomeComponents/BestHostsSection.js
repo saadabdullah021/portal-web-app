@@ -10,13 +10,15 @@ import Image from 'next/image';
 const dummyHostImage = dummyImage;
 
 const BestHostsSection = () => {
+  
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
    const [selected, setSelected] = useState("month");
   const [open, setOpen] = useState(false);
-  const { t } = useTranslation('common');
+     const { t, i18n } = useTranslation("home");
+    const isRTL = i18n.language === "ar";
 
-const options = ["month", "year", "week"];
+const options = ["month", "year",];
 
   // Sample hosts data - replace with API data
   const hosts = [
@@ -159,7 +161,7 @@ const options = ["month", "year", "week"];
       <div className="flex items-start justify-between mb-12">
         <div className="flex flex-col md:flex md:flex-row items-start lg:items-center gap-4">
           <h2 className="heading">
-            Best hosts of the
+            {t('besthost.title')}
           </h2>
       <div className="relative inline-block text-left">
       {/* Trigger */}
@@ -168,7 +170,7 @@ const options = ["month", "year", "week"];
         onClick={() => setOpen(!open)}
       >
         <span className="text-4xl font-bold md:text-5xl font-dm-sans text-[#3B71FE]">
-          {selected}
+          {t(`besthost.options.${selected}`)}
         </span>
         <ChevronDown
           className={`w-5 h-5 text-[#3B71FE] mt-2 transition-transform ${
@@ -189,7 +191,7 @@ const options = ["month", "year", "week"];
               }}
               className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg cursor-pointer"
             >
-              {option}
+{t(`besthost.options.${option}`)}
             </div>
           ))}
         </div>
@@ -209,7 +211,11 @@ const options = ["month", "year", "week"];
             }`}
             aria-label="Previous hosts"
           >
-            <MoveLeft className="w-5 h-5 text-gray-700" />
+              {isRTL ? (
+                  <MoveRight className="w-5 h-5 text-gray-700" /> // ✅ flip for RTL
+                ) : (
+                  <MoveLeft className="w-5 h-5 text-gray-700" />
+                )}  
           </button>
           <button
             onClick={nextSlide}
@@ -221,7 +227,11 @@ const options = ["month", "year", "week"];
             }`}
             aria-label="Next hosts"
           >
-            <MoveRight className="w-5 h-5 text-gray-700" />
+          {isRTL ? (
+                             <MoveLeft className="w-5 h-5 text-gray-700" /> // ✅ flip for RTL
+                           ) : (
+                             <MoveRight className="w-5 h-5 text-gray-700" />
+                           )}
           </button>
         </div>
       </div>
@@ -267,7 +277,11 @@ const options = ["month", "year", "week"];
             }`}
             aria-label="Previous host"
           >
-            <MoveLeft className="w-5 h-5 text-gray-700" />
+              {isRTL ? (
+                  <MoveRight className="w-5 h-5 text-gray-700" /> // ✅ flip for RTL
+                ) : (
+                  <MoveLeft className="w-5 h-5 text-gray-700" />
+                )}  
           </button>
           
        
@@ -282,7 +296,11 @@ const options = ["month", "year", "week"];
             }`}
             aria-label="Next host"
           >
-            <MoveRight className="w-5 h-5 text-gray-700" />
+          {isRTL ? (
+                             <MoveLeft className="w-5 h-5 text-gray-700" /> // ✅ flip for RTL
+                           ) : (
+                             <MoveRight className="w-5 h-5 text-gray-700" />
+                           )}
           </button>
         </div>
       </div>

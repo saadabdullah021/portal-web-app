@@ -1,5 +1,6 @@
 {
   "title": "Book, stay, <br/> wander",
+  "subtitle": "Find your next stay from our 1 million+ listings in over 200 countries.",
   "locationLabel": "Location",
   "locationPlaceholderMobile": "Location",
   "locationPlaceholderDesktop": "Where are you going?",
@@ -7,5 +8,12 @@
   "checkOut": "Check out",
   "travelers": "Travelers",
   "guestsPlaceholder": "Guests",
-  "search": "Search"
+  "search": "Search",
+  "Adults": "Adults",
+  "Children": "Children",
+  "Infants": "Infants",
+  "Ages 13 and above": "Ages 13 and above",
+  "Ages 2 - 12": "Ages 2 - 12",
+  "Under 2 years": "Under 2 years"
+
 }
