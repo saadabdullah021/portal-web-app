@@ -4,12 +4,12 @@
 import { useState } from "react";
 import { ArrowRightIcon, X } from "lucide-react";
 import Link from "next/link";
-import { PhoneInput } from "react-international-phone";
-import "react-international-phone/style.css";
 import HomeContent from "@/app/components/HomeContent";
 import { useTranslation } from "react-i18next";
 import { usePopup } from "@/app/contexts/PopupContext";
 import axios from "@/lib/axios";
+import { toast } from 'react-toastify';
+import PhoneInput from "@/app/components/ui/PhoneInput";
 
 export default function SignUpPage() {
     const { t } = useTranslation('auth');
@@ -30,6 +30,7 @@ export default function SignUpPage() {
     const handleSubmit = async () => {
         if (!phone) {
             setError("Please enter your phone number");
+            toast.error("Please enter your phone number");
             return;
         }
 
@@ -44,11 +45,21 @@ export default function SignUpPage() {
                 request_type: 'sign_up'
             };
 
-            await axios.post('/send-otp', payload);
-            closePopup('signup');
-            openPopup('otpVerification');
+            const response = await axios.post('/send-otp', payload);
+            console.log(response);
+            
+            if(response.status === 200 && response.data.success){
+                toast.success("OTP sent successfully!");
+                localStorage.setItem('signupPhone', phone);
+                closePopup('signup');
+                openPopup('otpVerification');
+            } else {
+                toast.error("Failed to send OTP. Please try again.");
+            }
         } catch (error) {
-            setError(error.response?.data?.message || "Failed to send OTP");
+            const errorMessage = error.response?.data?.message || "Failed to send OTP. Please try again.";
+            setError(errorMessage);
+            toast.error(errorMessage);
         } finally {
             setLoading(false);
         }
@@ -108,29 +119,15 @@ export default function SignUpPage() {
                                 {t('signup.or_continue') || 'Or continue with phone'}
                             </div>
 
-                            <div
-                             dir="ltr" 
-                            className="flex items-center gap-2 border border-[#E6E8EC] rounded-full mx-auto max-w-xs px-3 py-1 mt-6 shadow-sm">
+                            <div className="flex items-center gap-2 mx-auto max-w-xs mt-6">
                                 <PhoneInput
-                                    defaultCountry="sa"
                                     value={phone}
-                                    onChange={(phone) => setPhone(phone)}
+                                    onChange={setPhone}
+                                    placeholder="your phone number"
                                     className="flex-1"
-                                    inputClass="custom-phone-input"
-                                    placeholder="Enter your phone number"
+                                    error={!!error}
+                                    onSubmit={handleSubmit}
                                 />
-
-                                <button 
-                                    onClick={handleSubmit}
-                                    disabled={loading}
-                                    className="bg-blue-600 text-white justify-center w-6 h-6 flex items-center rounded-full hover:bg-blue-700 transition disabled:opacity-50"
-                                >
-                                    {loading ? (
-                                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                    ) : (
-                                        <ArrowRightIcon size={16} />
-                                    )}
-                                </button>
                             </div>
 
                             {error && (
