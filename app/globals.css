@@ -91,7 +91,7 @@ body {
   border: none !important;
   box-shadow: none !important;
   background: transparent !important;
-  width: 100% !important;
+  /* width: 100% !important; */
 }
 
 .react-international-phone-input-container input {
@@ -127,4 +127,8 @@ body {
 /* Optional: hover effect remove */
 .react-international-phone-country-selector-button:hover {
   background: transparent !important;
+}
+
+.react-international-phone-input-container{
+    width: 66px !important;
 }
