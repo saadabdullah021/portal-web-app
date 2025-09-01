@@ -55,7 +55,7 @@ const dummyLocations = useMemo(() => [
     }, 300);
 
     return () => clearTimeout(delayDebounce);
-  }, [location, dummyLocations]);
+  }, [location, dummyLocations, showDropdown]);
 
   // Close popup when clicking outside
   useEffect(() => {
