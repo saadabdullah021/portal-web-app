@@ -56,7 +56,7 @@ const SearchBar = ({ onSearch }) => {
     }, 300);
 
     return () => clearTimeout(delayDebounce);
-  }, [location, dummyLocations]);
+  }, [location, dummyLocations, showDropdown]);
 
   // Close when clicking outside
   useEffect(() => {

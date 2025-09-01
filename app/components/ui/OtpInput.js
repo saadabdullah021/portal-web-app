@@ -106,7 +106,7 @@ const OtpInput = ({
                         disabled={loading}
                         className="text-[#3B71FE] text-sm hover:underline font-semibold disabled:opacity-50"
                     >
-                        Didn't receive the code? Resend
+                        Didnt receive the code? Resend
                     </button>
                 </div>
             </div>

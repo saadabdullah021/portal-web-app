@@ -39,7 +39,7 @@ const IdentityConfirmation = ({
                 </button>
 
                 <h2 className="text-[32px] lg:text-[40px] font-dm-sans text-[#141416] font-bold text-center mb-2">
-                    Let's confirm it's really you
+                    Lets confirm its really you
                 </h2>
                 
                 <p className="text-[#777E90] text-center text-[16px] mb-8">
