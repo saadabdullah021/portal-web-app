@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { MoveLeft, MoveRight, Star } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import Image from "next/image";
@@ -7,15 +7,17 @@ import justForYou from "../../../public/images/justforyou.png";
 
 const NationalDayDealsSection = () => {
   const { t, i18n } = useTranslation("home");
-   const isRTL = i18n.language === "ar";
+  const isRTL = i18n.language === "ar";
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const sliderRef = useRef(null);
 
   // ✅ Same image for all properties (later replace with API images)
   const placeholderImage = justForYou;
 
   // ✅ Generate properties dynamically
-  const properties = Array.from({ length: 10 }, (_, i) => ({
+  const originalProperties = Array.from({ length: 10 }, (_, i) => ({
     id: i + 1,
     image: placeholderImage,
     badge: "SUPERHOST",
@@ -36,25 +38,53 @@ const NationalDayDealsSection = () => {
     return () => window.removeEventListener("resize", checkIsMobile);
   }, []);
 
-  // ✅ items per view add kiya
-const itemsPerView = isMobile ? 1 : 4;
-const maxSlide = properties.length - itemsPerView;
-  // ✅ Next Slide for Desktop
-const nextSlide = () => {
-  if (currentSlide < maxSlide) {
-    setCurrentSlide((prev) => prev + 1);
-  }
-};
+  // ✅ Items per view
+  const itemsPerView = isMobile ? 1 : 4;
+  
+  // ✅ Clone properties for infinite loop
+  const properties = [
+    ...originalProperties.slice(-itemsPerView), // Last items at beginning
+    ...originalProperties,
+    ...originalProperties.slice(0, itemsPerView), // First items at end
+  ];
 
-// ✅ update prevSlide
-const prevSlide = () => {
-  if (currentSlide > 0) {
-    setCurrentSlide((prev) => prev - 1);
-  }
-};
+  // ✅ Start from first real slide (after cloned items)
+  useEffect(() => {
+    setCurrentSlide(itemsPerView);
+  }, [itemsPerView]);
+
+  // ✅ Handle transition end for seamless loop
+  const handleTransitionEnd = () => {
+    setIsTransitioning(false);
+    
+    // If we're at the beginning clones, jump to real beginning
+    if (currentSlide === 0) {
+      setCurrentSlide(originalProperties.length);
+    }
+    // If we're at the end clones, jump to real start
+    else if (currentSlide >= originalProperties.length + itemsPerView) {
+      setCurrentSlide(itemsPerView);
+    }
+  };
+
+  // ✅ Next Slide - infinite loop
+  const nextSlide = () => {
+    if (isTransitioning) return;
+    
+    setIsTransitioning(true);
+    setCurrentSlide(prev => prev + 1);
+  };
+
+  // ✅ Previous Slide - infinite loop
+  const prevSlide = () => {
+    if (isTransitioning) return;
+    
+    setIsTransitioning(true);
+    setCurrentSlide(prev => prev - 1);
+  };
 
   const PropertyCard = ({ property }) => (
-    <div className="bg-white rounded-3xl overflow-hidden shadow-sm  transition-all duration-300 transform  flex-shrink-0 w-full md:w-auto">
+    <div className="bg-white rounded-3xl overflow-hidden shadow-sm transition-all duration-300 transform flex-shrink-0 w-full md:w-auto">
       <div className="relative">
         <div className="aspect-[4/3] relative overflow-hidden">
           <Image
@@ -66,7 +96,7 @@ const prevSlide = () => {
         </div>
 
         <div className="absolute top-4 left-4">
-          <span className="bg-[#FCFCFD] font-poppins text-[#23262F] text-xs font-bold p-2 rounded ">
+          <span className="bg-[#FCFCFD] font-poppins text-[#23262F] text-xs font-bold p-2 rounded">
             {property.badge}
           </span>
         </div>
@@ -116,63 +146,55 @@ const prevSlide = () => {
         <div className="hidden md:flex items-center gap-3">
           <button
             onClick={prevSlide}
-            disabled={currentSlide === 0} // ✅ Disable left button at start
-            className={`border border-gray-200 rounded-full p-3 ${
-              currentSlide === 0 ? "opacity-50 cursor-not-allowed" : ""
-            }`}
+            className="border border-gray-200 rounded-full p-3 hover:bg-gray-50 transition-colors"
             aria-label="Previous deal"
           >
-               {isRTL ? (
-                        <MoveRight className="w-5 h-5 text-gray-700" /> // ✅ flip for RTL
-                      ) : (
-                        <MoveLeft className="w-5 h-5 text-gray-700" />
-                      )}
+            {isRTL ? (
+              <MoveRight className="w-5 h-5 text-gray-700" />
+            ) : (
+              <MoveLeft className="w-5 h-5 text-gray-700" />
+            )}
           </button>
           <button
             onClick={nextSlide}
-            disabled={currentSlide >= properties.length - 4} // ✅ Disable right button at end
-            className={`border border-gray-200 rounded-full p-3 ${
-              currentSlide >= properties.length - 4
-                ? "opacity-50 cursor-not-allowed"
-                : ""
-            }`}
+            className="border border-gray-200 rounded-full p-3 hover:bg-gray-50 transition-colors"
             aria-label="Next deal"
           >
-           {isRTL ? (
-                      <MoveLeft className="w-5 h-5 text-gray-700" /> // ✅ flip for RTL
-                    ) : (
-                      <MoveRight className="w-5 h-5 text-gray-700" />
-                    )}
+            {isRTL ? (
+              <MoveLeft className="w-5 h-5 text-gray-700" />
+            ) : (
+              <MoveRight className="w-5 h-5 text-gray-700" />
+            )}
           </button>
         </div>
       </div>
 
-      {/* ✅ Desktop Slider */}
-    {/* ✅ Desktop Slider */}
-<div className="hidden md:block overflow-hidden py-4">
-  <div
-    className="flex transition-transform duration-500 -mx-2" // -mx-2 taake gap adjust ho
-    style={{ transform: `translateX(-${currentSlide * (100 / 4)}%)` }} // hamesha 25% move karega
-  >
-    {properties.map((property) => (
-      <div key={property.id} className="w-1/4 flex-shrink-0 px-2">
-        {/* px-2 diya taake gap create ho without breaking width */}
-        <PropertyCard property={property} />
+      {/* ✅ Desktop Infinite Slider */}
+      <div className="hidden md:block overflow-hidden py-4">
+        <div
+          ref={sliderRef}
+          className={`flex -mx-2 ${isTransitioning ? 'transition-transform duration-500 ease-in-out' : ''}`}
+          style={{ transform: `translateX(-${currentSlide * (100 / itemsPerView)}%)` }}
+          onTransitionEnd={handleTransitionEnd}
+        >
+          {properties.map((property, index) => (
+            <div key={`${property.id}-${index}`} className="w-1/4 flex-shrink-0 px-2">
+              <PropertyCard property={property} />
+            </div>
+          ))}
+        </div>
       </div>
-    ))}
-  </div>
-</div>
 
-
-      {/* ✅ Mobile Slider Same as Before */}
+      {/* ✅ Mobile Infinite Slider */}
       <div className="md:hidden relative">
         <div className="overflow-hidden pb-2 rounded-2xl">
           <div
-            className="flex transition-transform duration-500 ease-in-out"
+            className={`flex ${isTransitioning ? 'transition-transform duration-500 ease-in-out' : ''}`}
             style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+            onTransitionEnd={handleTransitionEnd}
           >
-            {properties.map((property) => (
-              <div key={property.id} className="w-full  flex-shrink-0">
+            {properties.map((property, index) => (
+              <div key={`${property.id}-${index}`} className="w-full flex-shrink-0">
                 <PropertyCard property={property} />
               </div>
             ))}
@@ -183,28 +205,26 @@ const prevSlide = () => {
         <div className="flex gap-4 items-center mt-6">
           <button
             onClick={prevSlide}
-            className=" border border-gray-200 rounded-full p-3 "
+            className="border border-gray-200 rounded-full p-3 hover:bg-gray-50 transition-colors"
             aria-label="Previous deal"
           >
-           {isRTL ? (
-                      <MoveRight className="w-5 h-5 text-gray-700" /> // ✅ flip for RTL
-                    ) : (
-                      <MoveLeft className="w-5 h-5 text-gray-700" />
-                    )}
+            {isRTL ? (
+              <MoveRight className="w-5 h-5 text-gray-700" />
+            ) : (
+              <MoveLeft className="w-5 h-5 text-gray-700" />
+            )}
           </button>
-
-      
 
           <button
             onClick={nextSlide}
-            className=" border border-gray-200 rounded-full p-3"
+            className="border border-gray-200 rounded-full p-3 hover:bg-gray-50 transition-colors"
             aria-label="Next deal"
           >
-         {isRTL ? (
-                    <MoveLeft className="w-5 h-5 text-gray-700" /> // ✅ flip for RTL
-                  ) : (
-                    <MoveRight className="w-5 h-5 text-gray-700" />
-                  )}
+            {isRTL ? (
+              <MoveLeft className="w-5 h-5 text-gray-700" />
+            ) : (
+              <MoveRight className="w-5 h-5 text-gray-700" />
+            )}
           </button>
         </div>
       </div>

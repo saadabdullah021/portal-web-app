@@ -1,13 +1,17 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 
 const DateInput = ({ label, value, onChange, isCheckout = false, checkInDate = null, onCheckInChange = null }) => {
+  const { i18n } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [checkInSelection, setCheckInSelection] = useState(checkInDate ? new Date(checkInDate) : null);
   const [checkOutSelection, setCheckOutSelection] = useState(value ? new Date(value) : null);
   const [hoveredDate, setHoveredDate] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
+  const [today, setToday] = useState(new Date());
   const calendarRef = useRef(null);
+   const isRTL = i18n.language === "ar";
 
   // Check if mobile
   useEffect(() => {
@@ -37,6 +41,13 @@ const DateInput = ({ label, value, onChange, isCheckout = false, checkInDate = n
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Store today for highlight
+  useEffect(() => {
+    const t = new Date();
+    t.setHours(0, 0, 0, 0);
+    setToday(t);
+  }, []);
+
   const months = [
     "January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"
@@ -54,12 +65,10 @@ const DateInput = ({ label, value, onChange, isCheckout = false, checkInDate = n
 
     const days = [];
 
-    // Add empty cells for days before the first day of the month
     for (let i = 0; i < startingDayOfWeek; i++) {
       days.push(null);
     }
 
-    // Add days of the month
     for (let day = 1; day <= daysInMonth; day++) {
       days.push(new Date(year, month, day));
     }
@@ -77,19 +86,16 @@ const DateInput = ({ label, value, onChange, isCheckout = false, checkInDate = n
 
   const handleDateClick = (date) => {
     if (!date || isDateDisabled(date)) return;
-    
-    // Simple date selection for current input
+
     if (isCheckout) {
       setCheckOutSelection(date);
     } else {
       setCheckInSelection(date);
     }
-    
+
     onChange(date.toISOString().split('T')[0]);
     setIsOpen(false);
   };
-
-
 
   const isDateDisabled = (date) => {
     if (!date) return true;
@@ -139,7 +145,7 @@ const DateInput = ({ label, value, onChange, isCheckout = false, checkInDate = n
 
             const isSelected = getSelectedDate() && date.toDateString() === getSelectedDate().toDateString();
             const isDisabled = isDateDisabled(date);
-            const isToday = date.toDateString() === new Date().toDateString();
+            const isToday = today && date.toDateString() === today.toDateString();
 
             return (
               <button
@@ -152,20 +158,18 @@ const DateInput = ({ label, value, onChange, isCheckout = false, checkInDate = n
                   h-8 w-8 lg:h-10 lg:w-10 rounded-full text-[12px] lg:text-[14px] font-medium transition-all duration-200 relative
                   ${isDisabled 
                     ? 'text-[#B1B5C3] cursor-not-allowed' 
-                    : 'cursor-pointer hover:bg-[#F4F5F6]'
+                    : 'cursor-pointer hover:bg-blue-800 hover:text-white'
                   }
-                  ${isSelected
-                    ? 'bg-[#222222] text-white hover:bg-[#222222]'
-                    : isToday && !isDisabled
-                    ? 'bg-[#23262F] text-white'
-                    : 'text-[#23262F]'
-                  }
+        ${isSelected
+  ? 'bg-[#222222] text-white hover:bg-[#222222]'
+  : isToday && !getSelectedDate()
+    ? 'border border-[#222222] bg-[#222222] text-white hover:bg-[#222222]'
+    : 'text-[#23262F]'
+}
+
                 `}
               >
                 {date.getDate()}
-                {isToday && !isSelected && (
-                  <div className="absolute bottom-0.5 lg:bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-white rounded-full"></div>
-                )}
               </button>
             );
           })}
@@ -185,13 +189,13 @@ const DateInput = ({ label, value, onChange, isCheckout = false, checkInDate = n
 
       {/* Input Field */}
       <div className="flex flex-col w-full">
-        <label className="text-[16px] font-medium lg:text-[24px] lg:text-[#23262F] lg:font-semibold pl-2 pt-2 mb-1">
+        <label className="text-[16px]  font-medium lg:text-[24px] lg:text-[#23262F] lg:font-semibold pl-2 pt-2 mb-1">
           {label}
         </label>
         
         <div
           onClick={() => setIsOpen(!isOpen)}
-          className="w-full bg-transparent px-3 py-0 text-[#777E90] placeholder-[#777E90] text-[16px] font-medium outline-none cursor-pointer"
+          className="w-full bg-transparent lg:pb-1 px-3 py-0 text-[#777E90] placeholder-[#777E90] text-[16px] font-medium outline-none cursor-pointer"
         >
           {formatDisplayDate(getSelectedDate())}
         </div>
@@ -199,10 +203,11 @@ const DateInput = ({ label, value, onChange, isCheckout = false, checkInDate = n
         {/* Custom Calendar */}
         {isOpen && (
           <div className={`
-            absolute z-50 top-full -left-5.5 lg:-left-18 mt-2 bg-white rounded-3xl shadow-2xl border border-[#E6E8EC] p-4 lg:p-6
+            absolute z-50 top-full lg:top-27  mt-2 bg-white rounded-3xl shadow-2xl border border-[#E6E8EC] p-4 lg:p-6
+           ${i18n.language === "ar" ? "  lg:-left-20" : " lg:-left-0"}
             ${isMobile 
-              ? 'w-[320px] ' 
-              : 'min-w-[680px]  '
+              ? 'max-w-auto w-[75vw] -left-3.5  mx-auto' 
+              : 'min-w-[340px]'
             }
           `}>
             {/* Calendar Header */}
@@ -211,9 +216,30 @@ const DateInput = ({ label, value, onChange, isCheckout = false, checkInDate = n
                 onClick={() => navigateMonth(-1)}
                 className="p-2 rounded-full hover:bg-[#F4F5F6] transition-colors"
               >
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <path d="M10 12L6 8L10 4" stroke="#23262F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
+                {isRTL ? (
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+    {/* Flip for RTL → Right Arrow */}
+    <path
+      d="M6 4L10 8L6 12"
+      stroke="#23262F"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+) : (
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+    {/* Default → Left Arrow */}
+    <path
+      d="M10 12L6 8L10 4"
+      stroke="#23262F"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+)}
+
               </button>
 
               {!isMobile && <div className="flex-1"></div>}
@@ -228,9 +254,30 @@ const DateInput = ({ label, value, onChange, isCheckout = false, checkInDate = n
                 onClick={() => navigateMonth(1)}
                 className="p-2 rounded-full hover:bg-[#F4F5F6] transition-colors"
               >
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <path d="M6 4L10 8L6 12" stroke="#23262F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
+                {isRTL ? (
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+    {/* Flip for RTL → Left Arrow */}
+    <path
+      d="M10 12L6 8L10 4"
+      stroke="#23262F"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+) : (
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+    {/* Default → Right Arrow */}
+    <path
+      d="M6 4L10 8L6 12"
+      stroke="#23262F"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+)}
+
               </button>
             </div>
 
@@ -239,10 +286,7 @@ const DateInput = ({ label, value, onChange, isCheckout = false, checkInDate = n
               {isMobile ? (
                 renderCalendar(0)
               ) : (
-                <>
-                  {renderCalendar(0)}
-                  {renderCalendar(1)}
-                </>
+                renderCalendar(0) // Only one month now
               )}
             </div>
 

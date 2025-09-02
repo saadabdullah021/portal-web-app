@@ -128,3 +128,19 @@ body {
 .react-international-phone-country-selector-button:hover {
   background: transparent !important;
 }
+
+/* Hide scrollbar but keep functionality */
+.custom-scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Edge */
+}
+
+.custom-scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+  /* Optional: smooth scrolling */
+  scroll-behavior: smooth;
+}
+
+
+
+

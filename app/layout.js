@@ -28,7 +28,7 @@ export default function RootLayout({ children }) {
           <PopupProvider>
             {isAuthRoute ? <AuthNavbar /> : <Navbar />}
             <main>{children}</main>
-            {!isAuthRoute && <Footer />}
+            <Footer />
           </PopupProvider>
         </I18nextProvider>
       </body>
