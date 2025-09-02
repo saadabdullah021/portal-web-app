@@ -1,22 +1,30 @@
 'use client';
 import { Navigation, UserRound, Calendar, Minus, Plus } from 'lucide-react';
 import { useState, useEffect, useRef, useMemo } from 'react';
+import { useDispatch } from 'react-redux';
+import { setSelectedLocation } from '../../../store/reducers/searchReducer';
+import axios from '@/lib/axios';
 import { useTranslation } from 'react-i18next';
 import DateInput from './DateInput';
 
 const SearchBar = ({ onSearch }) => {
-   const { i18n, t } = useTranslation("hero");
+  const { t } = useTranslation('hero');
+  const dispatch = useDispatch();
   const [location, setLocation] = useState('');
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
   const [isMobile, setIsMobile] = useState(false);
 
   // Travelers state
+  const [suggestions, setSuggestions] = useState([]);
+  const [locationsData, setLocationsData] = useState([]);
+  const [showDropdown, setShowDropdown] = useState(false);
+
+  const [showTravelers, setShowTravelers] = useState(false);
   const [adults, setAdults] = useState(0);
   const [children, setChildren] = useState(0);
   const [infants, setInfants] = useState(0);
 
-  // 🔥 Track active dropdown: "location" | "travelers" | null
   const [activeDropdown, setActiveDropdown] = useState(null); // 🔥 new line
 
   const travelersRef = useRef(null);
@@ -31,7 +39,37 @@ const SearchBar = ({ onSearch }) => {
     "Al Uqair, Eastern Province"
   ], []);
 
-  // Responsive check
+  useEffect(() => {
+    let isMounted = true;
+    const fetchLocations = async () => {
+      try {
+        const { data: json } = await axios.get('/get-all-locations');
+        if (!isMounted) return;
+        if (json?.success && Array.isArray(json.data)) {
+          const list = [];
+          json.data.forEach(city => {
+            if (Array.isArray(city.districts)) {
+              city.districts.forEach(d => {
+                list.push({
+                  label: d.district_name,
+                  cityId: city.city_id,
+                  districtId: d.district_id,
+                });
+              });
+            }
+          });
+          setLocationsData(list);
+        } else {
+          setLocationsData([]);
+        }
+      } catch {
+        setLocationsData([]);
+      }
+    };
+    fetchLocations();
+    return () => { isMounted = false; };
+  }, []);
+
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 1024);
     handleResize();
@@ -39,14 +77,13 @@ const SearchBar = ({ onSearch }) => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Debounced filter for location
-  const [suggestions, setSuggestions] = useState([]);
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
-      if (location.length > 1) {
-        const filtered = dummyLocations.filter(item =>
-          item.toLowerCase().includes(location.toLowerCase())
-        );
+      if (location.length > 0) {
+        const q = location.toLowerCase();
+        const filtered = locationsData
+          .filter(item => item.label.toLowerCase().includes(q))
+          .slice(0, 20);
         setSuggestions(filtered);
         setActiveDropdown("location"); // 🔥 show location dropdown
       } else {
@@ -56,9 +93,8 @@ const SearchBar = ({ onSearch }) => {
     }, 300);
 
     return () => clearTimeout(delayDebounce);
-  }, [location, dummyLocations, showDropdown]);
+  }, [location, locationsData]);
 
-  // Close when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -73,8 +109,11 @@ const SearchBar = ({ onSearch }) => {
   }, []);
 
   const handleSelect = (place) => {
-    setLocation(place);
-    setActiveDropdown(null); // 🔥 close after selecting
+    console.log(place,'place');
+    
+    setLocation(place.label || '');
+    dispatch(setSelectedLocation(place));
+    setShowDropdown(false);
   };
 
   const totalTravelers = adults + children + infants;
@@ -97,40 +136,25 @@ const SearchBar = ({ onSearch }) => {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
         
         {/* Location */}
-        <div className="lg:col-span-1 relative" ref={locationRef}> {/* 🔥 new line */}
-         <div
-    className={`rounded-xl p-3 lg:p-0 
-      ${activeDropdown === "location" ? " " : "lg:bg-transparent"} 
-      bg-white/60 lg:bg-transparent `}
-  >
-    <div
-      className="flex items-start gap-2 cursor-pointer"
-      onClick={() =>
-        setActiveDropdown(activeDropdown === "location" ? null : "location")
-      } // 👈 toggle dropdown on click
-    >
-      <Navigation color="#B1B5C3" size={24} className="lg:mt-4" />
-      <div className="flex flex-col w-full">
-        <label className="text-lg lg:text-[24px] text-[#23262F] font-semibold pl-2 pt-2 mb-1 hidden lg:block">
-          {t("locationLabel")}
-        </label>
-        <input
-          type="text"
-          value={location}
-          onChange={(e) => setLocation(e.target.value)}
-          onFocus={() =>
-            setActiveDropdown("location")
-          } // 👈 also works with focus
-          placeholder={
-            isMobile
-              ? t("locationPlaceholderMobile")
-              : t("locationPlaceholderDesktop")
-          }
-          className="w-full bg-transparent border-none rounded-md px-3 lg:placeholder-[#777E90] outline-none placeholder-[#23262F] placeholder:font-medium placeholder:text-[16px]"
-        />
-      </div>
-    </div>
-  </div>
+        <div className="lg:col-span-1 relative">
+          <div className="lg:bg-transparent bg-white/60 rounded-xl p-3 lg:p-0">
+            <div className="flex items-start space-x-2">
+              <Navigation color="#B1B5C3" size={20} className=" lg:mt-3" />
+              <div className="flex flex-col w-full">
+                <label className="text-lg lg:text-xl font-semibold pl-2 pt-2 mb-1 hidden lg:block">
+                  {t('locationLabel')}
+                </label>
+                <input
+                  type="text"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  onFocus={() => location.length > 0 && setShowDropdown(true)}
+                  placeholder={isMobile ? t('locationPlaceholderMobile') : t('locationPlaceholderDesktop')}
+                  className="w-full bg-transparent border-none rounded-md px-3 outline-none placeholder-gray-700 lg:placeholder-gray-400"
+                />
+              </div>
+            </div>
+          </div>
 
           {/* Suggestions dropdown */}
           {activeDropdown === "location" && suggestions.length > 0 && ( 
@@ -141,16 +165,8 @@ const SearchBar = ({ onSearch }) => {
                   onClick={() => handleSelect(item)}
                   className="px-4 py-3 cursor-pointer hover:bg-[#F4F5F6] flex items-center space-x-2 rounded-xl"
                 >
-                  <span className='bg-[#FCFCFD] border-[#E6E8EC] border-[1px] rounded-full w-8 h-8 flex items-center justify-center'>
-                    {/* icon */}
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path fillRule="evenodd" clipRule="evenodd" d="M12.6665 13.3333C13.0347 13.3333 13.3332 13.0348 13.3332 12.6666C13.3332 12.2984 13.0347 12 12.6665 12C12.2983 12 11.9998 12.2984 11.9998 12.6666C11.9998 13.0348 12.2983 13.3333 12.6665 13.3333ZM12.6665 14.6666C13.7711 14.6666 14.6665 13.7712 14.6665 12.6666C14.6665 11.5621 13.7711 10.6666 12.6665 10.6666C11.5619 10.6666 10.6665 11.5621 10.6665 12.6666C10.6665 13.7712 11.5619 14.6666 12.6665 14.6666Z" fill="#777E91"/>
-<path fillRule="evenodd" clipRule="evenodd" d="M10.3332 2.66671C9.4127 2.66671 8.6665 3.4129 8.6665 4.33337V11.6667C8.6665 13.3236 7.32336 14.6667 5.6665 14.6667C4.00965 14.6667 2.6665 13.3236 2.6665 11.6667V6.66671C2.6665 6.29852 2.96498 6.00004 3.33317 6.00004C3.70136 6.00004 3.99984 6.29852 3.99984 6.66671V11.6667C3.99984 12.5872 4.74603 13.3334 5.6665 13.3334C6.58698 13.3334 7.33317 12.5872 7.33317 11.6667V4.33337C7.33317 2.67652 8.67632 1.33337 10.3332 1.33337C11.99 1.33337 13.3332 2.67652 13.3332 4.33337V8.66671C13.3332 9.0349 13.0347 9.33337 12.6665 9.33337C12.2983 9.33337 11.9998 9.0349 11.9998 8.66671V4.33337C11.9998 3.4129 11.2536 2.66671 10.3332 2.66671Z" fill="#777E91"/>
-<path d="M2.75762 1.65387C3.01488 1.21287 3.65208 1.21287 3.90933 1.65387L5.08197 3.66412C5.34123 4.10856 5.02065 4.6667 4.50612 4.6667H2.16083C1.64631 4.6667 1.32573 4.10855 1.58498 3.66412L2.75762 1.65387Z" fill="#777E91"/>
-</svg>
-
-                  </span>
-                  <span className="text-[16px] font-medium text-[#23262F]">{item}</span>
+                  <Navigation size={16} className="text-gray-400" />
+                  <span className="text-[16px] font-medium text-[#23262F]">{item.label}</span>
                 </div>
               ))}
             </div>
