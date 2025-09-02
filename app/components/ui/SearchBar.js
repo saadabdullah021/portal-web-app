@@ -1,21 +1,24 @@
 'use client';
 import { Navigation, UserRound, Calendar, Minus, Plus } from 'lucide-react';
 import { useState, useEffect, useRef, useMemo } from 'react';
+import { useDispatch } from 'react-redux';
+import { setSelectedLocation } from '../../../store/reducers/searchReducer';
+import axios from '@/lib/axios';
 import { useTranslation } from 'react-i18next';
 import DateInput from './DateInput';
 
 const SearchBar = ({ onSearch }) => {
   const { t } = useTranslation('hero');
+  const dispatch = useDispatch();
   const [location, setLocation] = useState('');
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
   const [isMobile, setIsMobile] = useState(false);
 
-  // For dropdown (Location)
   const [suggestions, setSuggestions] = useState([]);
+  const [locationsData, setLocationsData] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
 
-  // Travelers popup
   const [showTravelers, setShowTravelers] = useState(false);
   const [adults, setAdults] = useState(0);
   const [children, setChildren] = useState(0);
@@ -23,15 +26,37 @@ const SearchBar = ({ onSearch }) => {
 
   const travelersRef = useRef(null);
 
-  // Dummy locations (replace with API later)
-const dummyLocations = useMemo(() => [
-  "Al Ula, Medina Province",
-  "Al Ulaiyah, Riyadh",
-  "Al Ulays, Jeddah",
-  "Al Ujeir, Dammam",
-  "Al Uqair, Eastern Province"
-], []);
-  // Responsive check
+  useEffect(() => {
+    let isMounted = true;
+    const fetchLocations = async () => {
+      try {
+        const { data: json } = await axios.get('/get-all-locations');
+        if (!isMounted) return;
+        if (json?.success && Array.isArray(json.data)) {
+          const list = [];
+          json.data.forEach(city => {
+            if (Array.isArray(city.districts)) {
+              city.districts.forEach(d => {
+                list.push({
+                  label: d.district_name,
+                  cityId: city.city_id,
+                  districtId: d.district_id,
+                });
+              });
+            }
+          });
+          setLocationsData(list);
+        } else {
+          setLocationsData([]);
+        }
+      } catch {
+        setLocationsData([]);
+      }
+    };
+    fetchLocations();
+    return () => { isMounted = false; };
+  }, []);
+
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 1024);
     handleResize();
@@ -39,13 +64,13 @@ const dummyLocations = useMemo(() => [
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Debounced filter from dummy data
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
-      if (location.length > 1) {
-        const filtered = dummyLocations.filter(item =>
-          item.toLowerCase().includes(location.toLowerCase())
-        );
+      if (location.length > 0) {
+        const q = location.toLowerCase();
+        const filtered = locationsData
+          .filter(item => item.label.toLowerCase().includes(q))
+          .slice(0, 20);
         setSuggestions(filtered);
         setShowDropdown(true);
       } else {
@@ -55,9 +80,8 @@ const dummyLocations = useMemo(() => [
     }, 300);
 
     return () => clearTimeout(delayDebounce);
-  }, [location, dummyLocations]);
+  }, [location, locationsData]);
 
-  // Close popup when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (travelersRef.current && !travelersRef.current.contains(event.target)) {
@@ -69,7 +93,10 @@ const dummyLocations = useMemo(() => [
   }, []);
 
   const handleSelect = (place) => {
-    setLocation(place);
+    console.log(place,'place');
+    
+    setLocation(place.label || '');
+    dispatch(setSelectedLocation(place));
     setShowDropdown(false);
   };
 
@@ -105,7 +132,7 @@ const dummyLocations = useMemo(() => [
                   type="text"
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
-                  onFocus={() => location.length > 1 && setShowDropdown(true)}
+                  onFocus={() => location.length > 0 && setShowDropdown(true)}
                   placeholder={isMobile ? t('locationPlaceholderMobile') : t('locationPlaceholderDesktop')}
                   className="w-full bg-transparent border-none rounded-md px-3 outline-none placeholder-gray-700 lg:placeholder-gray-400"
                 />
@@ -123,7 +150,7 @@ const dummyLocations = useMemo(() => [
                   className="px-4 py-3 cursor-pointer hover:bg-[#F4F5F6] flex items-center space-x-2 rounded-xl"
                 >
                   <Navigation size={16} className="text-gray-400" />
-                  <span className="text-[16px] font-medium text-[#23262F]">{item}</span>
+                  <span className="text-[16px] font-medium text-[#23262F]">{item.label}</span>
                 </div>
               ))}
             </div>
