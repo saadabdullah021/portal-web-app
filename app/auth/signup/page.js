@@ -8,7 +8,7 @@ import HomeContent from "@/app/components/HomeContent";
 import { useTranslation } from "react-i18next";
 import { usePopup } from "@/app/contexts/PopupContext";
 import axios from "@/lib/axios";
-import { toast } from 'react-toastify';
+import { showToast } from 'nextjs-toast-notify';
 import PhoneInput from "@/app/components/ui/PhoneInput";
 import OtpInput from "@/app/components/ui/OtpInput";
 import IdentityConfirmation from "@/app/components/ui/IdentityConfirmation";
@@ -68,7 +68,7 @@ export default function SignUpPage() {
                 localStorage.setItem('user', JSON.stringify(userData));
                 localStorage.setItem('isAuthenticated', 'true');
                 
-                toast.success(response.data.message || "Profile created successfully!");
+                showToast.success(response.data.message || "Profile created successfully!", { position: "top-center" });
                 
                 setShowOtpInput(false);
                 handleClosePopup()
@@ -76,13 +76,13 @@ export default function SignUpPage() {
                 console.log('User profile created:', userData);
                 
             } else {
-                toast.error("Failed to verify OTP. Please try again.");
+                showToast.error("Failed to verify OTP. Please try again.", { position: "top-center" });
                 setError("Failed to verify OTP. Please try again.");
             }
         } catch (error) {
             const errorMessage = error.response?.data?.message || "Failed to verify OTP. Please try again.";
             setError(errorMessage);
-            toast.error(errorMessage);
+            showToast.error(errorMessage, { position: "top-center" });
         } finally {
             setLoading(false);
         }
@@ -105,16 +105,16 @@ export default function SignUpPage() {
             console.log(response);
             
             if(response.status === 200 && response.data.success){
-                toast.success("OTP resent successfully!");
+                showToast.success("OTP resent successfully!", { position: "top-center" });
                 localStorage.setItem('signupPhone', fullPhone);
             } else {
-                toast.error("Failed to resend OTP. Please try again.");
+                showToast.error("Failed to resend OTP. Please try again.", { position: "top-center" });
                 setError("Failed to resend OTP. Please try again.");
             }
         } catch (error) {
             const errorMessage = error.response?.data?.message || "Failed to resend OTP. Please try again.";
             setError(errorMessage);
-            toast.error(errorMessage);
+            showToast.error(errorMessage, { position: "top-center" });
         } finally {
             setLoading(false);
         }
@@ -129,7 +129,7 @@ export default function SignUpPage() {
         
         if (!phoneData.phoneNumber) {
             setError("Please enter your phone number");
-            toast.error("Please enter your phone number");
+            showToast.error("Please enter your phone number", { position: "top-center" });
             return;
         }
 
@@ -148,17 +148,17 @@ export default function SignUpPage() {
             console.log(response);
             
             if(response.status === 200 && response.data.success){
-                toast.success("Phone number verified!");
+                showToast.success("Phone number verified!", { position: "top-center" });
                 localStorage.setItem('signupPhone', fullPhone);
                 closePopup('signup');
                 setShowIdentityConfirmation(true);
             } else {
-                toast.error("Failed to verify phone number. Please try again.");
+                showToast.error("Failed to verify phone number. Please try again.", { position: "top-center" });
             }
         } catch (error) {
             const errorMessage = error.response?.data?.message || "Failed to verify phone number. Please try again.";
             setError(errorMessage);
-            toast.error(errorMessage);
+            showToast.error(errorMessage, { position: "top-center" });
         } finally {
             setLoading(false);
         }
@@ -178,15 +178,15 @@ export default function SignUpPage() {
             const response = await axios.post('/send-otp', payload);
             
             if(response.status === 200 && response.data.success){
-                toast.success("OTP sent successfully!");
+                showToast.success("OTP sent successfully!", { position: "top-center" });
                 setShowIdentityConfirmation(false);
                 setShowOtpInput(true);
             } else {
-                toast.error("Failed to send OTP. Please try again.");
+                showToast.error("Failed to send OTP. Please try again.", { position: "top-center" });
             }
         } catch (error) {
             const errorMessage = error.response?.data?.message || "Failed to send OTP. Please try again.";
-            toast.error(errorMessage);
+            showToast.error(errorMessage, { position: "top-center" });
         }
     };
 

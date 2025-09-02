@@ -18,7 +18,7 @@ const IdentityConfirmation = ({
         if (!phone) return '';
         const length = phone.length;
         if (length <= 8) return phone;
-        return phone.substring(0, 4) + ' ' + phone.substring(4, 6) + ' ... ' + phone.substring(length - 2);
+        return phone;
     };
 
     const maskEmail = (email) => {
@@ -61,7 +61,7 @@ const IdentityConfirmation = ({
                         </span>
                     </label>
 
-                    <label className="flex items-center cursor-pointer">
+                    {/* <label className="flex items-center cursor-pointer">
                         <input
                             type="radio"
                             name="verificationMethod"
@@ -73,7 +73,7 @@ const IdentityConfirmation = ({
                         <span className="ml-3 text-[#141416] text-[16px]">
                             Get an email message at {maskEmail(email)}
                         </span>
-                    </label>
+                    </label> */}
                 </div>
 
                 <div className="text-center">
