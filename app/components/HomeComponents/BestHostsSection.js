@@ -1,101 +1,126 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { MoveLeft, MoveRight, ChevronDown } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import dummyImage from '../../../public/images/bestHost.png';
 import hostDummyImage from '../../../public/images/hostImage.png';
 import Image from 'next/image';
 
-// Dummy host images - replace with your actual images
 const dummyHostImage = dummyImage;
 
 const BestHostsSection = () => {
-  
+  const { t, i18n } = useTranslation('home');
+  const isRTL = i18n.language === 'ar';
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
-   const [selected, setSelected] = useState("month");
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [selected, setSelected] = useState('month');
   const [open, setOpen] = useState(false);
-     const { t, i18n } = useTranslation("home");
-    const isRTL = i18n.language === "ar";
+  const sliderRef = useRef(null);
 
-const options = ["month", "year",];
+  const options = ['month', 'year'];
 
   // Sample hosts data - replace with API data
-  const hosts = [
+  const originalHosts = [
     {
       id: 1,
-      name: "Ahmed Mohamed",
-      location: "Riyadh",
+      name: 'Ahmed Mohamed',
+      location: 'Riyadh',
       rating: 4.8,
       image: hostDummyImage,
       propertyImage: dummyHostImage,
     },
     {
       id: 2,
-      name: "Mohamed Adam",
-      location: "Riyadh, Jeddah, Al Ula",
+      name: 'Mohamed Adam',
+      location: 'Riyadh, Jeddah, Al Ula',
       rating: 4.0,
       image: hostDummyImage,
       propertyImage: dummyHostImage,
     },
     {
       id: 3,
-      name: "Asad Fadel",
-      location: "Al Ula",
+      name: 'Asad Fadel',
+      location: 'Al Ula',
       rating: 4.9,
       image: hostDummyImage,
       propertyImage: dummyHostImage,
     },
     {
       id: 4,
-      name: "Faisal Gamdi",
-      location: "Jeddah, Riyadh",
+      name: 'Faisal Gamdi',
+      location: 'Jeddah, Riyadh',
       rating: 4.9,
       image: hostDummyImage,
       propertyImage: dummyHostImage,
     },
     {
       id: 5,
-      name: "Omar Hassan",
-      location: "Makkah",
+      name: 'Omar Hassan',
+      location: 'Makkah',
       rating: 4.7,
       image: hostDummyImage,
       propertyImage: dummyHostImage,
     },
     {
       id: 6,
-      name: "Abdullah Khan",
-      location: "Dammam",
+      name: 'Abdullah Khan',
+      location: 'Dammam',
       rating: 4.8,
       image: hostDummyImage,
       propertyImage: dummyHostImage,
-    }
+    },
   ];
 
   useEffect(() => {
     const checkIsMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
-
     checkIsMobile();
     window.addEventListener('resize', checkIsMobile);
     return () => window.removeEventListener('resize', checkIsMobile);
   }, []);
 
-  const nextSlide = () => {
-    if (currentSlide < maxSlide) {
-      setCurrentSlide((prev) => prev + 1);
-    }
-  };
-
-  const prevSlide = () => {
-    if (currentSlide > 0) {
-      setCurrentSlide((prev) => prev - 1);
-    }
-  };
-
+  // ✅ Items per view
   const itemsPerView = isMobile ? 1 : 4;
-  const maxSlide = hosts.length - itemsPerView;
+
+  // ✅ Clone hosts for infinite loop
+  const hosts = [
+    ...originalHosts.slice(-itemsPerView), // Last items at start
+    ...originalHosts,
+    ...originalHosts.slice(0, itemsPerView), // First items at end
+  ];
+
+  // ✅ Start from first real slide (after cloned items)
+  useEffect(() => {
+    setCurrentSlide(itemsPerView);
+  }, [itemsPerView]);
+
+  // ✅ Handle transition end for seamless loop
+  const handleTransitionEnd = () => {
+    setIsTransitioning(false);
+
+    // Jump to real start/end if at clones
+    if (currentSlide === 0) {
+      setCurrentSlide(originalHosts.length);
+    } else if (currentSlide >= originalHosts.length + itemsPerView) {
+      setCurrentSlide(itemsPerView);
+    }
+  };
+
+  // ✅ Next Slide
+  const nextSlide = () => {
+    if (isTransitioning) return;
+    setIsTransitioning(true);
+    setCurrentSlide((prev) => prev + 1);
+  };
+
+  // ✅ Previous Slide
+  const prevSlide = () => {
+    if (isTransitioning) return;
+    setIsTransitioning(true);
+    setCurrentSlide((prev) => prev - 1);
+  };
 
   const HostCard = ({ host }) => (
     <div className="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 flex-shrink-0 w-full md:w-auto group">
@@ -105,7 +130,7 @@ const options = ["month", "year",];
           <Image
             src={host.propertyImage}
             alt={`${host.name}'s property`}
-            className="w-full h-full object-cover transition-transform duration-500 "
+            className="w-full h-full object-cover transition-transform duration-500"
             width={300}
             height={225}
             loading="lazy"
@@ -131,12 +156,12 @@ const options = ["month", "year",];
             <Image
               src={host.image}
               alt={host.name}
-              className=" object-cover"
+              className="object-cover"
               width={80}
               height={80}
               loading="lazy"
               onError={(e) => {
-                e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQ4IiBoZWlnaHQ9IjQ4IiByeD0iMjQiIGZpbGw9IiNGM0Y0RjYiLz4KPHA=';
+                e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQ4IiBoZWlnaHQ9IjQ4IiByeD0iMjQiIGZpbGw9IiNGM0Y0RjYiLz4KPC9zdmc+';
               }}
             />
           </div>
@@ -145,7 +170,7 @@ const options = ["month", "year",];
 
       {/* Host Info */}
       <div className="pt-10 pb-6 px-6 text-center">
-        <h3 className="font-medium text-[#23262F] text-sm sm:text-[16px] font-poppins  mt-4">
+        <h3 className="font-medium text-[#23262F] text-sm sm:text-[16px] font-poppins mt-4">
           {host.name}
         </h3>
         <p className="text-[#777E90] font-poppins font-normal text-xs mt-1">
@@ -160,105 +185,94 @@ const options = ["month", "year",];
       {/* Header */}
       <div className="flex items-start justify-between mb-12">
         <div className="flex flex-col md:flex md:flex-row items-start lg:items-center gap-4">
-          <h2 className="heading">
-            {t('besthost.title')}
-          </h2>
-      <div className="relative inline-block text-left">
-      {/* Trigger */}
-      <div
-        className="flex items-center gap-2 cursor-pointer select-none"
-        onClick={() => setOpen(!open)}
-      >
-        <span className="text-4xl font-bold md:text-5xl font-dm-sans text-[#3B71FE]">
-          {t(`besthost.options.${selected}`)}
-        </span>
-        <ChevronDown
-          className={`w-5 h-5 text-[#3B71FE] mt-2 transition-transform ${
-            open ? "rotate-180" : ""
-          }`}
-        />
-      </div>
-
-      {/* Dropdown Options */}
-      {open && (
-        <div className="absolute mt-2 bg-white border border-gray-200 rounded-lg shadow-lg w-40 p-2 z-10">
-          {options.map((option) => (
+          <h2 className="heading">{t('besthost.title')}</h2>
+          <div className="relative inline-block text-left">
+            {/* Trigger */}
             <div
-              key={option}
-              onClick={() => {
-                setSelected(option);
-                setOpen(false);
-              }}
-              className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg cursor-pointer"
+              className="flex items-center gap-2 cursor-pointer select-none"
+              onClick={() => setOpen(!open)}
             >
-{t(`besthost.options.${option}`)}
+              <span className="text-4xl font-bold md:text-5xl font-dm-sans text-[#3B71FE]">
+                {t(`besthost.options.${selected}`)}
+              </span>
+              <ChevronDown
+                className={`w-5 h-5 text-[#3B71FE] mt-2 transition-transform ${open ? 'rotate-180' : ''}`}
+              />
             </div>
-          ))}
-        </div>
-      )}
-    </div>
+
+            {/* Dropdown Options */}
+            {open && (
+              <div className="absolute mt-2 bg-white border border-gray-200 rounded-lg shadow-lg w-40 p-2 z-10">
+                {options.map((option) => (
+                  <div
+                    key={option}
+                    onClick={() => {
+                      setSelected(option);
+                      setOpen(false);
+                    }}
+                    className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg cursor-pointer"
+                  >
+                    {t(`besthost.options.${option}`)}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Desktop Navigation Arrows */}
         <div className="hidden md:flex items-center gap-3">
           <button
             onClick={prevSlide}
-            disabled={currentSlide === 0}
-            className={`border border-gray-200 rounded-full p-3 transition-all duration-200 hover:bg-gray-50 ${
-              currentSlide === 0 
-                ? "opacity-50 cursor-not-allowed" 
-                : "hover:border-gray-300"
-            }`}
+            className="border border-gray-200 rounded-full p-3 hover:bg-gray-50 transition-colors"
             aria-label="Previous hosts"
           >
-              {isRTL ? (
-                  <MoveRight className="w-5 h-5 text-gray-700" /> // ✅ flip for RTL
-                ) : (
-                  <MoveLeft className="w-5 h-5 text-gray-700" />
-                )}  
+            {isRTL ? (
+              <MoveRight className="w-5 h-5 text-gray-700" />
+            ) : (
+              <MoveLeft className="w-5 h-5 text-gray-700" />
+            )}
           </button>
           <button
             onClick={nextSlide}
-            disabled={currentSlide >= maxSlide}
-            className={`border border-gray-200 rounded-full p-3 transition-all duration-200 hover:bg-gray-50 ${
-              currentSlide >= maxSlide 
-                ? "opacity-50 cursor-not-allowed" 
-                : "hover:border-gray-300"
-            }`}
+            className="border border-gray-200 rounded-full p-3 hover:bg-gray-50 transition-colors"
             aria-label="Next hosts"
           >
-          {isRTL ? (
-                             <MoveLeft className="w-5 h-5 text-gray-700" /> // ✅ flip for RTL
-                           ) : (
-                             <MoveRight className="w-5 h-5 text-gray-700" />
-                           )}
+            {isRTL ? (
+              <MoveLeft className="w-5 h-5 text-gray-700" />
+            ) : (
+              <MoveRight className="w-5 h-5 text-gray-700" />
+            )}
           </button>
         </div>
       </div>
 
-      {/* Desktop Slider */}
+      {/* ✅ Desktop Infinite Slider */}
       <div className="hidden md:block overflow-hidden py-4">
         <div
-          className="flex transition-transform duration-500 ease-in-out -mx-2"
-          style={{ transform: `translateX(-${currentSlide * (100 / 4)}%)` }}
+          ref={sliderRef}
+          className={`flex -mx-2 ${isTransitioning ? 'transition-transform duration-500 ease-in-out' : ''}`}
+          style={{ transform: `translateX(-${currentSlide * (100 / itemsPerView)}%)` }}
+          onTransitionEnd={handleTransitionEnd}
         >
-          {hosts.map((host) => (
-            <div key={host.id} className="w-1/4 flex-shrink-0 px-2">
+          {hosts.map((host, index) => (
+            <div key={`${host.id}-${index}`} className="w-1/4 flex-shrink-0 px-2">
               <HostCard host={host} />
             </div>
           ))}
         </div>
       </div>
 
-      {/* Mobile Slider */}
+      {/* ✅ Mobile Infinite Slider */}
       <div className="md:hidden relative">
         <div className="overflow-hidden pb-2 rounded-2xl">
           <div
-            className="flex transition-transform duration-500 ease-in-out"
+            className={`flex ${isTransitioning ? 'transition-transform duration-500 ease-in-out' : ''}`}
             style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+            onTransitionEnd={handleTransitionEnd}
           >
-            {hosts.map((host) => (
-              <div key={host.id} className="w-full px-2 flex-shrink-0">
+            {hosts.map((host, index) => (
+              <div key={`${host.id}-${index}`} className="w-full flex-shrink-0 px-2">
                 <HostCard host={host} />
               </div>
             ))}
@@ -269,38 +283,25 @@ const options = ["month", "year",];
         <div className="flex justify-center gap-4 items-center mt-8">
           <button
             onClick={prevSlide}
-            disabled={currentSlide === 0}
-            className={`border border-gray-200 rounded-full p-3 transition-all duration-200 ${
-              currentSlide === 0 
-                ? "opacity-50 cursor-not-allowed" 
-                : "hover:bg-gray-50"
-            }`}
+            className="border border-gray-200 rounded-full p-3 hover:bg-gray-50 transition-colors"
             aria-label="Previous host"
           >
-              {isRTL ? (
-                  <MoveRight className="w-5 h-5 text-gray-700" /> // ✅ flip for RTL
-                ) : (
-                  <MoveLeft className="w-5 h-5 text-gray-700" />
-                )}  
+            {isRTL ? (
+              <MoveRight className="w-5 h-5 text-gray-700" />
+            ) : (
+              <MoveLeft className="w-5 h-5 text-gray-700" />
+            )}
           </button>
-          
-       
-          
           <button
             onClick={nextSlide}
-            disabled={currentSlide >= hosts.length - 1}
-            className={`border border-gray-200 rounded-full p-3 transition-all duration-200 ${
-              currentSlide >= hosts.length - 1 
-                ? "opacity-50 cursor-not-allowed" 
-                : "hover:bg-gray-50"
-            }`}
+            className="border border-gray-200 rounded-full p-3 hover:bg-gray-50 transition-colors"
             aria-label="Next host"
           >
-          {isRTL ? (
-                             <MoveLeft className="w-5 h-5 text-gray-700" /> // ✅ flip for RTL
-                           ) : (
-                             <MoveRight className="w-5 h-5 text-gray-700" />
-                           )}
+            {isRTL ? (
+              <MoveLeft className="w-5 h-5 text-gray-700" />
+            ) : (
+              <MoveRight className="w-5 h-5 text-gray-700" />
+            )}
           </button>
         </div>
       </div>

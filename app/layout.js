@@ -24,32 +24,14 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
-        <Providers>
-          <I18nextProvider i18n={i18n}>
-            <PopupProvider>
-              {isAuthRoute ? <AuthNavbar /> : <Navbar />}
-              <main>{children}</main>
-              {!isAuthRoute && <Footer />}
-              <ToastContainer
-                position="top-right"
-                autoClose={5000}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-                theme="light"
-                toastStyle={{
-                  borderRadius: '12px',
-                  fontSize: '14px',
-                  fontWeight: '500'
-                }}
-              />
-            </PopupProvider>
-          </I18nextProvider>
-        </Providers>
+        <I18nextProvider i18n={i18n}>
+          {/* ✅ Wrap everything inside PopupProvider */}
+          <PopupProvider>
+            {isAuthRoute ? <AuthNavbar /> : <Navbar />}
+            <main>{children}</main>
+            <Footer />
+          </PopupProvider>
+        </I18nextProvider>
       </body>
     </html>
   );

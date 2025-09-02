@@ -9,11 +9,7 @@
     "language": "Language",
     "signup": "Sign Up"
   },
-  "footer": {
-    "rights": "Copyright © 2025 Portal LLC.",
-    "privacy": "Privacy Policy",
-    "terms": "Terms & Conditions"
-  },
+
   "buttons": {
     "book_now": "Book Now",
     "learn_more": "Learn More",
@@ -123,6 +119,19 @@
   "promotionalvideo": {
     "title": "Promotional video goes here",
     "subtitle": "SUBTITLE"
+  },
+  "footer":{
+
+    "meta_title": "Portal - Your Gateway to Unforgettable Stays",
+    "description": "We offer a curated selection of luxury chalets for unforgettable getaways. From stunning views to premium amenities, each stay promises comfort and elegance. Booking is simple, secure, and tailored to your needs.",
+      "rights": "Copyright © 2025 Portal LLC.",
+    "privacy": "Privacy Policy",
+    "terms": "Terms & Conditions",
+    "cancle_policy": "Cancellation Policy",
+    "contact": "Contact us",
+    "quick_links": "Quick Links",
+    "payment_method": "Payment Methods"
+
   }
 
 

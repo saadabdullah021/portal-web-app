@@ -3,7 +3,8 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #23262F; /* default text color */
+  --foreground: #23262F;
+  /* default text color */
 
   --font-dm-sans: "DM Sans", sans-serif;
   --font-poppins: "Poppins", sans-serif;
@@ -18,7 +19,9 @@
   --font-poppins: var(--font-poppins);
   --font-mono: var(--font-mono);
 }
+
 @layer base {
+
   input[type=number]::-webkit-inner-spin-button,
   input[type=number]::-webkit-outer-spin-button {
     -webkit-appearance: none;
@@ -40,10 +43,10 @@ body {
 .heading {
   font-family: var(--font-dm-sans);
   font-weight: 700;
-  color: var(--text-color, #23262F); 
+  color: var(--text-color, #23262F);
   letter-spacing: 2%;
   max-width: 600px;
-  
+
   font-size: 48px;
   line-height: 56px;
 }
@@ -100,7 +103,8 @@ body {
   outline: none !important;
   background: transparent !important;
   font-size: 14px;
-  color: #777E90; /* design ke hisaab se text color */
+  color: #777E90;
+  /* design ke hisaab se text color */
 }
 
 /* Remove border/outline from flag dropdown */
@@ -118,10 +122,10 @@ body {
   /* fully rounded */
   border: none !important;
   box-shadow: none !important;
-  
-  
-  
-  
+
+
+
+
 }
 
 /* Optional: hover effect remove */
@@ -129,6 +133,21 @@ body {
   background: transparent !important;
 }
 
-.react-international-phone-input-container{
-    width: 66px !important;
+.react-international-phone-input-container {
+  width: 66px !important;
+}
+
+/* Hide scrollbar but keep functionality */
+.custom-scrollbar-hide::-webkit-scrollbar {
+  display: none;
+  /* Chrome, Safari, Edge */
+}
+
+.custom-scrollbar-hide {
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+  /* Optional: smooth scrolling */
+  scroll-behavior: smooth;
 }

@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation";
 
 const AuthNavbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { t } = useTranslation("auth");
+  const { t,i18n } = useTranslation("auth");
   const dropdownRef = useRef(null);
   const { openPopup } = usePopup();
   const router = useRouter();
@@ -124,7 +124,9 @@ const AuthNavbar = () => {
                   <button
                   
                      onClick={handleSignupClick}
-                    className="block px-4 py-2 mt-2 rounded-xl font-bold text-sm text-[#23262F] hover:bg-gray-50 transition-colors duration-200"
+                    className={`block px-4 py-2 mt-2  w-full  rounded-xl font-bold text-sm text-[#23262F] hover:bg-gray-50 transition-colors duration-200
+                       ${i18n.language === "ar" ? " text-right lg:text-right  " : " text-left lg:text-left "}
+                      `}
                   >
                     {t("auth_navbar.login_signup")}
                   </button>
