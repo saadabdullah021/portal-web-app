@@ -1,26 +1,39 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import * as Icons from 'lucide-react'; // ✅ saare icons import
+import * as Icons from 'lucide-react';
 import { MoveLeft, MoveRight } from 'lucide-react';
+import axios from '@/lib/axios';
 
 const BrowseCategorySection = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
-  // Sample data - replace with your actual data
-  const categories = [
-    { id: 1, name: 'Villa', icon: 'Building2', description: 'Small description', count: '2,592' },
-    { id: 2, name: 'Apartment', icon: 'Building', description: 'Small description', count: '3,145' },
-    { id: 3, name: 'Resort', icon: 'Hotel', description: 'Small description', count: '1,873' },
-    { id: 4, name: 'Cabin', icon: 'Tent', description: 'Small description', count: '2,020' },
-    { id: 5, name: 'Cottage', icon: 'House', description: 'Small description', count: '950' },
-    { id: 6, name: 'Farmhouse', icon: 'Tractor', description: 'Small description', count: '1,420' },
-    { id: 7, name: 'Lodge', icon: 'Warehouse', description: 'Small description', count: '675' },
-    { id: 8, name: 'Bungalow', icon: 'Home', description: 'Small description', count: '2,110' }
-  ];
+  const [categories, setCategories] = useState([]);
 
-  // ✅ Responsive check
+  useEffect(() => {
+    let mounted = true;
+    const fetchCategories = async () => {
+      try {
+        const { data } = await axios.get('/get-categories');
+        if (!mounted) return;
+        const list = Array.isArray(data?.data) ? data.data : [];
+        const normalized = list.map((c, idx) => ({
+          id: c.id ?? c.category_id ?? idx,
+          name: c.name ?? c.category_name ?? c.title ?? 'Category',
+          icon: c.icon ?? 'HelpCircle',
+          description: c.description ?? '',
+          count: c.count ?? c.total ?? c.total_listings ?? ''
+        }));
+        setCategories(normalized);
+      } catch {
+        setCategories([]);
+      }
+    };
+    fetchCategories();
+    return () => { mounted = false; };
+  }, []);
+
   useEffect(() => {
     const checkIsMobile = () => {
       setIsMobile(window.innerWidth < 768);
@@ -30,7 +43,6 @@ const BrowseCategorySection = () => {
     return () => window.removeEventListener("resize", checkIsMobile);
   }, []);
 
-  // ✅ Auto-play functionality
   useEffect(() => {
     if (isAutoPlaying) {
       const interval = setInterval(() => {
@@ -42,11 +54,10 @@ const BrowseCategorySection = () => {
     }
   }, [isAutoPlaying, isMobile, categories.length]);
 
-  // ✅ Items per view + maxSlide logic
   const itemsPerView = isMobile ? 1 : 4;
   const maxSlide = categories.length - itemsPerView;
 
-  // Navigation
+  // 
   const nextSlide = () => {
     if (currentSlide < maxSlide) {
       setCurrentSlide((prev) => prev + 1);
