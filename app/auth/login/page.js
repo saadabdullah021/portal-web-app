@@ -161,7 +161,7 @@ export default function SignInPopup() {
             >
               <button
                 onClick={handleClosePopup}
-                className="absolute -top-4 -right-0 lg:-top-4 lg:-right-4 bg-white rounded-full shadow-md text-gray-500 hover:text-gray-700 p-1 transition"
+                className="absolute -top-4 -right-0 lg:-top-4 lg:-right-4 bg-white rounded-full shadow-md text-gray-500 hover:text-gray-700 p-1 transition cursor-pointer"
               >
                 <X size={20} />
               </button>
