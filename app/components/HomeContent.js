@@ -11,7 +11,7 @@ import HowItWorks from "./HomeComponents/HowItWorks ";
 
 import JustForYouSection from "./HomeComponents/JustForYouSection";
 import LastMinuteDealsSection from "./HomeComponents/LastMinuteDealsSection";
-import NationalDayDealsSection from "./HomeComponents/NationalDayDealsSection";
+
 import PromotionalVideoSection from "./HomeComponents/PromotionalVideoSection";
 import { useEffect, useMemo, useState } from "react";
 
@@ -36,24 +36,59 @@ export default function HomeContent() {
     return () => { mounted = false; };
   }, []);
 
-  const renderedSections = useMemo(() => {
-    return homeComponents.map((section, idx) => {
+const renderedSections = useMemo(() => {
+  return homeComponents
+    .map((section, idx) => {
+      let Comp = null;
+
       if (section.component_design_type === 'grid') {
-        return <JustForYouSection key={`grid-${section.component_id || idx}`} items={section.items}/>;
+        Comp = (
+          <JustForYouSection
+            key={`grid-${section.component_id || idx}`}
+            items={section.items}
+          />
+        );
       }
-      if (section.component_design_type === 'slider' || section.component_title === 'Check out homes') {
-        return <LastMinuteDealsSection key={`slider-${section.component_id || idx}`} items={section.items}/>;
+      if (
+        section.component_design_type === 'slider' ||
+        section.component_title === 'Check out homes'
+      ) {
+        Comp = (
+          <LastMinuteDealsSection
+            key={`slider-${section.component_id || idx}`}
+            items={section.items}
+          />
+        );
       }
-      return null;
-    }).filter(Boolean);
-  }, [homeComponents]);
+
+      if (!Comp) return null;
+
+      // check position
+      const isFirst = idx === 0;
+      const isLast = idx === homeComponents.length - 1;
+
+      return (
+        <div
+          key={section.component_id || idx}
+          className={`
+            ${isFirst ? "pt-20  lg:pt-32 pb-0" : ""}
+            ${isLast ? "lg:pt-32 pt-20 pb-20 lg:pb-32" : ""}
+            ${!isFirst && !isLast ? "lg:pt-32 pt-20 pb-0" : ""}
+          `}
+        >
+          {Comp}
+        </div>
+      );
+    })
+    .filter(Boolean);
+}, [homeComponents]);
 
   return (
 
   <div className="max-w-7xl 2xl:max-w-[1400px] mx-auto px-4 ">
   <HeroSection/>
   {renderedSections}
-  <NationalDayDealsSection/>
+
   <HowItWorks/>
   <CuratedExperiences/>
   <AdventureSection/>

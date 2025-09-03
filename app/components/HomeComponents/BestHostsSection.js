@@ -123,7 +123,7 @@ const BestHostsSection = () => {
   };
 
   const HostCard = ({ host }) => (
-    <div className="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 flex-shrink-0 w-full md:w-auto group">
+    <div className="bg-white rounded-3xl overflow-hidden shadow-sm transition-all duration-300 transform  flex-shrink-0 w-full md:w-auto group">
       <div className="relative">
         {/* Property Image */}
         <div className="aspect-[4/3] bg-gradient-to-br from-gray-100 to-gray-200 relative overflow-hidden">

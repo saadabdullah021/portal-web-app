@@ -8,7 +8,7 @@ import { useTranslation } from "react-i18next";
 const HowItWorks = () => {
   const { t } = useTranslation("home");
   return (
-    <section className="relative w-full py-20 bg-white">
+    <section className="relative w-full pt-12 pb-20 bg-white">
       {/* Heading */}
       <div className="text-center mb-16">
         <h2 className="text-4xl md:text-5xl font-dm-sans font-bold text-[#23262F]">

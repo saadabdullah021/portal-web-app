@@ -152,7 +152,7 @@ useEffect(() => {
         <div className=" relative" ref={locationRef}>
           <div
             className={`rounded-xl p-3 lg:p-0 transition-all duration-300 ease-in-out
-              ${activeDropdown === "location" ? "lg:shadow-2xl lg:rounded-full lg:px-3 bg-white" : "lg:bg-transparent hover:bg-gray-100   lg:rounded-full lg:px-3" } 
+              ${activeDropdown === "location" ? "lg:bg-transparent " : "lg:bg-transparent " } 
               bg-white/60`}
           >
             <div
@@ -223,7 +223,7 @@ useEffect(() => {
         <div className="">
           <div
             className={`rounded-xl p-3 lg:p-0 cursor-pointer transition-all duration-300 ease-in-out
-              ${activeDropdown === "checkIn" ? "lg:shadow-2xl lg:rounded-full lg:px-3 bg-white" : "lg:bg-transparent hover:bg-gray-100   lg:rounded-full lg:px-3" } 
+              ${activeDropdown === "checkIn" ? " lg:bg-transparent" : "lg:bg-transparent " } 
               bg-white/60`}
             onClick={() =>
               setActiveDropdown(activeDropdown === "checkIn" ? null : "checkIn")
@@ -242,7 +242,7 @@ useEffect(() => {
         <div className="">
           <div
             className={`rounded-xl p-3 lg:p-0 cursor-pointer transition-all duration-300 ease-in-out
-              ${activeDropdown === "checkOut" ? "lg:shadow-2xl lg:rounded-full lg:px-3 bg-white" : "lg:bg-transparent hover:bg-gray-100   lg:rounded-full lg:px-3 "} 
+              ${activeDropdown === "checkOut" ? " lg:bg-transparent" : "lg:bg-transparent  "} 
               bg-white/60`}
             onClick={() =>
               setActiveDropdown(activeDropdown === "checkOut" ? null : "checkOut")
@@ -261,7 +261,7 @@ useEffect(() => {
         <div className=" relative pt-1" ref={travelersRef}>
           <div
             className={`lg:flex-1 rounded-xl p-3 lg:p-0 cursor-pointer transition-all duration-300 ease-in-out
-              ${activeDropdown === "travelers" ? "lg:shadow-2xl lg:rounded-full lg:px-3 bg-white " : "lg:bg-transparent hover:bg-gray-100   lg:rounded-full lg:px-3 "} 
+              ${activeDropdown === "travelers" ? " lg:bg-transparent " : "lg:bg-transparent  "} 
               bg-white/60`}
             onClick={() =>
               setActiveDropdown(activeDropdown === "travelers" ? null : "travelers")

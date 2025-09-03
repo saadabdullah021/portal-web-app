@@ -29,18 +29,14 @@ const NotificationDropdown = () => {
   const { i18n } = useTranslation();
 
   return (
- <div
+    <div
       className={`
         bg-white shadow-lg border border-gray-100 py-2 z-50
-
-        
         fixed top-16 left-0 w-full  h-[40%]
-
-        
         md:fixed-none 
         md:w-92 md:h-88 md:rounded-3xl
       md:absolute lg:absolute
-        ${i18n.language === "ar" ? "md:top-16 md:-left-8 lg:-right-68 xl:-right-58 lg:top-16" : " md:top-16 md:-left-70 lg:-left-62 xl:-left-56  lg:top-16 "}
+        ${i18n.language === "ar" ? "md:top-16 md:-left-3 lg:-right-64 xl:-right-63 2xl:-right-79 lg:top-16" : " md:top-16 md:-left-74 lg:-left-74 xl:-left-60 2xl:-left-75  lg:top-16 "}
       `}
     >
 

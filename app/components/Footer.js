@@ -7,9 +7,10 @@ import {
   Facebook,
   Instagram,
   Twitter,
-  MessageCircle,
 } from "lucide-react";
-import logo from "../../public/portal-logo.svg";
+import { FaWhatsapp } from "react-icons/fa6";
+
+import logo from "../../public/portal_complete_logo.jpeg";
 import amex from "../../public/images/amex.png";
 import applepay from "../../public/images/applepay.png";
 import mada from "../../public/images/mada.png";
@@ -25,18 +26,20 @@ export default function Footer() {
   
   return (
     <footer className="bg-white border-t border-gray-200 text-gray-700">
-      <div className="max-w-7xl 2xl:max-w-[1400px] mx-auto px-4 sm:px-12 lg:px-20 py-10 grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="max-w-7xl 2xl:max-w-[1400px] mx-auto px-4 sm:px-12 lg:px-20 py-10 grid grid-cols-1 lg:grid-cols-4 gap-4">
         
         {/* Logo & Description */}
         <div>
-          <div className="flex items-center gap-2 mb-3 lg:mb-5">
+          <div className="flex items-center gap-2 mb-6 lg:mb-5">
+            <Link href='/'>
             <Image
               src={logo}
               alt="Portal Logo"
-              width={86}
-              height={32}
+              width={150}
+              height={44}
               priority
-            />
+              />
+              </Link>
           </div>
           <p className={`text-sm leading-relaxed  text-[#777E90]
             ${i18n.language === "ar" ? " lg:max-w-[220px]  " : " lg:min-w-xs "}
@@ -49,21 +52,21 @@ export default function Footer() {
         <div className="lg:ml-24">
           <h4 className="font-semibold mb-6 relative inline-block">
             {t("footer.quick_links")}
-            <span className="block h-0.5 w-full bg-[#14189c] mt-1"></span>
+            <span className="block h-0.5 w-full bg-[#0365ef] mt-1"></span>
           </h4>
           <ul className="space-y-4 text-sm">
             <li>
-              <Link href="/terms-conditions" className="hover:text-[#14189c] text-[#777E90] font-medium transition">
+              <Link href="/terms-conditions" className="hover:text-[#0365ef] text-[#777E90] font-medium transition">
                 {t("footer.terms")}
               </Link>
             </li>
             <li>
-              <Link href="/privacy-policy" className="hover:text-[#14189c] text-[#777E90] font-medium transition">
+              <Link href="/privacy-policy" className="hover:text-[#0365ef] text-[#777E90] font-medium transition">
                 {t("footer.privacy")}
               </Link>
             </li>
             <li>
-              <Link href="/cancellation-policy" className="hover:text-[#14189c] text-[#777E90] font-medium transition">
+              <Link href="/cancellation-policy" className="hover:text-[#0365ef] text-[#777E90] font-medium transition">
                 {t("footer.cancle_policy")}
               </Link>
             </li>
@@ -74,28 +77,28 @@ export default function Footer() {
         <div className="lg:ml-8">
           <h4 className="font-semibold mb-6 relative inline-block">
             {t("footer.contact")}
-            <span className="block h-0.5 w-full bg-[#14189c] mt-1"></span>
+            <span className="block h-0.5 w-full bg-[#0365ef] mt-1"></span>
           </h4>
           <div className="flex items-center gap-3 pb-3">
-            <span className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100">
+            <span className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 hover:bg-[#14189c] text-[#0365ef] hover:text-white transition">
 
-            <Phone className="w-5 h-5 text-[#14189c]" />
+            <Phone className="w-4.5 h-4.5 text-[#0365ef] hover:text-white" />
             </span>
             <a
               href="tel:+966111110000"
-              className="text-sm hover:text-[#14189c] text-[#777E90] font-medium transition"
+              className="text-sm hover:text-[#0365ef] text-[#777E90] font-medium transition"
             >
               +966 111110000
             </a>
           </div>
-          <div className="flex items-center gap-3">
-            <span className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100">
+          <div className="flex items-center gap-3 ">
+            <span className="w-10 h-10 flex items-center justify-center rounded-full  bg-gray-100 hover:bg-[#14189c] text-[#0365ef] hover:text-white transition">
 
-            <Mail className="w-5 h-5 text-[#14189c]" />
+            <Mail className="w-4.5 h-4.5 text-[#0365ef]  hover:text-white " />
             </span>
             <a
               href="mailto:info@portal.com.sa"
-              className="text-sm hover:text-[#14189c] text-[#777E90] font-medium transition"
+              className="text-sm hover:text-[#0365ef] text-[#777E90] font-medium transition"
             >
               info@portal.com.sa
             </a>
@@ -106,9 +109,9 @@ export default function Footer() {
         <div className="">
           <h4 className="font-semibold mb-6 lg:mb-4 relative inline-block">
             {t("footer.payment_method")}
-            <span className="block h-0.5 w-full bg-[#14189c] mt-1"></span>
+            <span className="block h-0.5 w-full bg-[#0365ef] mt-1"></span>
           </h4>
-          <div className="flex flex-wrap items-center gap-2 mb-4 pt-2">
+          <div className="flex flex-wrap items-center gap-2 mb-3 pt-2">
 
             <span className="bg-gray-100 p-2 rounded-md">
             
@@ -175,28 +178,28 @@ export default function Footer() {
             <Link
               href="https://wa.me/966111110000"
               aria-label="Contact us on WhatsApp"
-              className="w-12 h-12 flex items-center justify-center rounded-full bg-gray-100 hover:bg-[#14189c] hover:text-white transition"
+              className="w-12 h-12 flex items-center justify-center rounded-full bg-gray-100 hover:bg-[#14189c] text-[#0365ef] hover:text-white transition"
             >
-              <MessageCircle className="w-5 h-5 " />
+              <FaWhatsapp className="w-5 h-5" />
             </Link>
             <Link
               href="https://instagram.com/portal"
               aria-label="Follow us on Instagram"
-              className="w-12 h-12 flex items-center justify-center rounded-full bg-gray-100 hover:bg-[#14189c] hover:text-white transition"
+              className="w-12 h-12 flex items-center justify-center rounded-full bg-gray-100 hover:bg-[#14189c] text-[#0365ef] hover:text-white transition"
             >
               <Instagram className="w-5 h-5" />
             </Link>
             <Link
               href="https://twitter.com/portal"
               aria-label="Follow us on Twitter"
-              className="w-12 h-12 flex items-center justify-center rounded-full bg-gray-100 hover:bg-[#14189c] hover:text-white transition"
+              className="w-12 h-12 flex items-center justify-center rounded-full bg-gray-100 hover:bg-[#14189c] text-[#0365ef] hover:text-white transition"
             >
               <Twitter className="w-5 h-5" />
             </Link>
             <Link
               href="https://facebook.com/portal"
               aria-label="Follow us on Facebook"
-              className="w-12 h-12 flex items-center justify-center rounded-full bg-gray-100 hover:bg-[#14189c] hover:text-white transition"
+              className="w-12 h-12 flex items-center justify-center rounded-full bg-gray-100 hover:bg-[#14189c] text-[#0365ef] hover:text-white transition"
             >
               <Facebook className="w-5 h-5" />
             </Link>
