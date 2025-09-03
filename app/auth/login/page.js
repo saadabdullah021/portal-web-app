@@ -3,32 +3,147 @@
 
 import { useState } from "react";
 import { ArrowRightIcon, X } from "lucide-react";
-import { PhoneInput } from "react-international-phone";
-import "react-international-phone/style.css";
 import HomeContent from "@/app/components/HomeContent";
 import { useTranslation } from "react-i18next";
 import { usePopup } from "@/app/contexts/PopupContext";
 import { useRouter } from "next/navigation";
+import PhoneInput from "@/app/components/ui/PhoneInput";
+import OtpInput from "@/app/components/ui/OtpInput";
+import axios from "@/lib/axios";
+import { showToast } from 'nextjs-toast-notify';
 
 export default function SignInPopup() {
-  const [phone, setPhone] = useState("");
+  const [phoneData, setPhoneData] = useState({ countryCode: "+966", phoneNumber: "" });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [showOtpInput, setShowOtpInput] = useState(false);
   const { t } = useTranslation('auth'); 
   const { popups, closePopup, openPopup } = usePopup();
   const router = useRouter();
 
   const handleClosePopup = () => {
     closePopup('login');
+    setPhoneData({ countryCode: "+966", phoneNumber: "" });
+    setError("");
+    setShowOtpInput(false);
   };
 
-  const handlePhoneSubmit = () => {
-    if (phone.trim()) {
-      closePopup('login');
-      // OTP verification page pe navigate aur popup open
-      router.push('/auth/otp-verification');
-      setTimeout(() => {
-        openPopup('otpVerification');
-      }, 100);
+  const handlePhoneChange = (data) => {
+    setPhoneData(data);
+  };
+
+  const handlePhoneSubmit = async () => {
+    const fullPhone = phoneData.countryCode + phoneData.phoneNumber;
+    
+    if (!phoneData.phoneNumber) {
+      setError("Please enter your phone number");
+      showToast.error("Please enter your phone number", { position: "top-center" });
+      return;
     }
+
+    setLoading(true);
+    setError("");
+
+    try {
+      const payload = {
+        otp_value: fullPhone,
+        otp_type: 'sms',
+        user_type: 'guest',
+        request_type: 'sign_in'
+      };
+
+      const response = await axios.post('/send-otp', payload);
+      console.log(response);
+      
+      if(response.status === 200 && response.data.success){
+        showToast.success("OTP sent successfully!", { position: "top-center" });
+        localStorage.setItem('loginPhone', fullPhone);
+        closePopup('login');
+        setShowOtpInput(true);
+      } else {
+        showToast.error("Failed to send OTP. Please try again.", { position: "top-center" });
+      }
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || "Failed to send OTP. Please try again.";
+      setError(errorMessage);
+      showToast.error(errorMessage, { position: "top-center" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleOtpSubmit = async (otp) => {
+    const fullPhone = phoneData.countryCode + phoneData.phoneNumber;
+    const countryCode = phoneData.countryCode.replace('+', '');
+    const phoneNumber = phoneData.phoneNumber;
+    
+    setLoading(true);
+    setError("");
+
+    try {
+      const payload = {
+        otp_code: otp,
+        otp_type: 'sms',
+        otp_value: fullPhone,
+        phone_number: phoneNumber,
+        country_code: countryCode,
+        request_type: 'sign_in',
+        user_type: 'guest'
+      };
+
+      const response = await axios.post('/verify-otp', payload);
+      console.log(response);
+      
+      if(response.status === 200 && response.data.success){
+        const userData = response.data.data.user;
+        
+        localStorage.setItem('user', JSON.stringify(userData));
+        localStorage.setItem('isAuthenticated', 'true');
+        
+        showToast.success("Login successful!", { position: "top-center" });
+        
+        setShowOtpInput(false);
+        
+        router.push('/');
+        
+      } else {
+        showToast.error("Failed to verify OTP. Please try again.", { position: "top-center" });
+        setError("Failed to verify OTP. Please try again.");
+      }
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || "Failed to verify OTP. Please try again.";
+      setError(errorMessage);
+      showToast.error(errorMessage, { position: "top-center" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleOtpResend = async () => {
+    try {
+      const fullPhone = phoneData.countryCode + phoneData.phoneNumber;
+      const payload = {
+        otp_value: fullPhone,
+        otp_type: 'sms',
+        user_type: 'guest',
+        request_type: 'sign_in'
+      };
+
+      const response = await axios.post('/send-otp', payload);
+      
+      if(response.status === 200 && response.data.success){
+        showToast.success("OTP resent successfully!", { position: "top-center" });
+      } else {
+        showToast.error("Failed to resend OTP. Please try again.", { position: "top-center" });
+      }
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || "Failed to resend OTP. Please try again.";
+      showToast.error(errorMessage, { position: "top-center" });
+    }
+  };
+
+  const handleCloseOtp = () => {
+    setShowOtpInput(false);
   };
 
   return (
@@ -40,20 +155,17 @@ export default function SignInPopup() {
             className="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
             onClick={handleClosePopup}
           >
-            {/* Modal Container */}
             <div
               className="bg-white rounded-2xl shadow-xl w-[540px] h-[310px] p-16 relative"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Close Button */}
               <button
                 onClick={handleClosePopup}
-                className="absolute -top-4 -right-0 lg:-top-4 lg:-right-4 bg-white rounded-full shadow-md text-gray-500 hover:text-gray-700 p-1 transition"
+                className="absolute -top-4 -right-0 lg:-top-4 lg:-right-4 bg-white rounded-full shadow-md text-gray-500 hover:text-gray-700 p-1 transition cursor-pointer"
               >
                 <X size={20} />
               </button>
 
-              {/* Heading */}
               <h2 className="text-[32px] lg:text-[40px] font-dm-sans text-[#141416] font-bold text-center">
                 {t('login.title')}
               </h2>
@@ -61,28 +173,33 @@ export default function SignInPopup() {
                 {t('login.subtitle')}
               </p>
 
-              {/* Input Section */}
-              <div  dir="ltr"  className="flex items-center gap-2 border border-[#E6E8EC] rounded-full mx-auto max-w-xs px-3 py-2 mt-6 shadow-sm">
-                {/* Phone Input */}
+              <div className="w-full mt-6">
                 <PhoneInput
-                  defaultCountry="sa"
-                  value={phone}
-                  onChange={(phone) => setPhone(phone)}
-                  className="flex-1"
-                  inputClass="custom-phone-input"
+                  value={phoneData}
+                  onChange={handlePhoneChange}
                   placeholder="Enter your phone number"
+                  className="w-full"
+                  error={!!error}
+                  onSubmit={handlePhoneSubmit}
                 />
-
-                {/* Submit Button */}
-                <button 
-                  onClick={handlePhoneSubmit}
-                  className="bg-blue-600 text-white justify-center w-6 h-6 flex items-center rounded-full hover:bg-blue-700 transition"
-                >
-                  <ArrowRightIcon size={16} />
-                </button>
               </div>
+
+              {error && (
+                <div className="text-red-500 text-xs text-center mt-2">
+                  {error}
+                </div>
+              )}
             </div>
           </div>
+        )}
+
+        {showOtpInput && (
+          <OtpInput
+            phoneNumber={phoneData.countryCode + phoneData.phoneNumber}
+            onSubmit={handleOtpSubmit}
+            onResend={handleOtpResend}
+            onClose={handleCloseOtp}
+          />
         )}
       </div>
     </>

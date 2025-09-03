@@ -17,7 +17,7 @@ const HeroSection = () => {
   };
 
   return (
-    <div className="relative">
+    <div className="relative mb-12 lg:mb-20">
       {/* Gradient Background */}
       <div className="absolute rounded-3xl inset-0 bg-gradient-to-r from-[#3B71FE40]/45 to-[#3B71FE40]/85 my-1"></div>
 

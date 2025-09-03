@@ -3,34 +3,35 @@
 import "./globals.css";
 import { I18nextProvider } from "react-i18next";
 import i18n from "../i18n/i18n";
-import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-
-// Components
 import Navbar from "./components/Navbar";
-import AuthNavbar from "./components/AuthNavbar";
 import Footer from "./components/Footer";
 import { PopupProvider } from "./contexts/PopupContext";
+import { Providers } from './providers';
 
 export default function RootLayout({ children }) {
-  const pathname = usePathname();
-  const [isAuthRoute, setIsAuthRoute] = useState(false);
+  // ⚡ abhi ke liye dummy state
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
 
   useEffect(() => {
-    setIsAuthRoute(pathname?.startsWith("/auth"));
-  }, [pathname]);
+    // 👇 yahan pe baad me actual login status ayega
+    // abhi ke liye localStorage se check kar rahe hain
+    const loggedIn = localStorage.getItem("isLoggedIn") === "true";
+    setIsAuthenticated(loggedIn);
+  }, []);
 
   return (
     <html lang="en">
       <body>
-        <I18nextProvider i18n={i18n}>
-          {/* ✅ Wrap everything inside PopupProvider */}
-          <PopupProvider>
-            {isAuthRoute ? <AuthNavbar /> : <Navbar />}
-            <main>{children}</main>
-            <Footer />
-          </PopupProvider>
-        </I18nextProvider>
+        <Providers>
+          <I18nextProvider i18n={i18n}>
+            <PopupProvider>
+              <Navbar isAuthenticated={isAuthenticated} />
+              <main>{children}</main>
+               <Footer />
+            </PopupProvider>
+          </I18nextProvider>
+        </Providers>
       </body>
     </html>
   );

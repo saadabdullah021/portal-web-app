@@ -125,7 +125,7 @@ const AdventureSection = () => {
   };
 
   const AdventureCard = ({ adventure }) => (
-    <div className="group cursor-pointer transform transition-all duration-300 hover:scale-105">
+    <div className="group cursor-pointer transform transition-all duration-300 ">
       <div className='flex items-center gap-2'>
         <div className={` flex items-center justify-center  overflow-hidden`}>
           <Image
