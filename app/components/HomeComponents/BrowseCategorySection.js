@@ -23,13 +23,33 @@ const BrowseCategorySection = () => {
         const { data } = await axios.get('/get-categories');
         if (!mounted) return;
         const list = Array.isArray(data?.data) ? data.data : [];
-        const normalized = list.map((c, idx) => ({
-          id: c.id ?? c.category_id ?? idx,
-          name: c.name ?? c.category_name ?? c.title ?? 'Category',
-          icon: c.icon ?? 'HelpCircle',
-          description: c.description ?? '',
-          count: c.count ?? c.total ?? c.total_listings ?? ''
-        }));
+        const iconPool = [
+          'Home',
+          'Building2',
+          'BedDouble',
+          'Hotel',
+          'Warehouse',
+          'House',
+          'Tent',
+          'Trees',
+          'Castle',
+          'Landmark',
+          'Factory',
+          'Boxes',
+          'LampDesk'
+        ];
+        const normalized = list.map((c, idx) => {
+          console.log(c,'cinnormalized');
+          
+          const randomIcon = iconPool[Math.floor(Math.random() * iconPool.length)] || 'HelpCircle';
+          return {
+            id: c.category_id ?? idx,
+            name: c.category_title ?? 'Category',
+            icon: randomIcon,
+            description: c.category_description ?? '',
+            count: c.listing_count ?? ''
+          };
+        });
         setCategories(normalized);
       } catch {
         setCategories([]);

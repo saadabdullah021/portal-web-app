@@ -5,7 +5,7 @@ import justForYou from '../../../public/images/justforyou.png';
 import { useTranslation } from 'react-i18next';
 import Image from 'next/image';
 
-const LastMinuteDealsSection = () => {
+const LastMinuteDealsSection = ({ items }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -15,14 +15,16 @@ const LastMinuteDealsSection = () => {
 
   const placeholderImage = justForYou;
 
-  // ✅ Original properties
   const originalProperties = Array.from({ length: 8 }, (_, i) => ({
-    id: i + 1,
-    image: placeholderImage,
-    discount: "25% OFF",
-    rating: 4.8,
-    reviews: 12,
-    title: "Lorem ipsum dolor imit con dolor lorem avec",
+    listing: {
+      listing_id: i + 1,
+      thumbnails: [{ thumbnail_url: placeholderImage.src }],
+      rating: 4.8,
+      reviews: 12,
+      title: "Lorem ipsum dolor imit con dolor lorem avec",
+      actual_price: "3,499",
+      discounted_price: "2,500 SAR",
+    },
     amenities: [
       {
         icon: (
@@ -61,6 +63,8 @@ const LastMinuteDealsSection = () => {
     period: "night",
   }));
 
+  const data = Array.isArray(items) && items.length > 0 ? items : originalProperties;
+
   useEffect(() => {
     const checkIsMobile = () => {
       setIsMobile(window.innerWidth < 768);
@@ -76,9 +80,9 @@ const LastMinuteDealsSection = () => {
   
   // ✅ Clone properties for infinite loop
   const properties = [
-    ...originalProperties.slice(-itemsPerView), // Last items at beginning
-    ...originalProperties,
-    ...originalProperties.slice(0, itemsPerView), // First items at end
+    ...data.slice(-itemsPerView),
+    ...data,
+    ...data.slice(0, itemsPerView),
   ];
 
   // ✅ Start from first real slide (after cloned items)
@@ -92,10 +96,10 @@ const LastMinuteDealsSection = () => {
     
     // If we're at the beginning clones, jump to real beginning
     if (currentSlide === 0) {
-      setCurrentSlide(originalProperties.length);
+      setCurrentSlide(data.length);
     }
     // If we're at the end clones, jump to real start
-    else if (currentSlide >= originalProperties.length + itemsPerView) {
+    else if (currentSlide >= data.length + itemsPerView) {
       setCurrentSlide(itemsPerView);
     }
   };
@@ -116,14 +120,21 @@ const LastMinuteDealsSection = () => {
     setCurrentSlide(prev => prev - 1);
   };
 
-  const PropertyCard = ({ property }) => (
+  const PropertyCard = ({ property }) => {
+    const listing = property?.listing || {};
+    const [first] = Array.isArray(listing.thumbnails) ? listing.thumbnails : [];
+    const hasDiscount = listing.discounted_price && String(listing.discounted_price) !== '0';
+    const imageSrc = first?.thumbnail_url || placeholderImage;
+    return (
     <div className="bg-white rounded-2xl overflow-hidden shadow-sm  transition-all duration-300 transform  flex-shrink-0 w-full md:w-auto group">
       <div className="relative">
         <div className="aspect-[4/3] bg-gradient-to-br from-amber-100 to-orange-200 relative overflow-hidden">
           <Image
-            src={property.image}
-            alt={property.title}
-            className="w-full h-full object-cover transition-transform duration-500"
+            src={imageSrc}
+            alt={listing.title}
+            fill
+            sizes="(max-width: 768px) 100vw, 25vw"
+            className="object-cover transition-transform duration-500"
             loading="lazy"
           />
           <div className="absolute inset-0 bg-gradient-to-br from-amber-100 via-orange-200 to-amber-300 hidden"></div>
@@ -145,12 +156,12 @@ const LastMinuteDealsSection = () => {
 
         {/* Title */}
         <h3 className="text-gray-900 text-[16px] font-poppins font-medium mb-4 line-clamp-2 leading-relaxed">
-          {property.title}
+          {listing.title}
         </h3>
 
         {/* Amenities */}
         <div className="flex items-center gap-4 mb-6">
-          {property.amenities.map((amenity, index) => (
+          {(Array.isArray(property.amenities) ? property.amenities : []).map((amenity, index) => (
             <div key={index} className="flex items-center gap-2 text-[#777E90]">
               {amenity.icon}
               <span className="text-xs font-poppins font-normal whitespace-nowrap">{amenity.label}</span>
@@ -160,17 +171,19 @@ const LastMinuteDealsSection = () => {
         <hr className="text-gray-200 py-2" />
         {/* Pricing */}
         <div className="flex items-center gap-2">
-          <span className="text-gray-400 text-sm font-bold font-poppins line-through">
-            {property.originalPrice}
-          </span>
+          {hasDiscount && (
+            <span className="text-sm font-bold font-poppins text-red-500 line-through">
+              {listing.actual_price}
+            </span>
+          )}
           <div className="flex items-baseline gap-1">
-            <span className="text-sm font-bold font-poppins text-[#58C27D]">{property.currentPrice}</span>
-            <span className="text-[#777E90] font-medium font-poppins text-xs">/ {property.period}</span>
+            <span className="text-sm font-bold font-poppins text-[#58C27D]">{hasDiscount ? listing.discounted_price : listing.actual_price}</span>
+            <span className="text-[#777E90] font-medium font-poppins text-xs">/ night</span>
           </div>
         </div>
       </div>
     </div>
-  );
+  ); };
 
   return (
     <section className="pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
@@ -220,7 +233,7 @@ const LastMinuteDealsSection = () => {
           onTransitionEnd={handleTransitionEnd}
         >
           {properties.map((property, index) => (
-            <div key={`${property.id}-${index}`} className="w-1/4 flex-shrink-0 px-2">
+            <div key={`${property?.listing?.listing_id ?? index}-${index}`} className="w-1/4 flex-shrink-0 px-2">
               <PropertyCard property={property} />
             </div>
           ))}
@@ -236,7 +249,7 @@ const LastMinuteDealsSection = () => {
             onTransitionEnd={handleTransitionEnd}
           >
             {properties.map((property, index) => (
-              <div key={`${property.id}-${index}`} className="w-full  flex-shrink-0">
+              <div key={`${property?.listing?.listing_id ?? index}-${index}`} className="w-full  flex-shrink-0">
                 <PropertyCard property={property} />
               </div>
             ))}
