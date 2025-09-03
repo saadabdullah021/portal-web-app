@@ -53,7 +53,7 @@ const Navbar = () => {
           <div className="hidden md:flex items-center space-x-4" ref={dropdownRef}>
             {/* Support */}
             <Link
-              href="#"
+              href="/unit-details"
               className="text-[#777E90] capitalize hover:text-blue-800 text-sm font-medium transition-colors duration-200"
             >
               {t("navbar.support")}
