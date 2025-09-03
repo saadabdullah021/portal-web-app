@@ -18,7 +18,7 @@ const IdentityConfirmation = ({
         if (!phone) return '';
         const length = phone.length;
         if (length <= 8) return phone;
-        return phone.substring(0, 4) + ' ' + phone.substring(4, 6) + ' ... ' + phone.substring(length - 2);
+        return phone;
     };
 
     const maskEmail = (email) => {
@@ -33,13 +33,13 @@ const IdentityConfirmation = ({
             <div className={`bg-white rounded-2xl shadow-xl w-[540px] p-10 relative ${className}`}>
                 <button
                     onClick={onClose}
-                    className="absolute -top-4 -right-4 bg-white rounded-full shadow-md text-gray-500 hover:text-gray-700 p-1 transition"
+                    className="absolute -top-4 -right-4 bg-white rounded-full shadow-md text-gray-500 hover:text-gray-700 p-1 transition cursor-pointer"
                 >
                     <X size={20} />
                 </button>
 
                 <h2 className="text-[32px] lg:text-[40px] font-dm-sans text-[#141416] font-bold text-center mb-2">
-                    Let's confirm it's really you
+                    Lets confirm its really you
                 </h2>
                 
                 <p className="text-[#777E90] text-center text-[16px] mb-8">
@@ -61,7 +61,7 @@ const IdentityConfirmation = ({
                         </span>
                     </label>
 
-                    <label className="flex items-center cursor-pointer">
+                    {/* <label className="flex items-center cursor-pointer">
                         <input
                             type="radio"
                             name="verificationMethod"
@@ -73,7 +73,7 @@ const IdentityConfirmation = ({
                         <span className="ml-3 text-[#141416] text-[16px]">
                             Get an email message at {maskEmail(email)}
                         </span>
-                    </label>
+                    </label> */}
                 </div>
 
                 <div className="text-center">

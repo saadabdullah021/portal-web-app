@@ -1,7 +1,7 @@
 // app/contexts/PopupContext.js
 "use client";
 
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useMemo, useState } from "react";
 
 const PopupContext = createContext();
 
@@ -44,13 +44,26 @@ export const PopupProvider = ({ children }) => {
     });
   };
 
+  const openExclusive = (popupName) => {
+    setPopups({
+      signup: false,
+      login: false,
+      verification: false,
+      confirmIdentity: false,
+      [popupName]: true,
+    });
+  };
+
+  const contextValue = useMemo(() => ({
+    popups,
+    openPopup,
+    closePopup,
+    closeAllPopups,
+    openExclusive,
+  }), [popups]);
+
   return (
-    <PopupContext.Provider value={{
-      popups,
-      openPopup,
-      closePopup,
-      closeAllPopups
-    }}>
+    <PopupContext.Provider value={contextValue}>
       {children}
     </PopupContext.Provider>
   );

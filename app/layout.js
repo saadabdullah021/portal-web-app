@@ -10,8 +10,7 @@ import AuthNavbar from "./components/AuthNavbar";
 import Footer from "./components/Footer";
 import { PopupProvider } from "./contexts/PopupContext";
 import { Providers } from './providers';
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+// removed react-toastify usage
 
 export default function RootLayout({ children }) {
   const pathname = usePathname();
@@ -24,14 +23,16 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
-        <I18nextProvider i18n={i18n}>
-          {/* ✅ Wrap everything inside PopupProvider */}
-          <PopupProvider>
-            {isAuthRoute ? <AuthNavbar /> : <Navbar />}
-            <main>{children}</main>
-            <Footer />
-          </PopupProvider>
-        </I18nextProvider>
+        <Providers>
+          <I18nextProvider i18n={i18n}>
+            <PopupProvider>
+              {isAuthRoute ? <AuthNavbar /> : <Navbar />}
+              <main>{children}</main>
+              {!isAuthRoute && <Footer />}
+              {/* toast container removed; nextjs-toast-notify renders toasts without a global container */}
+            </PopupProvider>
+          </I18nextProvider>
+        </Providers>
       </body>
     </html>
   );

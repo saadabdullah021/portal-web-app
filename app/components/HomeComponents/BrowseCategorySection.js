@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import * as Icons from 'lucide-react';
 import { MoveLeft, MoveRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import axios from '@/lib/axios';
 
 const BrowseCategorySection = () => {
   const { t, i18n } = useTranslation('home');
@@ -13,19 +14,31 @@ const BrowseCategorySection = () => {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const sliderRef = useRef(null);
 
-  // Sample data - replace with your actual data
-  const categories = [
-    { id: 1, name: 'Villa', icon: 'Building2', description: 'Small description', count: '2,592' },
-    { id: 2, name: 'Apartment', icon: 'Building', description: 'Small description', count: '3,145' },
-    { id: 3, name: 'Resort', icon: 'Hotel', description: 'Small description', count: '1,873' },
-    { id: 4, name: 'Cabin', icon: 'Tent', description: 'Small description', count: '2,020' },
-    { id: 5, name: 'Cottage', icon: 'House', description: 'Small description', count: '950' },
-    { id: 6, name: 'Farmhouse', icon: 'Tractor', description: 'Small description', count: '1,420' },
-    { id: 7, name: 'Lodge', icon: 'Warehouse', description: 'Small description', count: '675' },
-    { id: 8, name: 'Bungalow', icon: 'Home', description: 'Small description', count: '2,110' }
-  ];
+  const [categories, setCategories] = useState([]);
 
-  // ✅ Responsive check
+  useEffect(() => {
+    let mounted = true;
+    const fetchCategories = async () => {
+      try {
+        const { data } = await axios.get('/get-categories');
+        if (!mounted) return;
+        const list = Array.isArray(data?.data) ? data.data : [];
+        const normalized = list.map((c, idx) => ({
+          id: c.id ?? c.category_id ?? idx,
+          name: c.name ?? c.category_name ?? c.title ?? 'Category',
+          icon: c.icon ?? 'HelpCircle',
+          description: c.description ?? '',
+          count: c.count ?? c.total ?? c.total_listings ?? ''
+        }));
+        setCategories(normalized);
+      } catch {
+        setCategories([]);
+      }
+    };
+    fetchCategories();
+    return () => { mounted = false; };
+  }, []);
+
   useEffect(() => {
     const checkIsMobile = () => {
       setIsMobile(window.innerWidth < 768);

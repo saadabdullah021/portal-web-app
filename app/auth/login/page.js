@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 import PhoneInput from "@/app/components/ui/PhoneInput";
 import OtpInput from "@/app/components/ui/OtpInput";
 import axios from "@/lib/axios";
-import { toast } from 'react-toastify';
+import { showToast } from 'nextjs-toast-notify';
 
 export default function SignInPopup() {
   const [phoneData, setPhoneData] = useState({ countryCode: "+966", phoneNumber: "" });
@@ -37,7 +37,7 @@ export default function SignInPopup() {
     
     if (!phoneData.phoneNumber) {
       setError("Please enter your phone number");
-      toast.error("Please enter your phone number");
+      showToast.error("Please enter your phone number", { position: "top-center" });
       return;
     }
 
@@ -56,17 +56,17 @@ export default function SignInPopup() {
       console.log(response);
       
       if(response.status === 200 && response.data.success){
-        toast.success("OTP sent successfully!");
+        showToast.success("OTP sent successfully!", { position: "top-center" });
         localStorage.setItem('loginPhone', fullPhone);
         closePopup('login');
         setShowOtpInput(true);
       } else {
-        toast.error("Failed to send OTP. Please try again.");
+        showToast.error("Failed to send OTP. Please try again.", { position: "top-center" });
       }
     } catch (error) {
       const errorMessage = error.response?.data?.message || "Failed to send OTP. Please try again.";
       setError(errorMessage);
-      toast.error(errorMessage);
+      showToast.error(errorMessage, { position: "top-center" });
     } finally {
       setLoading(false);
     }
@@ -100,20 +100,20 @@ export default function SignInPopup() {
         localStorage.setItem('user', JSON.stringify(userData));
         localStorage.setItem('isAuthenticated', 'true');
         
-        toast.success("Login successful!");
+        showToast.success("Login successful!", { position: "top-center" });
         
         setShowOtpInput(false);
         
         router.push('/');
         
       } else {
-        toast.error("Failed to verify OTP. Please try again.");
+        showToast.error("Failed to verify OTP. Please try again.", { position: "top-center" });
         setError("Failed to verify OTP. Please try again.");
       }
     } catch (error) {
       const errorMessage = error.response?.data?.message || "Failed to verify OTP. Please try again.";
       setError(errorMessage);
-      toast.error(errorMessage);
+      showToast.error(errorMessage, { position: "top-center" });
     } finally {
       setLoading(false);
     }
@@ -132,13 +132,13 @@ export default function SignInPopup() {
       const response = await axios.post('/send-otp', payload);
       
       if(response.status === 200 && response.data.success){
-        toast.success("OTP resent successfully!");
+        showToast.success("OTP resent successfully!", { position: "top-center" });
       } else {
-        toast.error("Failed to resend OTP. Please try again.");
+        showToast.error("Failed to resend OTP. Please try again.", { position: "top-center" });
       }
     } catch (error) {
       const errorMessage = error.response?.data?.message || "Failed to resend OTP. Please try again.";
-      toast.error(errorMessage);
+      showToast.error(errorMessage, { position: "top-center" });
     }
   };
 
@@ -161,7 +161,7 @@ export default function SignInPopup() {
             >
               <button
                 onClick={handleClosePopup}
-                className="absolute -top-4 -right-0 lg:-top-4 lg:-right-4 bg-white rounded-full shadow-md text-gray-500 hover:text-gray-700 p-1 transition"
+                className="absolute -top-4 -right-0 lg:-top-4 lg:-right-4 bg-white rounded-full shadow-md text-gray-500 hover:text-gray-700 p-1 transition cursor-pointer"
               >
                 <X size={20} />
               </button>

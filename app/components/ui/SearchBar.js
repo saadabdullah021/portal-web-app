@@ -1,11 +1,15 @@
 'use client';
 import { Navigation, UserRound, Calendar, Minus, Plus } from 'lucide-react';
 import { useState, useEffect, useRef, useMemo } from 'react';
+import { useDispatch } from 'react-redux';
+import { setSelectedLocation } from '../../../store/reducers/searchReducer';
+import axios from '@/lib/axios';
 import { useTranslation } from 'react-i18next';
 import DateInput from './DateInput';
 
 const SearchBar = ({ onSearch }) => {
-   const { i18n, t } = useTranslation("hero");
+  const { t, i18n } = useTranslation('hero');
+  const dispatch = useDispatch();
   const [location, setLocation] = useState('');
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
@@ -14,12 +18,16 @@ const SearchBar = ({ onSearch }) => {
 const [locationSelected, setLocationSelected] = useState(false);
 
   // Travelers state
+  const [suggestions, setSuggestions] = useState([]);
+  const [locationsData, setLocationsData] = useState([]);
+  const [showDropdown, setShowDropdown] = useState(false);
+
+  const [showTravelers, setShowTravelers] = useState(false);
   const [adults, setAdults] = useState(0);
   const [children, setChildren] = useState(0);
   const [infants, setInfants] = useState(0);
 
-  // Track active dropdown
-  const [activeDropdown, setActiveDropdown] = useState(null);
+  const [activeDropdown, setActiveDropdown] = useState(null); // 🔥 new line
 
   const travelersRef = useRef(null);
   const locationRef = useRef(null);
@@ -35,7 +43,37 @@ const [locationSelected, setLocationSelected] = useState(false);
     "Al Wakrah, Qatar", 
   ], []);
 
-  // Responsive check
+  useEffect(() => {
+    let isMounted = true;
+    const fetchLocations = async () => {
+      try {
+        const { data: json } = await axios.get('/get-all-locations');
+        if (!isMounted) return;
+        if (json?.success && Array.isArray(json.data)) {
+          const list = [];
+          json.data.forEach(city => {
+            if (Array.isArray(city.districts)) {
+              city.districts.forEach(d => {
+                list.push({
+                  label: d.district_name,
+                  cityId: city.city_id,
+                  districtId: d.district_id,
+                });
+              });
+            }
+          });
+          setLocationsData(list);
+        } else {
+          setLocationsData([]);
+        }
+      } catch {
+        setLocationsData([]);
+      }
+    };
+    fetchLocations();
+    return () => { isMounted = false; };
+  }, []);
+
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 1024);
     handleResize();
@@ -44,7 +82,6 @@ const [locationSelected, setLocationSelected] = useState(false);
   }, []);
 
   // Debounced filter for location
-  const [suggestions, setSuggestions] = useState([]);
 useEffect(() => {
   const delayDebounce = setTimeout(() => {
     if (location.length > 1 && !locationSelected) {   // ✅ Only when not selected
@@ -65,7 +102,6 @@ useEffect(() => {
 }, [location, dummyLocations, locationSelected]);
 
 
-  // Close when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -79,12 +115,18 @@ useEffect(() => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-const handleSelect = (place) => {
-  setLocation(place);
-  setLocationSelected(true);    // Mark as selected
-  setSuggestions([]);           // ✅ Clear suggestions
+  const handleSelect = (place) => {
+    console.log(place,'place');
+    
+    setLocation(place.label || place || '');
+    dispatch(setSelectedLocation(place));
+    setShowDropdown(false);
+    setLocationSelected(true);  
+      setSuggestions([]);           // ✅ Clear suggestions
   setActiveDropdown(null);      // ✅ Close dropdown
 };
+  
+
 
 
   const totalTravelers = adults + children + infants;
@@ -133,9 +175,10 @@ const handleSelect = (place) => {
   }}
                   
                onFocus={() => {
-    if (!locationSelected) { // NEW: sirf tab khole jab selected nahi hai
+    if (!locationSelected) {
       setActiveDropdown("location");
-    }}}
+    }
+  }}
                   placeholder={
                     isMobile
                       ? t("locationPlaceholderMobile")
@@ -349,6 +392,7 @@ const handleSelect = (place) => {
       </div>
     </div>
   );
-};
 
+
+};
 export default SearchBar;
