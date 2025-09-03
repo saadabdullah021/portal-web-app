@@ -53,7 +53,7 @@ export default function OtpVerificationPopup() {
     <>
     
       <HomeContent/>
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
+    <div className="flex justify-center items-center  bg-gray-100">
       {popups.otpVerification && (
         <div
           className="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
