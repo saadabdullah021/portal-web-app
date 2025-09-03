@@ -78,7 +78,7 @@ const menuItems = [
         md:fixed-none 
         md:w-74 md:h-88 md:rounded-3xl
         overflow-y-auto md:absolute lg:absolute
-        ${i18n.language === "ar" ? "md:top-16 md:left-2 lg:-right-58 xl:-right-52 lg:top-16" : " md:top-14 md10 lg:-left-60 xl:-left-52  lg:top-16 "}
+        ${i18n.language === "ar" ? "md:top-16 md:left-6 lg:-right-70 xl:-right-56 2xl:-right-70 lg:top-16" : " md:top-16 md:-left-70 lg:-left-62 xl:-left-55 2xl:-left-72  lg:top-16 "}
       `}
     >
       <div className="px-2">

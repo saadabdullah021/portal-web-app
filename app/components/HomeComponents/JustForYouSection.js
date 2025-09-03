@@ -147,7 +147,7 @@ const JustForYouSection = ({ items }) => {
   ); };
 
   return (
-    <section className="py-16 px-4 sm:px-6 lg:px-8 lg:pb-36 lg:pt-44 max-w-7xl mx-auto">
+    <section className=" px-4 sm:px-6 lg:px-8  max-w-7xl mx-auto">
       {/* Section Heading */}
       <div className="mb-12">
         <h2 className="heading mb-4">

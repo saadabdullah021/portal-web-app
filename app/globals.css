@@ -154,3 +154,232 @@ body {
 
 
 
+/* 🔥 Travelers popup smooth animation */
+.travelers-enter {
+  opacity: 0;
+  transform: translateY(-8px) scale(0.95);
+}
+
+.travelers-enter-active {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.travelers-exit {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.travelers-exit-active {
+  opacity: 0;
+  transform: translateY(-8px) scale(0.95);
+  transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+
+
+/* Complete Beautiful Loader */
+.ch-loading-spinner-wrapper {
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: transparent;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.ch-loading-spinner {
+  position: relative;
+  width: 80px;   
+  height: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Logo center with enhanced styling */
+.ch-loading-spinner::before {
+  content: "";
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  background: url('/portal-logo.svg') no-repeat center center;
+  background-size: contain;
+  z-index: 2;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+}
+
+/* Spinning ring around logo */
+.ch-loading-spinner::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border: 3px solid transparent;
+  border-top: 3px solid #4CAF50;
+  border-right: 3px solid #FF6B6B;
+  border-radius: 50%;
+  animation: spin 1.5s linear infinite;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Floating particles with better positioning */
+.ch-loading-spinner > span {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: linear-gradient(45deg, #4CAF50, #FF6B6B);
+  opacity: 0;
+  animation: float 2.5s ease-in-out infinite;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.ch-loading-spinner > span:nth-child(1) {
+  top: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  animation-delay: 0s;
+}
+
+.ch-loading-spinner > span:nth-child(2) {
+  top: 50%;
+  right: -5px;
+  transform: translateY(-50%);
+  animation-delay: 0.4s;
+}
+
+.ch-loading-spinner > span:nth-child(3) {
+  bottom: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  animation-delay: 0.8s;
+}
+
+.ch-loading-spinner > span:nth-child(4) {
+  top: 50%;
+  left: -5px;
+  transform: translateY(-50%);
+  animation-delay: 1.2s;
+}
+
+.ch-loading-spinner > span:nth-child(5) {
+  top: 15%;
+  right: 15%;
+  animation-delay: 0.2s;
+}
+
+.ch-loading-spinner > span:nth-child(6) {
+  bottom: 15%;
+  right: 15%;
+  animation-delay: 0.6s;
+}
+
+.ch-loading-spinner > span:nth-child(7) {
+  bottom: 15%;
+  left: 15%;
+  animation-delay: 1s;
+}
+
+.ch-loading-spinner > span:nth-child(8) {
+  top: 15%;
+  left: 15%;
+  animation-delay: 1.4s;
+}
+
+/* Loading text */
+.loading-text {
+  position: absolute;
+  bottom: -50px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 2px;
+  animation: fadeInOut 2s ease-in-out infinite;
+}
+
+/* Enhanced Animations */
+@keyframes spin {
+  0% { 
+    transform: rotate(0deg);
+  }
+  100% { 
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes float {
+  0%, 100% { 
+    transform: scale(0) translateY(0);
+    opacity: 0;
+  }
+  20% { 
+    opacity: 1;
+    transform: scale(1) translateY(-20px);
+  }
+  50% { 
+    opacity: 0.6;
+    transform: scale(0.8) translateY(-40px);
+  }
+  80% {
+    opacity: 0.3;
+    transform: scale(0.4) translateY(-60px);
+  }
+}
+
+@keyframes fadeInOut {
+  0%, 100% { 
+    opacity: 0.5;
+  }
+  50% { 
+    opacity: 1;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .ch-loading-spinner {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .ch-loading-spinner::before {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .loading-text {
+    font-size: 12px;
+    bottom: -40px;
+  }
+}
+
+/* Additional enhancement - Glowing effect */
+.ch-loading-spinner-wrapper::before {
+  content: "";
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: glow 3s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+  0% { 
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  100% { 
+    opacity: 0.6;
+    transform: scale(1.2);
+  }
+}

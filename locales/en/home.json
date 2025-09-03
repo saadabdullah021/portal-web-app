@@ -132,6 +132,12 @@
     "quick_links": "Quick Links",
     "payment_method": "Payment Methods"
 
+  },
+    "auth_navbar": {
+    "help_center": "Help Center",
+    "become_host": "Become a Host",
+    "become_host_desc": "Share your space and start earning.",
+    "login_signup": "Login / Sign Up"
   }
 
 

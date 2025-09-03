@@ -126,9 +126,9 @@ const LastMinuteDealsSection = ({ items }) => {
     const hasDiscount = listing.discounted_price && String(listing.discounted_price) !== '0';
     const imageSrc = first?.thumbnail_url || placeholderImage;
     return (
-    <div className="bg-white rounded-2xl overflow-hidden shadow-sm  transition-all duration-300 transform  flex-shrink-0 w-full md:w-auto group">
-      <div className="relative">
-        <div className="aspect-[4/3] bg-gradient-to-br from-amber-100 to-orange-200 relative overflow-hidden">
+    <div className="bg-white -z-10  rounded-2xl overflow-hidden shadow-sm  transition-all duration-300 transform  flex-shrink-0 w-full md:w-auto group">
+      <div className="relative ">
+        <div className="aspect-[4/3] bg-gradient-to-br from-amber-100 to-orange-200   relative overflow-hidden">
           <Image
             src={imageSrc}
             alt={listing.title}
@@ -186,7 +186,7 @@ const LastMinuteDealsSection = ({ items }) => {
   ); };
 
   return (
-    <section className="pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+    <section className=" px-4 sm:px-6 lg:px-8  max-w-7xl mx-auto">
       <div className="flex items-start justify-between mb-12">
         <div>
           <h2 className="heading mb-4">

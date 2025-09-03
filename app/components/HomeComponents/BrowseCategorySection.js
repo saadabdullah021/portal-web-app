@@ -161,14 +161,14 @@ const BrowseCategorySection = () => {
                   className="flex-shrink-0 px-2 sm:px-3"
                   style={{ width: `${100 / itemsPerView}%` }}
                 >
-                  <div className="bg-white rounded-3xl p-8 shadow-sm hover:shadow-md transition-shadow duration-200 cursor-pointer group">
+                  <div className="bg-white rounded-3xl  min-h-[350px] p-8 shadow-sm  transition-shadow duration-200 cursor-pointer group">
                     {/* Count Badge */}
                     <div className="inline-flex items-center justify-center bg-[#E6E8EC] text-[#23262F] text-xs font-bold font-poppins uppercase px-4 py-2 rounded-[32px] mb-4 sm:mb-6">
                       {category.count}
                     </div>
 
                     {/* Icon */}
-                    <div className="flex items-center justify-center w-8 h-8 mt-12">
+                    <div className="flex items-center justify-center w-8 h-8 mt-2">
                       <IconComponent className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-[#23262F]" />
                     </div>
 
