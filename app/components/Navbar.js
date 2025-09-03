@@ -32,6 +32,9 @@ const Navbar = () => {
   const changeLanguage = (lng) => {
     i18n.changeLanguage(lng);
     document.dir = lng === "ar" ? "rtl" : "ltr";
+    try {
+      localStorage.setItem('i18nextLng', lng);
+    } catch {}
                  // 👈 ye re-render force karega
   setActiveDropdown(null); // 👈 menu close
   };
