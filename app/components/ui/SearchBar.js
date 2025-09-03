@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import DateInput from './DateInput';
 
 const SearchBar = ({ onSearch }) => {
-  const { t } = useTranslation('hero');
+  const { t, i18n } = useTranslation('hero');
   const dispatch = useDispatch();
   const [location, setLocation] = useState('');
   const [checkIn, setCheckIn] = useState('');
@@ -82,7 +82,6 @@ const [locationSelected, setLocationSelected] = useState(false);
   }, []);
 
   // Debounced filter for location
-  const [suggestions, setSuggestions] = useState([]);
 useEffect(() => {
   const delayDebounce = setTimeout(() => {
     if (location.length > 1 && !locationSelected) {   // ✅ Only when not selected
@@ -119,14 +118,14 @@ useEffect(() => {
   const handleSelect = (place) => {
     console.log(place,'place');
     
-    setLocation(place.label || '');
+    setLocation(place.label || place || '');
     dispatch(setSelectedLocation(place));
     setShowDropdown(false);
     setLocationSelected(true);  
       setSuggestions([]);           // ✅ Clear suggestions
   setActiveDropdown(null);      // ✅ Close dropdown
 };
-  };
+  
 
 
 
@@ -176,9 +175,10 @@ useEffect(() => {
   }}
                   
                onFocus={() => {
-    if (!locationSelected) { // NEW: sirf tab khole jab selected nahi hai
+    if (!locationSelected) {
       setActiveDropdown("location");
-    }}}
+    }
+  }}
                   placeholder={
                     isMobile
                       ? t("locationPlaceholderMobile")
@@ -392,6 +392,7 @@ useEffect(() => {
       </div>
     </div>
   );
-};
 
+
+};
 export default SearchBar;

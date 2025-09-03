@@ -1,9 +1,5 @@
 'use client';
-<<<<<<< HEAD
-import React, { useState, useEffect } from 'react';
-=======
 import React, { useState, useEffect, useRef } from 'react';
->>>>>>> 909d62e8f96a5a97a243ba4955fc2b32602ef009
 import * as Icons from 'lucide-react';
 import { MoveLeft, MoveRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -52,8 +48,6 @@ const BrowseCategorySection = () => {
     return () => window.removeEventListener('resize', checkIsMobile);
   }, []);
 
-<<<<<<< HEAD
-=======
   // ✅ Items per view
   const itemsPerView = isMobile ? 1 : 4;
 
@@ -82,7 +76,6 @@ const BrowseCategorySection = () => {
   };
 
   // ✅ Auto-play with infinite loop
->>>>>>> 909d62e8f96a5a97a243ba4955fc2b32602ef009
   useEffect(() => {
     if (isAutoPlaying) {
       const interval = setInterval(() => {
@@ -95,14 +88,7 @@ const BrowseCategorySection = () => {
     }
   }, [isAutoPlaying, isTransitioning]);
 
-<<<<<<< HEAD
-  const itemsPerView = isMobile ? 1 : 4;
-  const maxSlide = categories.length - itemsPerView;
-
-  // 
-=======
   // ✅ Next Slide
->>>>>>> 909d62e8f96a5a97a243ba4955fc2b32602ef009
   const nextSlide = () => {
     if (isTransitioning) return;
     setIsTransitioning(true);
