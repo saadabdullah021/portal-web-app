@@ -46,6 +46,7 @@ const renderedSections = useMemo(() => {
           <JustForYouSection
             key={`grid-${section.component_id || idx}`}
             items={section.items}
+            sectionData={section}
           />
         );
       }
@@ -55,6 +56,7 @@ const renderedSections = useMemo(() => {
       ) {
         Comp = (
           <LastMinuteDealsSection
+            data={section}
             key={`slider-${section.component_id || idx}`}
             items={section.items}
           />
