@@ -5,7 +5,7 @@ import justForYou from '../../../public/images/justforyou.png';
 import { useTranslation } from 'react-i18next';
 import Image from 'next/image';
 
-const LastMinuteDealsSection = ({ items }) => {
+const LastMinuteDealsSection = ({ items , data }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -19,6 +19,7 @@ const LastMinuteDealsSection = ({ items }) => {
     listing: {
       listing_id: i + 1,
       thumbnails: [{ thumbnail_url: placeholderImage.src }],
+      added_by_super_host: 1,
       rating: 4.8,
       reviews: 12,
       title: "Lorem ipsum dolor imit con dolor lorem avec",
@@ -63,7 +64,7 @@ const LastMinuteDealsSection = ({ items }) => {
     period: "night",
   }));
 
-  const data = Array.isArray(items) && items.length > 0 ? items : originalProperties;
+  const computedData = Array.isArray(items) && items.length > 0 ? items : originalProperties;
 
   useEffect(() => {
     const checkIsMobile = () => {
@@ -80,9 +81,9 @@ const LastMinuteDealsSection = ({ items }) => {
   
   // ✅ Clone properties for infinite loop
   const properties = [
-    ...data.slice(-itemsPerView),
-    ...data,
-    ...data.slice(0, itemsPerView),
+    ...computedData.slice(-itemsPerView),
+    ...computedData,
+    ...computedData.slice(0, itemsPerView),
   ];
 
   // ✅ Start from first real slide (after cloned items)
@@ -96,10 +97,10 @@ const LastMinuteDealsSection = ({ items }) => {
     
     // If we're at the beginning clones, jump to real beginning
     if (currentSlide === 0) {
-      setCurrentSlide(data.length);
+      setCurrentSlide(computedData.length);
     }
     // If we're at the end clones, jump to real start
-    else if (currentSlide >= data.length + itemsPerView) {
+    else if (currentSlide >= computedData.length + itemsPerView) {
       setCurrentSlide(itemsPerView);
     }
   };
@@ -125,6 +126,8 @@ const LastMinuteDealsSection = ({ items }) => {
     const [first] = Array.isArray(listing.thumbnails) ? listing.thumbnails : [];
     const hasDiscount = listing.discounted_price && String(listing.discounted_price) !== '0';
     const imageSrc = first?.thumbnail_url || placeholderImage;
+    console.log(property);
+    
     return (
     <div className="bg-white -z-10  rounded-2xl overflow-hidden shadow-sm  transition-all duration-300 transform  flex-shrink-0 w-full md:w-auto group">
       <div className="relative ">
@@ -139,10 +142,18 @@ const LastMinuteDealsSection = ({ items }) => {
           />
           <div className="absolute inset-0 bg-gradient-to-br from-amber-100 via-orange-200 to-amber-300 hidden"></div>
         </div>
-        <div className="absolute top-4 left-4">
-          <span className="bg-[#58C27D] text-white text-xs font-poppins font-bold px-3 py-2 rounded ">
-            {property.discount}
-          </span>
+        <div className="absolute top-4 left-4 right-4 flex items-center justify-between">
+         
+          {listing.added_by_super_host ? (
+            <span className="bg-[#FCFCFD] font-poppins text-[#23262F] text-xs font-bold p-2 rounded">
+              SUPERHOST
+            </span>
+          ) : null}
+           {hasDiscount && (
+            <span className="bg-[#58C27D] text-white text-xs font-poppins font-bold px-3 py-2 rounded">
+              {hasDiscount ? listing.discount : ''}
+            </span>
+          )}
         </div>
       </div>
 
@@ -150,8 +161,8 @@ const LastMinuteDealsSection = ({ items }) => {
         {/* Rating */}
         <div className="flex items-center gap-2 mb-3">
           <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-          <span className="font-semibold text-sm text-gray-900">{property.rating}</span>
-          <span className="text-gray-500 text-sm">({property.reviews} reviews)</span>
+          <span className="font-semibold text-sm text-gray-900">{listing.rating}</span>
+          <span className="text-gray-500 text-sm">({listing.reviews} reviews)</span>
         </div>
 
         {/* Title */}
@@ -172,7 +183,7 @@ const LastMinuteDealsSection = ({ items }) => {
         {/* Pricing */}
         <div className="flex items-center gap-2">
           {hasDiscount && (
-            <span className="text-sm font-bold font-poppins text-red-500 line-through">
+            <span className="text-sm font-bold font-poppins text-[#B1B5C3] line-through">
               {listing.actual_price}
             </span>
           )}
@@ -185,15 +196,20 @@ const LastMinuteDealsSection = ({ items }) => {
     </div>
   ); };
 
+  console.log(data);
+  
   return (
     <section className=" px-4 sm:px-6 lg:px-8  max-w-7xl mx-auto">
       <div className="flex items-start justify-between mb-12">
         <div>
           <h2 className="heading mb-4">
-            {t('lastMinuteDeals.title')}
+            {/* {t('lastMinuteDeals.title')} */}
+            {data.component_title}
           </h2>
           <p className="text-[#777E90] text-lg lg:text-2xl">
-            {t('lastMinuteDeals.subtitle')}
+            {/* {t('lastMinuteDeals.subtitle')}
+             */}
+             {data.component_description}
           </p>
         </div>
 
