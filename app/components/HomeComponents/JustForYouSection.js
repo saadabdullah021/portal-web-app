@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import Image from "next/image";
 import justForYou from '../../../public/images/justforyou.png';
 
-const JustForYouSection = ({ items }) => {
+const JustForYouSection = ({ items, sectionData  }) => {
   const { t, i18n } = useTranslation("home");
   const isRTL = i18n.language === "ar";
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -131,7 +131,7 @@ const JustForYouSection = ({ items }) => {
         {/* Price */}
         <div className="flex items-baseline gap-2">
           {hasDiscount && (
-            <span className="text-sm font-bold font-poppins text-red-500 line-through">
+            <span className="text-sm font-bold font-poppins text-[#B1B5C3] line-through">
               {listing.actual_price}
             </span>
           )}
@@ -151,10 +151,15 @@ const JustForYouSection = ({ items }) => {
       {/* Section Heading */}
       <div className="mb-12">
         <h2 className="heading mb-4">
-          {t('justForYou.title')}
+          {/* {t('justForYou.title')}
+           */}
+                       {sectionData.component_title}
+
         </h2>
         <p className="text-[#777E90] text-lg lg:text-2xl font-normal">
           {t('justForYou.subtitle')}
+                      {sectionData.component_description}
+
         </p>
       </div>
 
