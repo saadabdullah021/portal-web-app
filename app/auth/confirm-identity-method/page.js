@@ -29,7 +29,7 @@ export default function ConfirmIdentityPopup() {
     <div className="flex justify-center items-center  bg-gray-100">
       {popups.confirmIdentity && (
         <div
-          className="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
+          className="fixed inset-0 bg-black/40 flex items-center  justify-center z-50"
           onClick={handleClosePopup}
         >
           {/* Modal Container */}

@@ -73,9 +73,9 @@ const renderedSections = useMemo(() => {
         <div
           key={section.component_id || idx}
           className={`
-            ${isFirst ? "pt-20  lg:pt-32 pb-0" : ""}
-            ${isLast ? "lg:pt-32 pt-20 pb-20 lg:pb-32" : ""}
-            ${!isFirst && !isLast ? "lg:pt-32 pt-20 pb-0" : ""}
+            ${isFirst ? "pt-8  lg:pt-16 pb-0" : ""}
+            ${isLast ? "lg:pt-16 pt-8 pb-8 lg:pb-16" : ""}
+            ${!isFirst && !isLast ? "lg:pt-16 pt-8 pb-0" : ""}
           `}
         >
           {Comp}

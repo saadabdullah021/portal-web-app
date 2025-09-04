@@ -74,7 +74,7 @@ const PhoneInput = ({
             <button 
                 onClick={onSubmit}
                 disabled={disabled || loading}
-                className="flex-shrink-0 w-5 h-5 bg-blue-600 text-white rounded-full flex items-center justify-center hover:bg-blue-700 transition-colors disabled:opacity-50 ml-2 cursor-pointer"
+                className="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center hover:bg-blue-700 transition-colors disabled:opacity-50 ml-2 cursor-pointer"
             >
                 {loading ? (
                     <svg className="animate-spin" width="10" height="10" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -82,9 +82,9 @@ const PhoneInput = ({
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
                     </svg>
                 ) : (
-                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
+<svg width="14" height="8" viewBox="0 0 14 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fillRule="evenodd" clip-rule="evenodd" d="M9.09094 0.26716C9.49676 -0.107446 10.1294 -0.0821431 10.504 0.323675L13.7348 3.82364C14.0884 4.2067 14.0884 4.79713 13.7348 5.1802L10.504 8.68024C10.1294 9.08606 9.49677 9.11137 9.09095 8.73677C8.68513 8.36217 8.65982 7.72951 9.03442 7.32368L10.716 5.50192L0.999999 5.50192C0.447714 5.50192 -7.64154e-07 5.0542 -7.86799e-07 4.50192C-8.09444e-07 3.94964 0.447714 3.50192 0.999999 3.50192L10.716 3.50192L9.03443 1.68024C8.65982 1.27443 8.68513 0.641767 9.09094 0.26716Z" fill="#FCFCFD"/>
+</svg>
                 )}
             </button>
         </div>

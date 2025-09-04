@@ -6,7 +6,7 @@ import Image from "next/image";
 import { useTranslation } from "react-i18next";
 
 const HowItWorks = () => {
-  const { t } = useTranslation("home");
+  const { t,i18n } = useTranslation("home");
   return (
     <section className="relative w-full pt-12 pb-20 bg-white">
       {/* Heading */}
@@ -20,7 +20,9 @@ const HowItWorks = () => {
       </div>
 
       {/* Steps + CSS dotted connector */}
-      <div className="relative flex flex-col lg:flex-row lg:items-start md:items-center justify-center gap-12 md:gap-24">
+      <div className={`relative flex flex-col lg:flex-row lg:items-start md:items-center justify-center gap-12 
+         ${i18n.language === "ar" ?"md:gap-48 ":"md:gap-24"}
+        `}>
 
         <div className="hidden lg:block wave-line">
           <svg viewBox="0 0 1000 200" preserveAspectRatio="none">

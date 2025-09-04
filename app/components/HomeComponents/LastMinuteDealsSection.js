@@ -189,7 +189,7 @@ const LastMinuteDealsSection = ({ items , data }) => {
           )}
           <div className="flex items-baseline gap-1">
             <span className="text-sm font-bold font-poppins text-[#58C27D]">{hasDiscount ? listing.discounted_price : listing.actual_price}</span>
-            <span className="text-[#777E90] font-medium font-poppins text-xs">/ night</span>
+            <span className="text-[#777E90] font-medium font-poppins text-xs">/ {t('lastMinuteDeals.night')} </span>
           </div>
         </div>
       </div>
@@ -202,11 +202,11 @@ const LastMinuteDealsSection = ({ items , data }) => {
     <section className=" px-4 sm:px-6 lg:px-8  max-w-7xl mx-auto">
       <div className="flex items-start justify-between mb-12">
         <div>
-          <h2 className="heading mb-4">
+          <h2 className="heading mb-2">
             {/* {t('lastMinuteDeals.title')} */}
             {data.component_title}
           </h2>
-          <p className="text-[#777E90] text-lg lg:text-2xl">
+          <p className="text-[#777E90] text-[10px] lg:text-[15px]">
             {/* {t('lastMinuteDeals.subtitle')}
              */}
              {data.component_description}

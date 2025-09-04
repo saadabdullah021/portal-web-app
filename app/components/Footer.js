@@ -49,7 +49,9 @@ export default function Footer() {
         </div>
 
         {/* Quick Links */}
-        <div className="lg:ml-24">
+        <div className={`
+            ${i18n.language === "ar" ? " lg:mr-12  " : " lg:ml-24 "}
+          `}>
           <h4 className="font-semibold mb-6 relative inline-block">
             {t("footer.quick_links")}
             <span className="block h-0.5 w-full bg-[#0365ef] mt-1"></span>
@@ -74,35 +76,36 @@ export default function Footer() {
         </div>
 
         {/* Contact */}
-        <div className="lg:ml-8">
+        <div className={`
+            ${i18n.language === "ar" ? " lg:ml-0  " : " lg:ml-8 "}`}>
           <h4 className="font-semibold mb-6 relative inline-block">
             {t("footer.contact")}
             <span className="block h-0.5 w-full bg-[#0365ef] mt-1"></span>
           </h4>
-          <div className="flex items-center gap-3 pb-3">
-            <span className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 hover:bg-[#14189c] text-[#0365ef] hover:text-white transition">
+<div className="flex items-center gap-3 pb-3">
+  <span className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 hover:bg-[#14189c] text-[#0365ef] hover:text-white transition">
+    <Phone className="w-4.5 h-4.5 text-current" />
+  </span>
+  <a
+    href="tel:+966111110000"
+    className="text-sm hover:text-[#0365ef] text-[#777E90] font-medium transition"
+  >
+    +966 111110000
+  </a>
+</div>
 
-            <Phone className="w-4.5 h-4.5 text-[#0365ef] hover:text-white" />
-            </span>
-            <a
-              href="tel:+966111110000"
-              className="text-sm hover:text-[#0365ef] text-[#777E90] font-medium transition"
-            >
-              +966 111110000
-            </a>
-          </div>
-          <div className="flex items-center gap-3 ">
-            <span className="w-10 h-10 flex items-center justify-center rounded-full  bg-gray-100 hover:bg-[#14189c] text-[#0365ef] hover:text-white transition">
+<div className="flex items-center gap-3">
+  <span className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 hover:bg-[#14189c] text-[#0365ef] hover:text-white transition">
+    <Mail className="w-4.5 h-4.5 text-current" />
+  </span>
+  <a
+    href="mailto:info@portal.com.sa"
+    className="text-sm hover:text-[#0365ef] text-[#777E90] font-medium transition"
+  >
+    info@portal.com.sa
+  </a>
+</div>
 
-            <Mail className="w-4.5 h-4.5 text-[#0365ef]  hover:text-white " />
-            </span>
-            <a
-              href="mailto:info@portal.com.sa"
-              className="text-sm hover:text-[#0365ef] text-[#777E90] font-medium transition"
-            >
-              info@portal.com.sa
-            </a>
-          </div>
         </div>
 
         {/* Payment Methods & Social */}

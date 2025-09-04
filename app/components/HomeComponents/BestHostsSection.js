@@ -185,7 +185,7 @@ const BestHostsSection = () => {
       {/* Header */}
       <div className="flex items-start justify-between mb-12">
         <div className="flex flex-col md:flex md:flex-row items-start lg:items-center gap-4">
-          <h2 className="heading">{t('besthost.title')}</h2>
+          <h2 className="text-4xl font-bold md:text-5xl font-dm-sans">{t('besthost.title')}</h2>
           <div className="relative inline-block text-left">
             {/* Trigger */}
             <div
