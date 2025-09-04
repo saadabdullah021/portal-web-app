@@ -139,7 +139,7 @@ const JustForYouSection = ({ items, sectionData  }) => {
             <span className="text-lg font-semibold font-poppins text-gray-900">
               {hasDiscount ? listing.discounted_price : listing.actual_price}
             </span>
-            <span className="text-[#777E90] text-sm">/ night</span>
+            <span className="text-[#777E90] text-sm">/ {t('lastMinuteDeals.night')}</span>
           </div>
         </div>
       </div>
@@ -150,13 +150,13 @@ const JustForYouSection = ({ items, sectionData  }) => {
     <section className=" px-4 sm:px-6 lg:px-8  max-w-7xl mx-auto">
       {/* Section Heading */}
       <div className="mb-12">
-        <h2 className="heading mb-4">
+        <h2 className="heading mb-2">
           {/* {t('justForYou.title')}
            */}
                        {sectionData.component_title}
 
         </h2>
-        <p className="text-[#777E90] text-lg lg:text-2xl font-normal">
+        <p className="text-[#777E90] text-[10px] lg:text-[15px] font-normal">
           {t('justForYou.subtitle')}
                       {sectionData.component_description}
 

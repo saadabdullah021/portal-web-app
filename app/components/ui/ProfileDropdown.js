@@ -92,7 +92,9 @@ const menuItems = [
               className="flex items-center space-x-3  pr-3 pl-5 font-bold font-dm-sans py-[15px] text-sm text-[#777E90] hover:bg-gray-50 rounded-md transition-colors duration-200"
             >
               {item.icon}
-              <span className="space-y-12">{item.label}</span>
+              <span className={`space-y-12
+                        ${i18n.language === "ar" ?" mr-2":" mr-0 "}
+                `}>{item.label}</span>
             </a>
           )
         )}

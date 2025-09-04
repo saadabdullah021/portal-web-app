@@ -7,7 +7,9 @@
     "support": "Support",
     "login": "Login",
     "language": "Language",
-    "signup": "Sign Up"
+    "signup": "Sign Up",
+    "English":"English",
+    "Arabic":"Arabic"
   },
 
   "buttons": {
@@ -29,7 +31,8 @@
     "where": "Where are you going?",
     "checkin": "Check-in",
     "checkout": "Check-out",
-    "guests": "Guests"
+    "guests": "Guests",
+    "Add_date":"Add date"
   },
   "messages": {
     "loading": "Loading...",
@@ -44,7 +47,8 @@
   "lastMinuteDeals": {
     "title": "Last Minute Deals",
     "subtitle": "Grab these exclusive offers before they're gone!",
-    "view_all": "View All Deals"
+    "view_all": "View All Deals",
+    "night":"night"
   },
   "nationalDayDeals": {
     "title": "National Day Specials",

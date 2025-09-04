@@ -108,7 +108,7 @@ const PromotionalVideoSection = () => {
             <p className="text-xs sm:text-sm font-medium text-gray-500 uppercase tracking-wider mb-2">
               {t('promotionalvideo.subtitle')}
             </p>
-            <h2 className="heading leading-tight">
+            <h2 className="text-4xl md:text-5xl font-dm-sans font-bold text-[#23262F] leading-tight">
               {t('promotionalvideo.title')}
             </h2>
           </div>

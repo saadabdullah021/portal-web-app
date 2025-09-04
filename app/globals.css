@@ -44,14 +44,14 @@ body {
   letter-spacing: 2%;
   max-width: 600px;
   
-  font-size: 48px;
+  font-size: 30px;
   line-height: 56px;
 }
 
 /* Tablet screens (<=1024px) */
 @media (max-width: 1024px) {
   .heading {
-    font-size: 40px;
+    font-size: 25px;
     line-height: 48px;
   }
 }
@@ -59,7 +59,36 @@ body {
 /* Mobile screens (<=640px) */
 @media (max-width: 640px) {
   .heading {
-    font-size: 40px;
+    font-size: 20px;
+    line-height: 48px;
+  }
+}
+
+
+
+.heading-center {
+  font-family: var(--font-dm-sans);
+  font-weight: 700;
+  color: var(--text-color, #23262F); 
+  letter-spacing: 2%;
+  
+  text-align: center;
+  font-size: 30px;
+  line-height: 56px;
+}
+
+/* Tablet screens (<=1024px) */
+@media (max-width: 1024px) {
+  .heading-center {
+    font-size: 25px;
+    line-height: 48px;
+  }
+}
+
+/* Mobile screens (<=640px) */
+@media (max-width: 640px) {
+  .heading-center {
+    font-size: 20px;
     line-height: 48px;
   }
 }

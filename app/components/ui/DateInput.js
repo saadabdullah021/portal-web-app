@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 
 const DateInput = ({ label, value, onChange, isCheckout = false, checkInDate = null, onCheckInChange = null }) => {
-  const { i18n } = useTranslation();
+  const { t,i18n } = useTranslation("home");
   const [isOpen, setIsOpen] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [checkInSelection, setCheckInSelection] = useState(checkInDate ? new Date(checkInDate) : null);
@@ -104,10 +104,13 @@ const DateInput = ({ label, value, onChange, isCheckout = false, checkInDate = n
     return date < today;
   };
 
-  const formatDisplayDate = (date) => {
-    if (!date) return "Add date";
-    return date.toLocaleDateString('en-GB');
-  };
+const formatDisplayDate = (date) => {
+  if (!date) return t("search.Add_date"); 
+  return date.toLocaleDateString(
+    i18n.language === "ar" ? "ar-EG" : "en-GB" 
+  );
+};
+
 
   const getSelectedDate = () => {
     if (isCheckout) {
@@ -175,11 +178,11 @@ const DateInput = ({ label, value, onChange, isCheckout = false, checkInDate = n
   };
 
   return (
-    <div className="flex items-start space-x-2 mt-1 relative" ref={calendarRef}
+    <div className="flex items-start space-x-2 mt-1   relative" ref={calendarRef}
               onClick={() => setIsOpen(!isOpen)}
     >
       {/* Calendar Icon */}
-      <svg width="24" height="24" className="mt-2 lg:mt-3" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg width="24" height="24" className="mt-2 lg:mt-3 " viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path fillRule="evenodd" clipRule="evenodd" d="M19 6H5C4.44772 6 4 6.44772 4 7V19C4 19.5523 4.44772 20 5 20H19C19.5523 20 20 19.5523 20 19V7C20 6.44771 19.5523 6 19 6ZM5 4C3.34315 4 2 5.34315 2 7V19C2 20.6569 3.34315 22 5 22H19C20.6569 22 22 20.6569 22 19V7C22 5.34315 20.6569 4 19 4H5Z" fill="#B1B5C4"/>
         <path fillRule="evenodd" clipRule="evenodd" d="M10 12C9.44772 12 9 12.4477 9 13C9 13.5523 9.44772 14 10 14H17C17.5523 14 18 13.5523 18 13C18 12.4477 17.5523 12 17 12H10ZM7 16C6.44772 16 6 16.4477 6 17C6 17.5523 6.44772 18 7 18H13C13.5523 18 14 17.5523 14 17C14 16.4477 13.5523 16 13 16H7Z" fill="#B1B5C4"/>
         <path fillRule="evenodd" clipRule="evenodd" d="M7 2C6.44772 2 6 2.44772 6 3V7C6 7.55228 6.44772 8 7 8C7.55228 8 8 7.55228 8 7V3C8 2.44772 7.55228 2 7 2ZM17 2C16.4477 2 16 2.44772 16 3V7C16 7.55228 16.4477 8 17 8C17.5523 8 18 7.55228 18 7V3C18 2.44772 17.5523 2 17 2Z" fill="#B1B5C4"/>
@@ -187,7 +190,9 @@ const DateInput = ({ label, value, onChange, isCheckout = false, checkInDate = n
 
       {/* Input Field */}
       <div className="flex flex-col w-full">
-        <label className="text-[16px]  font-medium lg:text-[24px] lg:text-[#23262F] lg:font-semibold pl-2 pt-2 mb-1">
+        <label className={`text-[16px]   font-medium lg:text-[24px] lg:text-[#23262F] lg:font-semibold pl-2 pt-2 mb-1
+            ${i18n.language === "ar" ?"pr-3 lg:pr-2":"pr-0 "}
+          `}>
           {label}
         </label>
         

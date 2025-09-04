@@ -20,6 +20,8 @@ const Navbar = ({ isAuthenticated }) => {
   const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+  const [selectedLabel, setSelectedLabel] = useState("Language");
+
 
   // ✅ Outside click handler
   useEffect(() => {
@@ -32,14 +34,19 @@ const Navbar = ({ isAuthenticated }) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const changeLanguage = (lng) => {
-    i18n.changeLanguage(lng);
-    document.dir = lng === "ar" ? "rtl" : "ltr";
-    try {
-      localStorage.setItem("i18nextLng", lng);
-    } catch { }
-    setActiveDropdown(null);
-  };
+const changeLanguage = (lng) => {
+  i18n.changeLanguage(lng);
+  document.dir = lng === "ar" ? "rtl" : "ltr";
+  try {
+    localStorage.setItem("i18nextLng", lng);
+  } catch {}
+
+  const lang = languageOptions.find(lang => lang.code === lng);
+  setSelectedLabel(lang ? lang.label : "Language"); // ✅ update label dynamically
+
+  setActiveDropdown(null);
+};
+
 
   const handleSignupClick = () => {
     toggleMenu();
@@ -55,9 +62,6 @@ const Navbar = ({ isAuthenticated }) => {
     { code: 'ar', label: 'Arabic', country: 'Saudi Arabia' }
   ];
 
-  const getCurrentLanguage = () => {
-    return languageOptions.find(lang => lang.code === i18n.language) || languageOptions[0];
-  };
 
   return (
     <nav className="bg-white shadow-lg border-b border-gray-100 sticky top-0 z-50">
@@ -95,30 +99,31 @@ const Navbar = ({ isAuthenticated }) => {
                     activeDropdown === "language" ? null : "language"
                   )
                 }
-                className="flex items-center space-x-1 text-[#777E90] hover:text-blue-800 p-2 rounded-md transition-colors duration-200"
+                className="flex items-center space-x-1 text-[#777E90] hover:text-black p-2 rounded-full bg-gray-100 transition-colors duration-200"
               >
-                <Globe className="h-4 w-4" />
-                <span className="text-sm capitalize font-medium">
-                  {getCurrentLanguage().label}
-                </span>
+                <Globe className="h-4.5 w-4.5" />
+                {/* <span className="text-sm capitalize font-medium">
+                   {selectedLabel}
+
+                </span> */}
                
               </button>
 
               {/* Language Dropdown */}
               {activeDropdown === "language" && (
-                <div className={`absolute top-13 mt-2 w-64 bg-white shadow-xl rounded-[20px] p-3 z-50 border border-gray-100
-                  ${i18n.language === "ar" ? "left-6 md:left-12 lg:-left-20 2xl:-right-18" : "right-2 md:-right-12 lg:-right-8 2xl:-left-62"}
+                <div className={`absolute top-13 mt-2 w-73  bg-white shadow-xl rounded-[20px] p-3 z-50 border border-gray-100
+                  ${i18n.language === "ar" ? "left-6 md:left-6 lg:left-6 2xl:left-8" : "right-0 md:right-6 lg:right-6 2xl:right-10"}
                 `}>
-                  <div className="space-x-3 flex items-center">
+                  <div className="space-x-3 flex justify-center items-center">
                     {languageOptions.map((lang) => (
                       <button
                         key={lang.code}
                         onClick={() => changeLanguage(lang.code)}
-                        className={`w-full text-left px-3 py-1.5 rounded-xl hover:bg-gray-50 transition-colors duration-200 ${
+                        className={`w-full text-left px-3 py-3 rounded-xl hover:bg-gray-50 transition-colors duration-200 ${
                           i18n.language === lang.code ? 'bg-[#F4F5F6] rounded-[8px]' : ''
                         }`}
                       >
-                        <div className="flex flex-col">
+                        <div className="flex flex-col ">
                           <span className="font-semibold text-[#23262F] text-[14px]">
                             {lang.label}
                           </span>
@@ -196,12 +201,12 @@ const Navbar = ({ isAuthenticated }) => {
                         activeDropdown === "menu" ? null : "menu"
                       )
                     }
-                    className="p-2 rounded-md text-[#777E90] hover:text-blue-800 hover:bg-gray-50"
+                    className="p-2 rounded-full bg-gray-100 text-[#777E90] hover:text-black hover:bg-gray-50"
                   >
                     {activeDropdown === "menu" ? (
-                      <X className="h-6 w-6" />
+                      <X className="h-5 w-5" />
                     ) : (
-                      <Menu className="h-6 w-6" />
+                      <Menu className="h-5 w-5" />
                     )}
                   </button>
                   {activeDropdown === "menu" && (
