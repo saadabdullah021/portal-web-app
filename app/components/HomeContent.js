@@ -27,7 +27,7 @@ export default function HomeContent() {
       try {
         const { data } = await axios.get('/get-home-components');
         if (!mounted) return;
-        setHomeComponents(Array.isArray(data?.data) ? data.data : []);
+        setHomeComponents(Array.isArray(data?.data?.records) ? data.data?.records : []);
       } catch {
         setHomeComponents([]);
       }
