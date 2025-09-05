@@ -273,7 +273,7 @@ const SearchBar = ({ onSearch }) => {
               <UserRound color='#B1B5C3' size={24} className='mt-0 lg:mt-2.5' />
               <div className="flex flex-col w-full">
                 <label className={`text-lg lg:text-[24px]  font-semibold pl-2 pt-2 lg:pt-1 mb-1 hidden lg:block
-                    ${i18n.language === "ar" ?"lg:mr-2  ":" "}
+                    ${i18n.language === "ar" ? "lg:mr-2  " : " "}
                   `}>
                   {t('travelers')}
                 </label>
@@ -314,7 +314,9 @@ const SearchBar = ({ onSearch }) => {
                 >
                   <Minus size={16} color='#B1B5C3' className="hover:#3B71FE" />
                 </button>
-                <span className="w-4 text-center text-[16px] font-medium text-[#23262F]">{adults}</span>
+                <span className={`w-4 text-center text-[16px] font-medium text-[#23262F]
+                                         ${i18n.language === "ar" ? " pl-6" : " "}
+                  `}>{adults}</span>
                 <button
                   onClick={() => setAdults(adults + 1)}
                   className="w-6 h-6 flex items-center justify-center border-[2px] border-[#B1B5C3] rounded-full transition-colors duration-200 hover:border-[#3B71FE]"
@@ -336,14 +338,16 @@ const SearchBar = ({ onSearch }) => {
               <div className="flex items-center space-x-3">
                 <button
                   onClick={() => setChildren(Math.max(0, children - 1))}
-                  className="w-6 h-6 border-[2px] border-[#B1B5C3] rounded-full transition-colors duration-200 hover:border-[#3B71FE]"
+                  className="w-6 h-6 border-[2px] flex items-center justify-center border-[#B1B5C3] rounded-full transition-colors duration-200 hover:border-[#3B71FE]"
                 >
                   <Minus size={16} color='#B1B5C3' />
                 </button>
-                <span className="w-4 text-center text-[16px] font-medium text-[#23262F]">{children}</span>
+                <span className={`w-4 text-center text-[16px] font-medium text-[#23262F]
+                     ${i18n.language === "ar" ? " pl-6" : " "}
+                  `}>{children}</span>
                 <button
                   onClick={() => setChildren(children + 1)}
-                  className="w-6 h-6 border-[2px] border-[#B1B5C3] rounded-full transition-colors duration-200 hover:border-[#3B71FE]"
+                  className="w-6 h-6 border-[2px] flex items-center justify-center border-[#B1B5C3] rounded-full transition-colors duration-200 hover:border-[#3B71FE]"
                 >
                   <Plus size={16} color='#B1B5C3' />
                 </button>
@@ -362,14 +366,16 @@ const SearchBar = ({ onSearch }) => {
               <div className="flex items-center space-x-3">
                 <button
                   onClick={() => setInfants(Math.max(0, infants - 1))}
-                  className="w-6 h-6 border-[2px] border-[#B1B5C3] rounded-full transition-colors duration-200 hover:border-[#3B71FE]"
+                  className="w-6 h-6 border-[2px] flex items-center justify-center border-[#B1B5C3] rounded-full transition-colors duration-200 hover:border-[#3B71FE]"
                 >
                   <Minus size={16} color='#B1B5C3' />
                 </button>
-                <span className="w-4 text-center text-[16px] font-medium text-[#23262F]">{infants}</span>
+                <span className={`w-4 text-center text-[16px] font-medium text-[#23262F]
+                     ${i18n.language === "ar" ? " pl-6" : " "}
+                  `}>{infants}</span>
                 <button
                   onClick={() => setInfants(infants + 1)}
-                  className="w-6 h-6 border-[2px] border-[#B1B5C3] rounded-full transition-colors duration-200 hover:border-[#3B71FE]"
+                  className="w-6 h-6 border-[2px] flex items-center justify-center border-[#B1B5C3] rounded-full transition-colors duration-200 hover:border-[#3B71FE]"
                 >
                   <Plus size={16} color='#B1B5C3' />
                 </button>

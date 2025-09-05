@@ -42,7 +42,9 @@
   "justForYou": {
     "title": "Just For You",
     "subtitle": "Discover properties tailored to your preferences",
-    "view_all": "View All"
+    "view_all": "View All",
+    "reviews" :"reviews"
+
   },
   "lastMinuteDeals": {
     "title": "Last Minute Deals",

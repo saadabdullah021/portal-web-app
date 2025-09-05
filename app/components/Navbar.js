@@ -114,14 +114,19 @@ const changeLanguage = (lng) => {
                 <div className={`absolute top-13 mt-2 w-73  bg-white shadow-xl rounded-[20px] p-3 z-50 border border-gray-100
                   ${i18n.language === "ar" ? "left-6 md:left-6 lg:left-6 2xl:left-8" : "right-0 md:right-6 lg:right-6 2xl:right-10"}
                 `}>
-                  <div className="space-x-3 flex justify-center items-center">
+                  <div className={`space-x-3 flex justify-center items-center
+                     ${i18n.language === "ar" ?" gap-3":" "}
+                      `}>
                     {languageOptions.map((lang) => (
                       <button
                         key={lang.code}
                         onClick={() => changeLanguage(lang.code)}
                         className={`w-full text-left px-3 py-3 rounded-xl hover:bg-gray-50 transition-colors duration-200 ${
                           i18n.language === lang.code ? 'bg-[#F4F5F6] rounded-[8px]' : ''
-                        }`}
+                          
+                        }
+                        
+                        `}
                       >
                         <div className="flex flex-col ">
                           <span className="font-semibold text-[#23262F] text-[14px]">
@@ -201,7 +206,9 @@ const changeLanguage = (lng) => {
                         activeDropdown === "menu" ? null : "menu"
                       )
                     }
-                    className="p-2 rounded-full bg-gray-100 text-[#777E90] hover:text-black hover:bg-gray-50"
+                      className={`p-2 rounded-full bg-gray-100 text-[#777E90] hover:text-black hover:bg-gray-50
+                         ${i18n.language === "ar" ?" mr-2":" mr-0"}
+                        `}
                   >
                     {activeDropdown === "menu" ? (
                       <X className="h-5 w-5" />
@@ -217,10 +224,14 @@ const changeLanguage = (lng) => {
                   {/* Help Center */}
                   <Link
                     href="/help"
-                    className="flex items-center space-x-3 pr-4 py-2  rounded-xl text-sm text-[#23262F] hover:bg-gray-50 transition-colors duration-200"
+                    className={`flex items-center space-x-2  py-2  rounded-xl text-sm text-[#23262F] hover:bg-gray-50 transition-colors duration-200
+                       ${i18n.language === "ar" ?" pr-0":" pl-2"}
+                      `}
                   >
-                    <HelpCircle className="h-5 w-5 text-gray-600" />
-                    <span className="font-bold ">
+                    <HelpCircle className="h-5 w-5 text-gray-600 " />
+                    <span className={`font-bold 
+                       ${i18n.language === "ar" ?" pr-2":"pr-0 "}
+                      `}>
                       {t("auth_navbar.help_center")}
 
                     </span>

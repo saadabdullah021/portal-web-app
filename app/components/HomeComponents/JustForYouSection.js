@@ -118,7 +118,7 @@ const JustForYouSection = ({ items, sectionData  }) => {
             {Number(listing.rating) || 0}
           </span>
           <span className="text-gray-500 text-sm">
-            ({listing.reviews ?? 0} reviews)
+            ({listing.reviews ?? 0} {t('justForYou.reviews')})
           </span>
         </div>
 

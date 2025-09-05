@@ -162,7 +162,7 @@ const LastMinuteDealsSection = ({ items , data }) => {
         <div className="flex items-center gap-2 mb-3">
           <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
           <span className="font-semibold text-sm text-gray-900">{listing.rating}</span>
-          <span className="text-gray-500 text-sm">({listing.reviews} reviews)</span>
+          <span className="text-gray-500 text-sm">({listing.reviews} {t('justForYou.reviews')})</span>
         </div>
 
         {/* Title */}

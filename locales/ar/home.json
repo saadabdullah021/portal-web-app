@@ -41,7 +41,8 @@
   "justForYou": {
     "title": "فقط من أجلك",
     "subtitle": "اكتشف العقارات المصممة وفقًا لتفضيلاتك",
-    "view_all": "عرض الكل"
+    "view_all": "عرض الكل",
+    "reviews":"مراجعات"
   },
   "lastMinuteDeals": {
     "title": "عروض اللحظة الأخيرة",
