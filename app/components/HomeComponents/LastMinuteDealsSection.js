@@ -64,7 +64,7 @@ const LastMinuteDealsSection = ({ items , data }) => {
     period: "night",
   }));
 
-  const computedData = Array.isArray(items) && items.length > 0 ? items : originalProperties;
+  const computedData = Array.isArray(items) && items.length > 0 ? items : [];
 
   useEffect(() => {
     const checkIsMobile = () => {
@@ -78,7 +78,7 @@ const LastMinuteDealsSection = ({ items , data }) => {
 
   // ✅ Items per view
   const itemsPerView = isMobile ? 1 : 4;
-  
+  console.log(computedData)
   // ✅ Clone properties for infinite loop
   const properties = [
     ...computedData.slice(-itemsPerView),
@@ -123,9 +123,9 @@ const LastMinuteDealsSection = ({ items , data }) => {
 
   const PropertyCard = ({ property }) => {
     const listing = property?.listing || {};
-    const [first] = Array.isArray(listing.thumbnails) ? listing.thumbnails : [];
+    const thumbnail = listing.thumbnail || {};
     const hasDiscount = listing.discounted_price && String(listing.discounted_price) !== '0';
-    const imageSrc = first?.thumbnail_url || placeholderImage;
+    const imageSrc = thumbnail?.thumbnail_url || placeholderImage;
     console.log(property);
     
     return (
@@ -143,17 +143,15 @@ const LastMinuteDealsSection = ({ items , data }) => {
           <div className="absolute inset-0 bg-gradient-to-br from-amber-100 via-orange-200 to-amber-300 hidden"></div>
         </div>
         <div className="absolute top-4 left-4 right-4 flex items-center justify-between">
-         
-          {listing.added_by_super_host ? (
+          {hasDiscount ? (
+            <span className="bg-[#58C27D] text-white text-xs font-poppins font-bold px-3 py-2 rounded">
+              {listing.discount}
+            </span>
+          ) : listing.added_by_super_host ? (
             <span className="bg-[#FCFCFD] font-poppins text-[#23262F] text-xs font-bold p-2 rounded">
               SUPERHOST
             </span>
           ) : null}
-           {hasDiscount && (
-            <span className="bg-[#58C27D] text-white text-xs font-poppins font-bold px-3 py-2 rounded">
-              {hasDiscount ? listing.discount : ''}
-            </span>
-          )}
         </div>
       </div>
 
@@ -171,6 +169,8 @@ const LastMinuteDealsSection = ({ items , data }) => {
         </h3>
 
         {/* Amenities */}
+        {console.log(property,'check properyunksddksjb')
+        }
         <div className="flex items-center gap-4 mb-6">
           {(Array.isArray(property.amenities) ? property.amenities : []).map((amenity, index) => (
             <div key={index} className="flex items-center gap-2 text-[#777E90]">
@@ -196,7 +196,7 @@ const LastMinuteDealsSection = ({ items , data }) => {
     </div>
   ); };
 
-  console.log(data);
+  console.log(properties);
   
   return (
     <section className=" px-4 sm:px-6 lg:px-8  max-w-7xl mx-auto">

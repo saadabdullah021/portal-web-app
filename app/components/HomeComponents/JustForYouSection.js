@@ -86,8 +86,8 @@ const JustForYouSection = ({ items, sectionData  }) => {
 
   const PropertyCard = ({ property }) => {
     const listing = property?.listing || {};
-    const [first] = Array.isArray(listing.thumbnails) ? listing.thumbnails : [];
-    const imageSrc = first?.thumbnail_url || placeholderImage;
+    const thumbnail = listing.thumbnail || {};
+    const imageSrc = thumbnail?.thumbnail_url || placeholderImage;
     const hasDiscount = listing.discounted_price && String(listing.discounted_price) !== '0';
     return (
     <div className="bg-white -z-10 rounded-3xl overflow-hidden shadow-sm transition-all duration-300 transform flex-shrink-0 w-full md:w-auto">
@@ -104,9 +104,15 @@ const JustForYouSection = ({ items, sectionData  }) => {
         </div>
 
         <div className="absolute top-4 left-4">
-          <span className="bg-[#FCFCFD] font-poppins text-[#23262F] text-xs font-bold p-2 rounded">
-            {listing.added_by_super_host ? 'SUPERHOST' : ''}
-          </span>
+          {hasDiscount ? (
+            <span className="bg-[#58C27D] text-white text-xs font-poppins font-bold px-3 py-2 rounded">
+              {listing.discount}
+            </span>
+          ) : listing.added_by_super_host ? (
+            <span className="bg-[#FCFCFD] font-poppins text-[#23262F] text-xs font-bold p-2 rounded">
+              SUPERHOST
+            </span>
+          ) : null}
         </div>
       </div>
 
