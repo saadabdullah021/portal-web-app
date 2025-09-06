@@ -52,37 +52,41 @@ const SearchBar = ({ onSearch }) => {
     localStorage.setItem('recentSearches', JSON.stringify(newRecent));
   };
 
-  useEffect(() => {
-    let isMounted = true;
-    const fetchLocations = async () => {
-      try {
-        const { data: json } = await axios.get('/get-all-locations');
-        if (!isMounted) return;
-        if (json?.success && Array.isArray(json.data)) {
-          const list = [];
-          json.data.forEach(city => {
-            if (Array.isArray(city.districts)) {
-              city.districts.forEach(d => {
-                list.push({
-                  label: d.district_name,
-                  cityName: city.city_name,
-                  cityId: city.city_id,
-                  districtId: d.district_id,
-                });
+  const fetchLocations = async () => {
+    try {
+      const { data: json } = await axios.get('/get-all-locations');
+      if (json?.success && Array.isArray(json.data)) {
+        const list = [];
+        json.data.forEach(city => {
+          if (Array.isArray(city.districts)) {
+            city.districts.forEach(d => {
+              list.push({
+                label: d.district_name,
+                cityName: city.city_name,
+                cityId: city.city_id,
+                districtId: d.district_id,
               });
-            }
-          });
-          setLocationsData(list);
-        } else {
-          setLocationsData([]);
-        }
-      } catch {
+            });
+          }
+        });
+        setLocationsData(list);
+      } else {
         setLocationsData([]);
       }
-    };
+    } catch {
+      setLocationsData([]);
+    }
+  };
+
+  useEffect(() => {
+    let isMounted = true;
     fetchLocations();
     return () => { isMounted = false; };
   }, []);
+
+  useEffect(() => {
+    fetchLocations();
+  }, [i18n.language]);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 1024);
