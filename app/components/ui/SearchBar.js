@@ -20,8 +20,9 @@ const SearchBar = ({ onSearch }) => {
   // Travelers state
   const [suggestions, setSuggestions] = useState([]);
   const [locationsData, setLocationsData] = useState([]);
-  const [selectedCity, setSelectedCity] = useState(null);
-  const [showDistricts, setShowDistricts] = useState(false);
+  const [filteredLocations, setFilteredLocations] = useState([]);
+  const [recentSearches, setRecentSearches] = useState([]);
+  const [selectedIndex, setSelectedIndex] = useState(-1);
 
   const [adults, setAdults] = useState(0);
   const [children, setChildren] = useState(0);
@@ -32,12 +33,24 @@ const SearchBar = ({ onSearch }) => {
   const travelersRef = useRef(null);
   const locationRef = useRef(null);
 
-  const citiesData = useMemo(() => {
-    if (!Array.isArray(locationsData) || locationsData.length === 0) {
-      return [];
+  // Load recent searches from localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem('recentSearches');
+    if (saved) {
+      try {
+        setRecentSearches(JSON.parse(saved));
+      } catch {
+        setRecentSearches([]);
+      }
     }
-    return [...new Set(locationsData.map(loc => loc.cityName))];
-  }, [locationsData]);
+  }, []);
+
+  // Save recent searches to localStorage
+  const saveRecentSearch = (location) => {
+    const newRecent = [location, ...recentSearches.filter(item => item !== location)].slice(0, 5);
+    setRecentSearches(newRecent);
+    localStorage.setItem('recentSearches', JSON.stringify(newRecent));
+  };
 
   useEffect(() => {
     let isMounted = true;
@@ -79,26 +92,36 @@ const SearchBar = ({ onSearch }) => {
   }, []);
 
   const handleLocationFocus = () => {
-    if (!locationSelected) {
-      setSuggestions(citiesData);
-      setActiveDropdown("location");
+    setActiveDropdown("location");
+    setSelectedIndex(-1);
+    if (location.trim() === '') {
+      // Show all locations when input is empty
+      setFilteredLocations(locationsData);
+    } else {
+      // Filter locations based on current input
+      const filtered = locationsData.filter(loc => 
+        loc.label.toLowerCase().includes(location.toLowerCase()) ||
+        loc.cityName.toLowerCase().includes(location.toLowerCase())
+      );
+      setFilteredLocations(filtered);
     }
   };
 
+  // Real-time filtering as user types
   useEffect(() => {
-    const delayDebounce = setTimeout(() => {
-      if (location.length > 1 && !locationSelected && activeDropdown === "location") {
-        const filtered = citiesData.filter(city =>
-          city.toLowerCase().includes(location.toLowerCase())
+    if (activeDropdown === "location") {
+      if (location.trim() === '') {
+        setFilteredLocations(locationsData);
+      } else {
+        const filtered = locationsData.filter(loc => 
+          loc.label.toLowerCase().includes(location.toLowerCase()) ||
+          loc.cityName.toLowerCase().includes(location.toLowerCase())
         );
-        setSuggestions(filtered);
-      } else if (location.length === 0 && !locationSelected && activeDropdown === "location") {
-        setSuggestions(citiesData);
+        setFilteredLocations(filtered);
       }
-    }, 300);
-
-    return () => clearTimeout(delayDebounce);
-  }, [location, citiesData, locationSelected, activeDropdown]);
+      setSelectedIndex(-1);
+    }
+  }, [location, locationsData, activeDropdown]);
 
 
   useEffect(() => {
@@ -114,30 +137,50 @@ const SearchBar = ({ onSearch }) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleCitySelect = (city) => {
-    setSelectedCity(city);
-    setShowDistricts(true);
-    const cityDistricts = locationsData.filter(loc => loc.cityName === city);
-    setSuggestions(cityDistricts);
-  };
-
-  const handleDistrictSelect = (district) => {
-    const fullLocation = `${district.label}, ${selectedCity}`;
+  const handleLocationSelect = (selectedLocation) => {
+    const fullLocation = `${selectedLocation.label}, ${selectedLocation.cityName}`;
     setLocation(fullLocation);
-    dispatch(setSelectedLocation(district));
+    dispatch(setSelectedLocation(selectedLocation));
     setLocationSelected(true);
-    setSuggestions([]);
     setActiveDropdown(null);
-    setShowDistricts(false);
-    setSelectedCity(null);
+    saveRecentSearch(fullLocation);
   };
 
-  const handleBackToCities = () => {
-    setShowDistricts(false);
-    setSelectedCity(null);
-    setSuggestions(citiesData);
+  const handleClearLocation = () => {
+    setLocation('');
+    setLocationSelected(false);
+    setFilteredLocations([]);
+    setActiveDropdown(null);
+    setSelectedIndex(-1);
   };
 
+  // Keyboard navigation
+  const handleKeyDown = (e) => {
+    if (activeDropdown !== "location") return;
+
+    const totalItems = filteredLocations.length + (recentSearches.length > 0 ? 1 : 0);
+
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        setSelectedIndex(prev => (prev + 1) % totalItems);
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        setSelectedIndex(prev => prev <= 0 ? totalItems - 1 : prev - 1);
+        break;
+      case 'Enter':
+        e.preventDefault();
+        if (selectedIndex >= 0 && selectedIndex < filteredLocations.length) {
+          handleLocationSelect(filteredLocations[selectedIndex]);
+        }
+        break;
+      case 'Escape':
+        setActiveDropdown(null);
+        setSelectedIndex(-1);
+        break;
+    }
+  };
 
 
 
@@ -178,85 +221,87 @@ const SearchBar = ({ onSearch }) => {
                   `}>
                   {t("locationLabel")}
                 </label>
-                <input
-                  type="text"
-                  value={location}
-                  onChange={(e) => {
-                    setLocation(e.target.value);
-                    setLocationSelected(false); // NEW: reset when user types again
-                  }}
-
-                  onFocus={handleLocationFocus}
-                  placeholder={
-                    isMobile
-                      ? t("locationPlaceholderMobile")
-                      : t("locationPlaceholderDesktop")
-                  }
-                  className="w-full bg-transparent border-none rounded-md px-2 lg:placeholder-[#777E90] outline-none placeholder-[#23262F] placeholder:font-medium placeholder:text-[16px]  lg:pb-1"
-                />
+                <div className="relative w-full">
+                  <input
+                    type="text"
+                    value={location}
+                    onChange={(e) => {
+                      setLocation(e.target.value);
+                      setLocationSelected(false);
+                    }}
+                    onFocus={handleLocationFocus}
+                    onKeyDown={handleKeyDown}
+                    placeholder={
+                      isMobile
+                        ? t("locationPlaceholderMobile")
+                        : t("locationPlaceholderDesktop")
+                    }
+                    className="w-full bg-transparent border-none rounded-md px-2 lg:placeholder-[#777E90] outline-none placeholder-[#23262F] placeholder:font-medium placeholder:text-[16px] lg:pb-1 pr-8"
+                  />
+                  {location && (
+                    <button
+                      onClick={handleClearLocation}
+                      className="absolute right-1 top-1/2 transform -translate-y-1/2 w-8 h-8 flex items-center justify-center"
+                    >
+                      <img 
+                        src="/images/Line.svg" 
+                        alt="Close" 
+                        className="w-7 h-7"
+                      />
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Suggestions dropdown */}
           <div className={`
-            absolute custom-scrollbar-hide z-100 bg-[#fff] shadow-xl rounded-3xl lg:top-30 max-h-[300px] w-full lg:w-auto overflow-y-auto p-3
+            absolute custom-scrollbar-hide z-100 bg-[#fff] shadow-xl rounded-3xl lg:top-30 max-h-[400px] w-full lg:w-[400px] overflow-y-auto
             transition-all duration-300 ease-in-out origin-top 
-            ${i18n.language === "ar" ? "lg:-right-6" : "lg:-right-11"}
-            ${activeDropdown === "location" && suggestions.length > 0
+            ${i18n.language === "ar" ? "lg:right-0" : "lg:-left-4"}
+            ${activeDropdown === "location" && (filteredLocations.length > 0 || recentSearches.length > 0)
               ? "opacity-100 scale-100 translate-y-0 "
               : "opacity-0 scale-95 -translate-y-2 pointer-events-none "
             }
           `}>
-            {showDistricts && (
-              <div className="mb-3 pb-3 border-b border-gray-200">
-                <button
-                  onClick={handleBackToCities}
-                  className="flex items-center space-x-2 text-[#3B71FE] hover:text-blue-700 transition-colors"
-                >
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M10 12L6 8L10 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                  <span className="text-sm font-medium">Back to cities</span>
-                </button>
-              </div>
-            )}
+            <div className="p-4">
+              {filteredLocations.length > 0 && (
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-700 mb-3 px-2">
+                    {location.trim() === '' ? 'Search destinations' : 'Search results'}
+                  </h3>
+                  {filteredLocations.slice(0, 10).map((location, idx) => (
+                    <div
+                      key={`${location.cityId}-${location.districtId}`}
+                      onClick={() => handleLocationSelect(location)}
+                      className={`px-2 py-3 cursor-pointer flex items-center space-x-3 rounded-xl transition-colors duration-200 ${
+                        selectedIndex === idx ? 'bg-[#3B71FE]/10' : 'hover:bg-[#F4F5F6]'
+                      }`}
+                    >
+                      <span className='bg-[#FCFCFD] border-[#E6E8EC] border-[1px] rounded-full w-8 h-8 flex items-center justify-center'>
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path fillRule="evenodd" clipRule="evenodd" d="M12.6665 13.3333C13.0347 13.3333 13.3332 13.0348 13.3332 12.6666C13.3332 12.2984 13.0347 12 12.6665 12C12.2983 12 11.9998 12.2984 11.9998 12.6666C11.9998 13.0348 12.2983 13.3333 12.6665 13.3333ZM12.6665 14.6666C13.7711 14.6666 14.6665 13.7712 14.6665 12.6666C14.6665 11.5621 13.7711 10.6666 12.6665 10.6666C11.5619 10.6666 10.6665 11.5621 10.6665 12.6666C10.6665 13.7712 11.5619 14.6666 12.6665 14.6666Z" fill="#777E91" />
+                          <path fillRule="evenodd" clipRule="evenodd" d="M10.3332 2.66671C9.4127 2.66671 8.6665 3.4129 8.6665 4.33337V11.6667C8.6665 13.3236 7.32336 14.6667 5.6665 14.6667C4.00965 14.6667 2.6665 13.3236 2.6665 11.6667V6.66671C2.6665 6.29852 2.96498 6.00004 3.33317 6.00004C3.70136 6.00004 3.99984 6.29852 3.99984 6.66671V11.6667C3.99984 12.5872 4.74603 13.3334 5.6665 13.3334C6.58698 13.3334 7.33317 12.5872 7.33317 11.6667V4.33337C7.33317 2.67652 8.67632 1.33337 10.3332 1.33337C11.99 1.33337 13.3332 2.67652 13.3332 4.33337V8.66671C13.3332 9.0349 13.0347 9.33337 12.6665 9.33337C12.2983 9.33337 11.9998 9.0349 11.9998 8.66671V4.33337C11.9998 3.4129 11.2536 2.66671 10.3332 2.66671Z" fill="#777E91" />
+                          <path d="M2.75762 1.65387C3.01488 1.21287 3.65208 1.21287 3.90933 1.65387L5.08197 3.66412C5.34123 4.10856 5.02065 4.6667 4.50612 4.6667H2.16083C1.64631 4.6667 1.32573 4.10855 1.58498 3.66412L2.75762 1.65387Z" fill="#777E91" />
+                        </svg>
+                      </span>
+                      <div className="flex flex-col">
+                        <span className="text-[16px] font-medium text-[#23262F]">{location.label}</span>
+                        <span className="text-[14px] text-[#777E91]">{location.cityName}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
 
-            {showDistricts ? (
-              suggestions?.map((district, idx) => (
-                <div
-                  key={idx}
-                  onClick={() => handleDistrictSelect(district)}
-                  className="px-2 py-3 cursor-pointer hover:bg-[#F4F5F6] flex items-center space-x-2 rounded-xl transition-colors duration-200"
-                >
-                  <span className='bg-[#FCFCFD] border-[#E6E8EC] border-[1px] rounded-full w-8 h-8 flex items-center justify-center'>
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path fillRule="evenodd" clipRule="evenodd" d="M12.6665 13.3333C13.0347 13.3333 13.3332 13.0348 13.3332 12.6666C13.3332 12.2984 13.0347 12 12.6665 12C12.2983 12 11.9998 12.2984 11.9998 12.6666C11.9998 13.0348 12.2983 13.3333 12.6665 13.3333ZM12.6665 14.6666C13.7711 14.6666 14.6665 13.7712 14.6665 12.6666C14.6665 11.5621 13.7711 10.6666 12.6665 10.6666C11.5619 10.6666 10.6665 11.5621 10.6665 12.6666C10.6665 13.7712 11.5619 14.6666 12.6665 14.6666Z" fill="#777E91" />
-                      <path fillRule="evenodd" clipRule="evenodd" d="M10.3332 2.66671C9.4127 2.66671 8.6665 3.4129 8.6665 4.33337V11.6667C8.6665 13.3236 7.32336 14.6667 5.6665 14.6667C4.00965 14.6667 2.6665 13.3236 2.6665 11.6667V6.66671C2.6665 6.29852 2.96498 6.00004 3.33317 6.00004C3.70136 6.00004 3.99984 6.29852 3.99984 6.66671V11.6667C3.99984 12.5872 4.74603 13.3334 5.6665 13.3334C6.58698 13.3334 7.33317 12.5872 7.33317 11.6667V4.33337C7.33317 2.67652 8.67632 1.33337 10.3332 1.33337C11.99 1.33337 13.3332 2.67652 13.3332 4.33337V8.66671C13.3332 9.0349 13.0347 9.33337 12.6665 9.33337C12.2983 9.33337 11.9998 9.0349 11.9998 8.66671V4.33337C11.9998 3.4129 11.2536 2.66671 10.3332 2.66671Z" fill="#777E91" />
-                      <path d="M2.75762 1.65387C3.01488 1.21287 3.65208 1.21287 3.90933 1.65387L5.08197 3.66412C5.34123 4.10856 5.02065 4.6667 4.50612 4.6667H2.16083C1.64631 4.6667 1.32573 4.10855 1.58498 3.66412L2.75762 1.65387Z" fill="#777E91" />
-                    </svg>
-                  </span>
-                  <span className="text-[16px] font-medium lg:min-w-[250px] text-[#23262F]">{district.label}</span>
+              {/* No Results */}
+              {filteredLocations.length === 0 && location.trim() !== '' && (
+                <div className="px-2 py-8 text-center">
+                  <p className="text-[16px] text-[#777E91]">No destinations found</p>
+                  <p className="text-[14px] text-[#777E91] mt-1">Try a different search term</p>
                 </div>
-              ))
-            ) : (
-              suggestions?.map((city, idx) => (
-                <div
-                  key={idx}
-                  onClick={() => handleCitySelect(city)}
-                  className="px-2 py-3 cursor-pointer hover:bg-[#F4F5F6] flex items-center space-x-2 rounded-xl transition-colors duration-200"
-                >
-                  <span className='bg-[#FCFCFD] border-[#E6E8EC] border-[1px] rounded-full w-8 h-8 flex items-center justify-center'>
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path fillRule="evenodd" clipRule="evenodd" d="M12.6665 13.3333C13.0347 13.3333 13.3332 13.0348 13.3332 12.6666C13.3332 12.2984 13.0347 12 12.6665 12C12.2983 12 11.9998 12.2984 11.9998 12.6666C11.9998 13.0348 12.2983 13.3333 12.6665 13.3333ZM12.6665 14.6666C13.7711 14.6666 14.6665 13.7712 14.6665 12.6666C14.6665 11.5621 13.7711 10.6666 12.6665 10.6666C11.5619 10.6666 10.6665 11.5621 10.6665 12.6666C10.6665 13.7712 11.5619 14.6666 12.6665 14.6666Z" fill="#777E91" />
-                      <path fillRule="evenodd" clipRule="evenodd" d="M10.3332 2.66671C9.4127 2.66671 8.6665 3.4129 8.6665 4.33337V11.6667C8.6665 13.3236 7.32336 14.6667 5.6665 14.6667C4.00965 14.6667 2.6665 13.3236 2.6665 11.6667V6.66671C2.6665 6.29852 2.96498 6.00004 3.33317 6.00004C3.70136 6.00004 3.99984 6.29852 3.99984 6.66671V11.6667C3.99984 12.5872 4.74603 13.3334 5.6665 13.3334C6.58698 13.3334 7.33317 12.5872 7.33317 11.6667V4.33337C7.33317 2.67652 8.67632 1.33337 10.3332 1.33337C11.99 1.33337 13.3332 2.67652 13.3332 4.33337V8.66671C13.3332 9.0349 13.0347 9.33337 12.6665 9.33337C12.2983 9.33337 11.9998 9.0349 11.9998 8.66671V4.33337C11.9998 3.4129 11.2536 2.66671 10.3332 2.66671Z" fill="#777E91" />
-                      <path d="M2.75762 1.65387C3.01488 1.21287 3.65208 1.21287 3.90933 1.65387L5.08197 3.66412C5.34123 4.10856 5.02065 4.6667 4.50612 4.6667H2.16083C1.64631 4.6667 1.32573 4.10855 1.58498 3.66412L2.75762 1.65387Z" fill="#777E91" />
-                    </svg>
-                  </span>
-                  <span className="text-[16px] font-medium lg:min-w-[250px] text-[#23262F]">{city}</span>
-                </div>
-              ))
-            )}
+              )}
+            </div>
           </div>
         </div>
 
