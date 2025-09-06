@@ -20,9 +20,9 @@ const SearchBar = ({ onSearch }) => {
   // Travelers state
   const [suggestions, setSuggestions] = useState([]);
   const [locationsData, setLocationsData] = useState([]);
-  const [showDropdown, setShowDropdown] = useState(false);
+  const [selectedCity, setSelectedCity] = useState(null);
+  const [showDistricts, setShowDistricts] = useState(false);
 
-  const [showTravelers, setShowTravelers] = useState(false);
   const [adults, setAdults] = useState(0);
   const [children, setChildren] = useState(0);
   const [infants, setInfants] = useState(0);
@@ -32,16 +32,12 @@ const SearchBar = ({ onSearch }) => {
   const travelersRef = useRef(null);
   const locationRef = useRef(null);
 
-  // Dummy locations
-  const dummyLocations = useMemo(() => [
-    "Al Ula, Medina Province",
-    "Al Ulaiyah, Riyadh",
-    "Al Ulays, Jeddah",
-    "Al Ujeir, Dammam",
-    "Al Uqair, Eastern Province",
-    "Al Wajh, Tabuk",
-    "Al Wakrah, Qatar",
-  ], []);
+  const citiesData = useMemo(() => {
+    if (!Array.isArray(locationsData) || locationsData.length === 0) {
+      return [];
+    }
+    return [...new Set(locationsData.map(loc => loc.cityName))];
+  }, [locationsData]);
 
   useEffect(() => {
     let isMounted = true;
@@ -56,6 +52,7 @@ const SearchBar = ({ onSearch }) => {
               city.districts.forEach(d => {
                 list.push({
                   label: d.district_name,
+                  cityName: city.city_name,
                   cityId: city.city_id,
                   districtId: d.district_id,
                 });
@@ -81,25 +78,27 @@ const SearchBar = ({ onSearch }) => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Debounced filter for location
+  const handleLocationFocus = () => {
+    if (!locationSelected) {
+      setSuggestions(citiesData);
+      setActiveDropdown("location");
+    }
+  };
+
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
-      if (location.length > 1 && !locationSelected) {   // ✅ Only when not selected
-        const filtered = dummyLocations.filter(item =>
-          item.toLowerCase().includes(location.toLowerCase())
+      if (location.length > 1 && !locationSelected && activeDropdown === "location") {
+        const filtered = citiesData.filter(city =>
+          city.toLowerCase().includes(location.toLowerCase())
         );
         setSuggestions(filtered);
-        if (filtered.length > 0) {
-          setActiveDropdown("location");
-        }
-      } else {
-        setSuggestions([]);
-        if (activeDropdown === "location") setActiveDropdown(null);
+      } else if (location.length === 0 && !locationSelected && activeDropdown === "location") {
+        setSuggestions(citiesData);
       }
     }, 300);
 
     return () => clearTimeout(delayDebounce);
-  }, [location, dummyLocations, locationSelected]);
+  }, [location, citiesData, locationSelected, activeDropdown]);
 
 
   useEffect(() => {
@@ -115,15 +114,28 @@ const SearchBar = ({ onSearch }) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleSelect = (place) => {
-    console.log(place, 'place');
+  const handleCitySelect = (city) => {
+    setSelectedCity(city);
+    setShowDistricts(true);
+    const cityDistricts = locationsData.filter(loc => loc.cityName === city);
+    setSuggestions(cityDistricts);
+  };
 
-    setLocation(place.label || place || '');
-    dispatch(setSelectedLocation(place));
-    setShowDropdown(false);
+  const handleDistrictSelect = (district) => {
+    const fullLocation = `${district.label}, ${selectedCity}`;
+    setLocation(fullLocation);
+    dispatch(setSelectedLocation(district));
     setLocationSelected(true);
-    setSuggestions([]);           // ✅ Clear suggestions
-    setActiveDropdown(null);      // ✅ Close dropdown
+    setSuggestions([]);
+    setActiveDropdown(null);
+    setShowDistricts(false);
+    setSelectedCity(null);
+  };
+
+  const handleBackToCities = () => {
+    setShowDistricts(false);
+    setSelectedCity(null);
+    setSuggestions(citiesData);
   };
 
 
@@ -157,9 +169,7 @@ const SearchBar = ({ onSearch }) => {
           >
             <div
               className="flex items-start gap-2 cursor-pointer"
-              onClick={() =>
-                setActiveDropdown(activeDropdown === "location" ? null : "location")
-              }
+            onClick={handleLocationFocus}
             >
               <Navigation color="#B1B5C3" size={24} className="lg:mt-4 pr-1" />
               <div className="flex flex-col w-full">
@@ -176,11 +186,7 @@ const SearchBar = ({ onSearch }) => {
                     setLocationSelected(false); // NEW: reset when user types again
                   }}
 
-                  onFocus={() => {
-                    if (!locationSelected) {
-                      setActiveDropdown("location");
-                    }
-                  }}
+                  onFocus={handleLocationFocus}
                   placeholder={
                     isMobile
                       ? t("locationPlaceholderMobile")
@@ -194,7 +200,7 @@ const SearchBar = ({ onSearch }) => {
 
           {/* Suggestions dropdown */}
           <div className={`
-            absolute custom-scrollbar-hide  z-100 bg-[#fff] shadow-xl rounded-3xl lg:top-30 max-h-[300px] w-full lg:w-auto  overflow-y-auto p-3
+            absolute custom-scrollbar-hide z-100 bg-[#fff] shadow-xl rounded-3xl lg:top-30 max-h-[300px] w-full lg:w-auto overflow-y-auto p-3
             transition-all duration-300 ease-in-out origin-top 
             ${i18n.language === "ar" ? "lg:-right-6" : "lg:-right-11"}
             ${activeDropdown === "location" && suggestions.length > 0
@@ -202,22 +208,55 @@ const SearchBar = ({ onSearch }) => {
               : "opacity-0 scale-95 -translate-y-2 pointer-events-none "
             }
           `}>
-            {suggestions.map((item, idx) => (
-              <div
-                key={idx}
-                onClick={() => handleSelect(item)}
-                className="px-2 py-3 cursor-pointer hover:bg-[#F4F5F6] flex items-center space-x-2 rounded-xl transition-colors duration-200"
-              >
-                <span className='bg-[#FCFCFD] border-[#E6E8EC] border-[1px] rounded-full w-8 h-8 flex items-center justify-center'>
+            {showDistricts && (
+              <div className="mb-3 pb-3 border-b border-gray-200">
+                <button
+                  onClick={handleBackToCities}
+                  className="flex items-center space-x-2 text-[#3B71FE] hover:text-blue-700 transition-colors"
+                >
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path fillRule="evenodd" clipRule="evenodd" d="M12.6665 13.3333C13.0347 13.3333 13.3332 13.0348 13.3332 12.6666C13.3332 12.2984 13.0347 12 12.6665 12C12.2983 12 11.9998 12.2984 11.9998 12.6666C11.9998 13.0348 12.2983 13.3333 12.6665 13.3333ZM12.6665 14.6666C13.7711 14.6666 14.6665 13.7712 14.6665 12.6666C14.6665 11.5621 13.7711 10.6666 12.6665 10.6666C11.5619 10.6666 10.6665 11.5621 10.6665 12.6666C10.6665 13.7712 11.5619 14.6666 12.6665 14.6666Z" fill="#777E91" />
-                    <path fillRule="evenodd" clipRule="evenodd" d="M10.3332 2.66671C9.4127 2.66671 8.6665 3.4129 8.6665 4.33337V11.6667C8.6665 13.3236 7.32336 14.6667 5.6665 14.6667C4.00965 14.6667 2.6665 13.3236 2.6665 11.6667V6.66671C2.6665 6.29852 2.96498 6.00004 3.33317 6.00004C3.70136 6.00004 3.99984 6.29852 3.99984 6.66671V11.6667C3.99984 12.5872 4.74603 13.3334 5.6665 13.3334C6.58698 13.3334 7.33317 12.5872 7.33317 11.6667V4.33337C7.33317 2.67652 8.67632 1.33337 10.3332 1.33337C11.99 1.33337 13.3332 2.67652 13.3332 4.33337V8.66671C13.3332 9.0349 13.0347 9.33337 12.6665 9.33337C12.2983 9.33337 11.9998 9.0349 11.9998 8.66671V4.33337C11.9998 3.4129 11.2536 2.66671 10.3332 2.66671Z" fill="#777E91" />
-                    <path d="M2.75762 1.65387C3.01488 1.21287 3.65208 1.21287 3.90933 1.65387L5.08197 3.66412C5.34123 4.10856 5.02065 4.6667 4.50612 4.6667H2.16083C1.64631 4.6667 1.32573 4.10855 1.58498 3.66412L2.75762 1.65387Z" fill="#777E91" />
+                    <path d="M10 12L6 8L10 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
-                </span>
-                <span className="text-[16px] font-medium lg:min-w-[250px] text-[#23262F]">{item}</span>
+                  <span className="text-sm font-medium">Back to cities</span>
+                </button>
               </div>
-            ))}
+            )}
+
+            {showDistricts ? (
+              suggestions?.map((district, idx) => (
+                <div
+                  key={idx}
+                  onClick={() => handleDistrictSelect(district)}
+                  className="px-2 py-3 cursor-pointer hover:bg-[#F4F5F6] flex items-center space-x-2 rounded-xl transition-colors duration-200"
+                >
+                  <span className='bg-[#FCFCFD] border-[#E6E8EC] border-[1px] rounded-full w-8 h-8 flex items-center justify-center'>
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path fillRule="evenodd" clipRule="evenodd" d="M12.6665 13.3333C13.0347 13.3333 13.3332 13.0348 13.3332 12.6666C13.3332 12.2984 13.0347 12 12.6665 12C12.2983 12 11.9998 12.2984 11.9998 12.6666C11.9998 13.0348 12.2983 13.3333 12.6665 13.3333ZM12.6665 14.6666C13.7711 14.6666 14.6665 13.7712 14.6665 12.6666C14.6665 11.5621 13.7711 10.6666 12.6665 10.6666C11.5619 10.6666 10.6665 11.5621 10.6665 12.6666C10.6665 13.7712 11.5619 14.6666 12.6665 14.6666Z" fill="#777E91" />
+                      <path fillRule="evenodd" clipRule="evenodd" d="M10.3332 2.66671C9.4127 2.66671 8.6665 3.4129 8.6665 4.33337V11.6667C8.6665 13.3236 7.32336 14.6667 5.6665 14.6667C4.00965 14.6667 2.6665 13.3236 2.6665 11.6667V6.66671C2.6665 6.29852 2.96498 6.00004 3.33317 6.00004C3.70136 6.00004 3.99984 6.29852 3.99984 6.66671V11.6667C3.99984 12.5872 4.74603 13.3334 5.6665 13.3334C6.58698 13.3334 7.33317 12.5872 7.33317 11.6667V4.33337C7.33317 2.67652 8.67632 1.33337 10.3332 1.33337C11.99 1.33337 13.3332 2.67652 13.3332 4.33337V8.66671C13.3332 9.0349 13.0347 9.33337 12.6665 9.33337C12.2983 9.33337 11.9998 9.0349 11.9998 8.66671V4.33337C11.9998 3.4129 11.2536 2.66671 10.3332 2.66671Z" fill="#777E91" />
+                      <path d="M2.75762 1.65387C3.01488 1.21287 3.65208 1.21287 3.90933 1.65387L5.08197 3.66412C5.34123 4.10856 5.02065 4.6667 4.50612 4.6667H2.16083C1.64631 4.6667 1.32573 4.10855 1.58498 3.66412L2.75762 1.65387Z" fill="#777E91" />
+                    </svg>
+                  </span>
+                  <span className="text-[16px] font-medium lg:min-w-[250px] text-[#23262F]">{district.label}</span>
+                </div>
+              ))
+            ) : (
+              suggestions?.map((city, idx) => (
+                <div
+                  key={idx}
+                  onClick={() => handleCitySelect(city)}
+                  className="px-2 py-3 cursor-pointer hover:bg-[#F4F5F6] flex items-center space-x-2 rounded-xl transition-colors duration-200"
+                >
+                  <span className='bg-[#FCFCFD] border-[#E6E8EC] border-[1px] rounded-full w-8 h-8 flex items-center justify-center'>
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path fillRule="evenodd" clipRule="evenodd" d="M12.6665 13.3333C13.0347 13.3333 13.3332 13.0348 13.3332 12.6666C13.3332 12.2984 13.0347 12 12.6665 12C12.2983 12 11.9998 12.2984 11.9998 12.6666C11.9998 13.0348 12.2983 13.3333 12.6665 13.3333ZM12.6665 14.6666C13.7711 14.6666 14.6665 13.7712 14.6665 12.6666C14.6665 11.5621 13.7711 10.6666 12.6665 10.6666C11.5619 10.6666 10.6665 11.5621 10.6665 12.6666C10.6665 13.7712 11.5619 14.6666 12.6665 14.6666Z" fill="#777E91" />
+                      <path fillRule="evenodd" clipRule="evenodd" d="M10.3332 2.66671C9.4127 2.66671 8.6665 3.4129 8.6665 4.33337V11.6667C8.6665 13.3236 7.32336 14.6667 5.6665 14.6667C4.00965 14.6667 2.6665 13.3236 2.6665 11.6667V6.66671C2.6665 6.29852 2.96498 6.00004 3.33317 6.00004C3.70136 6.00004 3.99984 6.29852 3.99984 6.66671V11.6667C3.99984 12.5872 4.74603 13.3334 5.6665 13.3334C6.58698 13.3334 7.33317 12.5872 7.33317 11.6667V4.33337C7.33317 2.67652 8.67632 1.33337 10.3332 1.33337C11.99 1.33337 13.3332 2.67652 13.3332 4.33337V8.66671C13.3332 9.0349 13.0347 9.33337 12.6665 9.33337C12.2983 9.33337 11.9998 9.0349 11.9998 8.66671V4.33337C11.9998 3.4129 11.2536 2.66671 10.3332 2.66671Z" fill="#777E91" />
+                      <path d="M2.75762 1.65387C3.01488 1.21287 3.65208 1.21287 3.90933 1.65387L5.08197 3.66412C5.34123 4.10856 5.02065 4.6667 4.50612 4.6667H2.16083C1.64631 4.6667 1.32573 4.10855 1.58498 3.66412L2.75762 1.65387Z" fill="#777E91" />
+                    </svg>
+                  </span>
+                  <span className="text-[16px] font-medium lg:min-w-[250px] text-[#23262F]">{city}</span>
+                </div>
+              ))
+            )}
           </div>
         </div>
 
