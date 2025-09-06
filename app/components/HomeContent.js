@@ -18,10 +18,12 @@ import { useEffect, useMemo, useState } from "react";
 import WhyPortalSection from "./HomeComponents/WhyPortalSection";
 import axios from '@/lib/axios';
 import Shimmer from './ui/Shimmer';
+import { useTranslation } from 'react-i18next';
 
 export default function HomeContent() {
   const [homeComponents, setHomeComponents] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { i18n } = useTranslation();
 
   useEffect(() => {
     let mounted = true;
@@ -41,12 +43,14 @@ export default function HomeContent() {
     };
     fetchHome();
     return () => { mounted = false; };
-  }, []);
+  }, [i18n.language]);
 
 const renderedSections = useMemo(() => {
+  console.log('HomeContent - homeComponents:', homeComponents);
   return homeComponents
     .map((section, idx) => {
       let Comp = null;
+      console.log(`HomeContent - Section ${idx}:`, section);
 
       if (section.component_design_type === 'grid') {
         Comp = (
@@ -61,6 +65,7 @@ const renderedSections = useMemo(() => {
         section.component_design_type === 'slider' ||
         section.component_title === 'Check out homes'
       ) {
+        console.log(`HomeContent - Creating slider for section ${idx}:`, section.items?.records);
         Comp = (
           <LastMinuteDealsSection
             data={section}

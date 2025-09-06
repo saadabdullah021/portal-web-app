@@ -64,7 +64,7 @@ const LastMinuteDealsSection = ({ items , data }) => {
     period: "night",
   }));
 
-  const computedData = Array.isArray(items) && items.length > 0 ? items : [];
+  const computedData = Array.isArray(items) && items.length > 0 ? items : originalProperties;
 
   useEffect(() => {
     const checkIsMobile = () => {
@@ -78,7 +78,9 @@ const LastMinuteDealsSection = ({ items , data }) => {
 
   // ✅ Items per view
   const itemsPerView = isMobile ? 1 : 4;
-  console.log(computedData)
+  console.log('LastMinuteDealsSection - items:', items);
+  console.log('LastMinuteDealsSection - computedData:', computedData);
+  console.log('LastMinuteDealsSection - data:', data);
   // ✅ Clone properties for infinite loop
   const properties = [
     ...computedData.slice(-itemsPerView),
@@ -197,6 +199,12 @@ const LastMinuteDealsSection = ({ items , data }) => {
   ); };
 
   console.log(properties);
+  
+  // Ensure we always have data to render
+  if (!properties || properties.length === 0) {
+    console.log('LastMinuteDealsSection: No properties to render');
+    return null;
+  }
   
   return (
     <section className=" px-4 sm:px-6 lg:px-8  max-w-7xl mx-auto">
