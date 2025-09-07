@@ -144,7 +144,7 @@ const LastMinuteDealsSection = ({ items , data }) => {
           />
           <div className="absolute inset-0 bg-gradient-to-br from-amber-100 via-orange-200 to-amber-300 hidden"></div>
         </div>
-        <div className="absolute top-4 left-4 right-4 flex items-center justify-between">
+        <div className={`absolute top-4 ${isRTL ? 'right-4 left-4' : 'left-4 right-4'} flex items-center justify-between`}>
           {hasDiscount ? (
             <span className="bg-[#58C27D] text-white text-xs font-poppins font-bold px-3 py-2 rounded">
               {listing.discount}% OFF
@@ -198,7 +198,12 @@ const LastMinuteDealsSection = ({ items , data }) => {
     </div>
   ); };
 
-  console.log(properties);
+  console.log('LastMinuteDealsSection - properties:', properties);
+  console.log('LastMinuteDealsSection - currentSlide:', currentSlide);
+  console.log('LastMinuteDealsSection - isRTL:', isRTL);
+  console.log('LastMinuteDealsSection - itemsPerView:', itemsPerView);
+  console.log('LastMinuteDealsSection - computedData.length:', computedData.length);
+  console.log('LastMinuteDealsSection - transform value:', `translateX(-${currentSlide * (100 / itemsPerView)}%)`);
   
   // Ensure we always have data to render
   if (!properties || properties.length === 0) {
@@ -252,8 +257,10 @@ const LastMinuteDealsSection = ({ items , data }) => {
       <div className="hidden md:block overflow-hidden py-4">
         <div
           ref={sliderRef}
-          className={`flex -mx-2 ${isTransitioning ? 'transition-transform duration-500 ease-in-out' : ''}`}
-          style={{ transform: `translateX(-${currentSlide * (100 / itemsPerView)}%)` }}
+          className={`flex -mx-2 ${isTransitioning ? 'transition-transform duration-500 ease-in-out' : ''} ${isRTL ? 'flex-row-reverse' : ''}`}
+          style={{ 
+            transform: `translateX(-${currentSlide * (100 / itemsPerView)}%)`
+          }}
           onTransitionEnd={handleTransitionEnd}
         >
           {properties.map((property, index) => (
@@ -268,8 +275,10 @@ const LastMinuteDealsSection = ({ items , data }) => {
       <div className="md:hidden relative">
         <div className="overflow-hidden pb-2 rounded-2xl">
           <div
-            className={`flex ${isTransitioning ? 'transition-transform duration-500 ease-in-out' : ''}`}
-            style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+            className={`flex ${isTransitioning ? 'transition-transform duration-500 ease-in-out' : ''} ${isRTL ? 'flex-row-reverse' : ''}`}
+            style={{ 
+              transform: `translateX(-${currentSlide * 100}%)`
+            }}
             onTransitionEnd={handleTransitionEnd}
           >
             {properties.map((property, index) => (

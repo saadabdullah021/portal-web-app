@@ -40,15 +40,21 @@ export default function HomeContent() {
       return;
     }
 
-    console.log('HomeContent - Making API call to /get-home-components');
+    console.log('HomeContent - Making API call to /get-home-components with language:', i18n.language);
     let mounted = true;
     const fetchHome = async () => {
       try {
         setIsLoading(true);
-        const { data } = await axios.get('/get-home-components');
+        const { data } = await axios.get('/get-home-components', {
+          params: {
+            language: i18n.language
+          }
+        });
         if (!mounted) return;
+        console.log('HomeContent - API response:', data);
         setHomeComponents(Array.isArray(data?.data?.records) ? data.data?.records : []);
-      } catch {
+      } catch (error) {
+        console.error('HomeContent - API error:', error);
         setHomeComponents([]);
       } finally {
         if (mounted) {
@@ -61,7 +67,14 @@ export default function HomeContent() {
   }, [i18n.language, isAnyPopupOpen]);
 
 const renderedSections = useMemo(() => {
+  console.log('HomeContent - homeComponents length:', homeComponents.length);
   console.log('HomeContent - homeComponents:', homeComponents);
+  
+  if (homeComponents.length === 0) {
+    console.log('HomeContent - No components to render, showing static sections only');
+    return null;
+  }
+  
   return homeComponents
     .map((section, idx) => {
       let Comp = null;
@@ -112,7 +125,10 @@ const renderedSections = useMemo(() => {
 }, [homeComponents]);
 
   return (
-    <div className="max-w-7xl 2xl:max-w-[1400px] mx-auto px-4 ">
+    <div 
+      className={`max-w-7xl 2xl:max-w-[1400px] mx-auto px-4 ${i18n.language === 'ar' ? 'rtl' : 'ltr'}`}
+      dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}
+    >
       <HeroSection/>
       
       {isLoading ? (
