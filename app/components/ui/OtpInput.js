@@ -8,6 +8,7 @@ const OtpInput = ({
     onResend,
     error = false,
     errorMessage = "",
+    successMessage = "",
     className = "" 
 }) => {
     const [otp, setOtp] = useState(['', '', '', '']);
@@ -81,8 +82,8 @@ const OtpInput = ({
     };
 
     return (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-            <div className={`bg-white rounded-2xl shadow-xl w-[540px] p-10 relative ${className}`}>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className={`bg-white rounded-2xl shadow-2xl w-[480px] p-8 relative ${className}`}>
                 <button
                     onClick={onClose}
                     className="absolute -top-4 -right-0 lg:-right-4 bg-white rounded-full shadow-md text-gray-500 hover:text-gray-700 p-1 transition"
@@ -90,15 +91,15 @@ const OtpInput = ({
                     <X size={20} />
                 </button>
 
-                <h2 className="text-[32px] lg:text-[40px] font-dm-sans text-[#141416] font-bold text-center mb-2">
-                    Enter your security code
+                <h2 className="text-2xl font-bold text-gray-900 text-center mb-3">
+                    Confirm your number
                 </h2>
                 
-                <p className="text-[#777E90] text-center text-[16px] mb-8">
-                    We texted you on {maskPhoneNumber(phoneNumber)}
+                <p className="text-gray-600 text-center text-sm mb-8">
+                    Enter the code we sent over SMS to {maskPhoneNumber(phoneNumber)}:
                 </p>
 
-                <div className="flex justify-center gap-4 mb-4">
+                <div className="flex justify-center gap-3 mb-8">
                     {otp.map((digit, index) => (
                         <div key={index} className="relative">
                             <input
@@ -110,14 +111,15 @@ const OtpInput = ({
                                 value={digit}
                                 onChange={(e) => handleInputChange(index, e.target.value)}
                                 onKeyDown={(e) => handleKeyDown(index, e)}
-                                className={`w-16 h-16 text-center text-2xl font-bold border-2 rounded-lg focus:outline-none bg-gray-50 pr-8 ${
-                                    error ? 'border-red-500' : 'border-gray-200 focus:border-blue-500'
+                                placeholder="-"
+                                className={`w-14 h-14 text-center text-2xl font-semibold border-2 rounded-xl focus:outline-none bg-white transition-colors ${
+                                    error ? 'border-red-500 bg-red-50' : 'border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100'
                                 }`}
                                 disabled={loading}
                             />
                             {error && (
-                                <div className="absolute top-1/2 right-2 transform -translate-y-1/2 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
-                                    <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
+                                    <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                                         <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                                     </svg>
                                 </div>
@@ -127,16 +129,30 @@ const OtpInput = ({
                 </div>
 
                 {error && errorMessage && (
-                    <p className="text-red-500 text-sm text-center mb-4">{errorMessage}</p>
+                    <p className="text-red-500 text-sm text-center mb-6 font-medium">{errorMessage}</p>
                 )}
 
-                <div className="text-center">
+                {successMessage && !error && (
+                    <p className="text-green-600 text-sm text-center mb-6 font-medium">{successMessage}</p>
+                )}
+
+                <div className="text-center mb-6">
                     <button
                         onClick={handleResend}
                         disabled={loading}
                         className="text-[#3B71FE] text-sm hover:underline font-semibold disabled:opacity-50"
                     >
                         Didnt receive the code? Resend
+                    </button>
+                </div>
+
+                <div className="flex justify-center">
+                    <button
+                        onClick={() => handleSubmit(otp.join(''))}
+                        disabled={loading || otp.some(digit => digit === '')}
+                        className="bg-gray-200 text-gray-600 font-medium py-3 px-8 rounded-lg hover:bg-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        Continue
                     </button>
                 </div>
             </div>

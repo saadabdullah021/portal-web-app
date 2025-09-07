@@ -1,7 +1,7 @@
 //app/auth/signup/page.js
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ArrowRightIcon, X } from "lucide-react";
 import Link from "next/link";
 import HomeContent from "@/app/components/HomeContent";
@@ -18,9 +18,23 @@ export default function SignUpPage() {
     const [phoneData, setPhoneData] = useState({ countryCode: "+966", phoneNumber: "", email: "" });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+    const [successMessage, setSuccessMessage] = useState("");
     const [fieldErrors, setFieldErrors] = useState({});
     const [showIdentityConfirmation, setShowIdentityConfirmation] = useState(false);
     const [showOtpInput, setShowOtpInput] = useState(false);
+
+    // Clear all states when popup opens
+    useEffect(() => {
+        if (popups.signup) {
+            setPhoneData({ countryCode: "+966", phoneNumber: "", email: "" });
+            setError("");
+            setSuccessMessage("");
+            setFieldErrors({});
+            setShowOtpInput(false);
+            setShowIdentityConfirmation(false);
+            setLoading(false);
+        }
+    }, [popups.signup]);
 
     const validatePhoneNumber = (phoneNumber) => {
         if (!phoneNumber || phoneNumber.trim() === '') {
@@ -28,6 +42,9 @@ export default function SignUpPage() {
         }
         if (phoneNumber.length < 8) {
             return 'Phone number must be at least 8 digits';
+        }
+        if (phoneNumber.length > 11) {
+            return 'Phone number must not exceed 11 digits';
         }
         if (!/^\d+$/.test(phoneNumber)) {
             return 'Phone number must contain only digits';
@@ -39,8 +56,8 @@ export default function SignUpPage() {
         if (!otp || otp.trim() === '') {
             return 'OTP is required';
         }
-        if (otp.length !== 6) {
-            return 'OTP must be 6 digits';
+        if (otp.length !== 4) {
+            return 'OTP must be 4 digits';
         }
         if (!/^\d+$/.test(otp)) {
             return 'OTP must contain only digits';
@@ -52,6 +69,7 @@ export default function SignUpPage() {
         closePopup('signup');
         setPhoneData({ countryCode: "+966", phoneNumber: "", email: "" });
         setError("");
+        setSuccessMessage("");
         setFieldErrors({});
         setShowOtpInput(false);
         setShowIdentityConfirmation(false);
@@ -79,6 +97,7 @@ export default function SignUpPage() {
         
         setLoading(true);
         setError("");
+        setSuccessMessage("");
         setFieldErrors({});
 
         try {
@@ -101,13 +120,17 @@ export default function SignUpPage() {
                 localStorage.setItem('user', JSON.stringify(userData));
                 localStorage.setItem('isAuthenticated', 'true');
                 
-                setShowOtpInput(false);
-                handleClosePopup()
+                setSuccessMessage(response.data.message || "Account created successfully!");
+                
+                setTimeout(() => {
+                    setShowOtpInput(false);
+                    handleClosePopup();
+                }, 2000);
                 
                 console.log('User profile created:', userData);
                 
             } else {
-                setError("Failed to verify OTP. Please try again.");
+                setError(response.data.message || "Failed to verify OTP. Please try again.");
             }
         } catch (error) {
             const errorMessage = error.response?.data?.message || "Failed to verify OTP. Please try again.";
@@ -312,8 +335,9 @@ export default function SignUpPage() {
                         onSubmit={handleOtpSubmit}
                         onResend={handleOtpResend}
                         onClose={handleCloseOtp}
-                        error={!!fieldErrors.otp}
-                        errorMessage={fieldErrors.otp}
+                        error={!!fieldErrors.otp || !!error}
+                        errorMessage={fieldErrors.otp || error}
+                        successMessage={successMessage}
                     />
                 )}
 

@@ -1,7 +1,7 @@
 // File: app/auth/login/page.js
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ArrowRightIcon, X } from "lucide-react";
 import HomeContent from "@/app/components/HomeContent";
 import { useTranslation } from "react-i18next";
@@ -15,11 +15,24 @@ export default function SignInPopup() {
   const [phoneData, setPhoneData] = useState({ countryCode: "+966", phoneNumber: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const [fieldErrors, setFieldErrors] = useState({});
   const [showOtpInput, setShowOtpInput] = useState(false);
   const { t } = useTranslation('auth'); 
   const { popups, closePopup, openPopup } = usePopup();
   const router = useRouter();
+
+  // Clear all states when popup opens
+  useEffect(() => {
+    if (popups.login) {
+      setPhoneData({ countryCode: "+966", phoneNumber: "" });
+      setError("");
+      setSuccessMessage("");
+      setFieldErrors({});
+      setShowOtpInput(false);
+      setLoading(false);
+    }
+  }, [popups.login]);
 
   const validatePhoneNumber = (phoneNumber) => {
     if (!phoneNumber || phoneNumber.trim() === '') {
@@ -27,6 +40,9 @@ export default function SignInPopup() {
     }
     if (phoneNumber.length < 8) {
       return 'Phone number must be at least 8 digits';
+    }
+    if (phoneNumber.length > 11) {
+      return 'Phone number must not exceed 11 digits';
     }
     if (!/^\d+$/.test(phoneNumber)) {
       return 'Phone number must contain only digits';
@@ -38,8 +54,8 @@ export default function SignInPopup() {
     if (!otp || otp.trim() === '') {
       return 'OTP is required';
     }
-    if (otp.length !== 6) {
-      return 'OTP must be 6 digits';
+    if (otp.length !== 4) {
+      return 'OTP must be 4 digits';
     }
     if (!/^\d+$/.test(otp)) {
       return 'OTP must contain only digits';
@@ -51,6 +67,7 @@ export default function SignInPopup() {
     closePopup('login');
     setPhoneData({ countryCode: "+966", phoneNumber: "" });
     setError("");
+    setSuccessMessage("");
     setFieldErrors({});
     setShowOtpInput(false);
   };
@@ -110,6 +127,7 @@ export default function SignInPopup() {
     
     setLoading(true);
     setError("");
+    setSuccessMessage("");
     setFieldErrors({});
 
     try {
@@ -132,12 +150,15 @@ export default function SignInPopup() {
         localStorage.setItem('user', JSON.stringify(userData));
         localStorage.setItem('isAuthenticated', 'true');
         
-        setShowOtpInput(false);
+        setSuccessMessage(response.data.message || "Login successful!");
         
-        router.push('/');
+        setTimeout(() => {
+          setShowOtpInput(false);
+          router.push('/');
+        }, 2000);
         
       } else {
-        setError("Failed to verify OTP. Please try again.");
+        setError(response.data.message || "Failed to verify OTP. Please try again.");
       }
     } catch (error) {
       const errorMessage = error.response?.data?.message || "Failed to verify OTP. Please try again.";
@@ -228,8 +249,9 @@ export default function SignInPopup() {
             onSubmit={handleOtpSubmit}
             onResend={handleOtpResend}
             onClose={handleCloseOtp}
-            error={!!fieldErrors.otp}
-            errorMessage={fieldErrors.otp}
+            error={!!fieldErrors.otp || !!error}
+            errorMessage={fieldErrors.otp || error}
+            successMessage={successMessage}
           />
         )}
       </div>
