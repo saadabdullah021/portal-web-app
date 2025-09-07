@@ -152,9 +152,10 @@ const AuthModals = () => {
       console.log(response);
       
       if(response.status === 200 && response.data.success){
-        const userData = response.data.data.user;
+        const userData = response.data.data;
         
         localStorage.setItem('user', JSON.stringify(userData));
+        localStorage.setItem('authToken', userData.token);
         localStorage.setItem('isAuthenticated', 'true');
         
         setSignupSuccessMessage(response.data.message || "Account created successfully!");
@@ -365,9 +366,10 @@ const AuthModals = () => {
       console.log(response);
       
       if(response.status === 200 && response.data.success){
-        const userData = response.data.data.user;
+        const userData = response.data.data;
         
         localStorage.setItem('user', JSON.stringify(userData));
+        localStorage.setItem('authToken', userData.token);
         localStorage.setItem('isAuthenticated', 'true');
         
         setLoginSuccessMessage(response.data.message || "Login successful!");

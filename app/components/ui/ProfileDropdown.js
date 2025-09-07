@@ -4,8 +4,15 @@ import { useTranslation } from "react-i18next";
 
 
 
-const ProfileDropdown = () => {
+const ProfileDropdown = ({ user }) => {
   const { i18n, t } = useTranslation("home");
+
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('isAuthenticated');
+    window.location.reload();
+  };
 
 const menuItems = [
   {
@@ -82,6 +89,27 @@ const menuItems = [
       `}
     >
       <div className="px-2">
+        {/* User Info Section */}
+        {user && (
+          <div className="px-3 py-3 border-b border-gray-200">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                <span className="text-sm font-bold text-gray-600">
+                  {user.full_name ? user.full_name.charAt(0).toUpperCase() : 'G'}
+                </span>
+              </div>
+              <div>
+                <p className="font-semibold text-sm text-gray-900">
+                  {user.full_name || 'Guest User'}
+                </p>
+                <p className="text-xs text-gray-500">
+                  {user.phone_number ? `+${user.country_code} ${user.phone_number}` : 'No phone'}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+        
         {menuItems.map((item, index) =>
           item.divider ? (
             <hr key={`divider-${index}`} className="my-2 border-gray-200" />
@@ -100,8 +128,10 @@ const menuItems = [
         )}
 
         {/* Logout Button */}
-        <button className="w-full mt-2 flex items-center justify-center lg:mx-auto px-2 py-2 font-bold text-sm text-[#23262F] border-[1.5px] border-gray-200 rounded-full hover:bg-gray-50 transition-colors duration-200">
-        
+        <button 
+          onClick={handleLogout}
+          className="w-full mt-2 flex items-center justify-center lg:mx-auto px-2 py-2 font-bold text-sm text-[#23262F] border-[1.5px] border-gray-200 rounded-full hover:bg-gray-50 transition-colors duration-200 cursor-pointer"
+        >
           {t('buttons.Logout')}
         </button>
       </div>

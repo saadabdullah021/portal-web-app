@@ -13,7 +13,7 @@ import { useRouter } from "next/navigation";
 import { usePopup } from "../contexts/PopupContext";
 import AuthModals from "./AuthModals";
 
-const Navbar = ({ isAuthenticated }) => {
+const Navbar = () => {
   const [activeDropdown, setActiveDropdown] = useState(null);
   const { t } = useTranslation("home");
   const dropdownRef = useRef(null);
@@ -22,7 +22,39 @@ const Navbar = ({ isAuthenticated }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const [selectedLabel, setSelectedLabel] = useState("Language");
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState(null);
 
+
+  // Check authentication status from localStorage
+  useEffect(() => {
+    const checkAuthStatus = () => {
+      try {
+        const authToken = localStorage.getItem('authToken');
+        const userData = localStorage.getItem('user');
+        const isAuth = localStorage.getItem('isAuthenticated');
+        
+        if (authToken && userData && isAuth === 'true') {
+          setIsAuthenticated(true);
+          setUser(JSON.parse(userData));
+        } else {
+          setIsAuthenticated(false);
+          setUser(null);
+        }
+      } catch (error) {
+        console.error('Error checking auth status:', error);
+        setIsAuthenticated(false);
+        setUser(null);
+      }
+    };
+
+    checkAuthStatus();
+    
+    // Listen for storage changes (when user logs in/out in another tab)
+    window.addEventListener('storage', checkAuthStatus);
+    
+    return () => window.removeEventListener('storage', checkAuthStatus);
+  }, []);
 
   // ✅ Outside click handler
   useEffect(() => {
@@ -184,8 +216,8 @@ const changeLanguage = (lng) => {
                   >
                     <div className="w-10 h-10 rounded-full overflow-hidden">
                       <Image
-                        src={host}
-                        alt="host image"
+                        src={user?.profile_image || host}
+                        alt={user?.full_name || "user image"}
                         className="object-cover"
                         width={40}
                         height={40}
@@ -193,7 +225,7 @@ const changeLanguage = (lng) => {
                       />
                     </div>
                   </button>
-                  {activeDropdown === "profile" && <ProfileDropdown />}
+                  {activeDropdown === "profile" && <ProfileDropdown user={user} />}
                 </div>
               </>
             ) : (
