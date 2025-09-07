@@ -159,9 +159,10 @@ export default function SignUpPage() {
             
             if(response.status === 200 && response.data.success){
                 localStorage.setItem('signupPhone', fullPhone);
-            } else {
-                setError("Failed to resend OTP. Please try again.");
-            }
+                setSuccessMessage(response.data.message);
+            } else if(response.status === 200 && response.data.status_code === 400){
+                setError(response.data.message);
+            } 
         } catch (error) {
             const errorMessage = error.response?.data?.message || "Failed to resend OTP. Please try again.";
             setError(errorMessage);
@@ -201,6 +202,8 @@ export default function SignUpPage() {
                 localStorage.setItem('signupPhone', fullPhone);
                 closePopup('signup');
                 setShowIdentityConfirmation(true);
+            } else if(response.status === 200 && response.data.status_code === 400){
+                setError(response.data.message);
             } else {
                 setError("Failed to verify phone number. Please try again.");
             }

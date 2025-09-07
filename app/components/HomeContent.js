@@ -14,6 +14,7 @@ import LastMinuteDealsSection from "./HomeComponents/LastMinuteDealsSection";
 
 import PromotionalVideoSection from "./HomeComponents/PromotionalVideoSection";
 import { useEffect, useMemo, useState } from "react";
+import { usePopup } from "../contexts/PopupContext";
 
 import WhyPortalSection from "./HomeComponents/WhyPortalSection";
 import axios from '@/lib/axios';
@@ -24,8 +25,22 @@ export default function HomeContent() {
   const [homeComponents, setHomeComponents] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const { i18n } = useTranslation();
+  const { popups } = usePopup();
+
+  // Check if any popup is open
+  const isAnyPopupOpen = popups.login || popups.signup || popups.verification || popups.confirmIdentity;
 
   useEffect(() => {
+    console.log('HomeContent useEffect - isAnyPopupOpen:', isAnyPopupOpen);
+    
+    // Don't make API calls if any popup is open
+    if (isAnyPopupOpen) {
+      console.log('HomeContent - Popup is open, skipping API call');
+      setIsLoading(false);
+      return;
+    }
+
+    console.log('HomeContent - Making API call to /get-home-components');
     let mounted = true;
     const fetchHome = async () => {
       try {
@@ -43,7 +58,7 @@ export default function HomeContent() {
     };
     fetchHome();
     return () => { mounted = false; };
-  }, [i18n.language]);
+  }, [i18n.language, isAnyPopupOpen]);
 
 const renderedSections = useMemo(() => {
   console.log('HomeContent - homeComponents:', homeComponents);
