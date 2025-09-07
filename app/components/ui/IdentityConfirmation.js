@@ -86,7 +86,7 @@ const IdentityConfirmation = ({
                 <div className="text-center">
                     <button
                         onClick={handleContinue}
-                        className="bg-[#3B71FE] text-white font-semibold py-3 px-8 rounded-full hover:bg-blue-700 transition-colors text-[16px]"
+                        className="bg-[#3B71FE] text-white font-semibold py-3 px-8 rounded-full hover:bg-blue-700 transition-colors text-[16px] cursor-pointer"
                     >
                         Continue
                     </button>

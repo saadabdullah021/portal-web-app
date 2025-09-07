@@ -70,7 +70,7 @@ const AuthNavbar = () => {
               onClick={() =>
                 changeLanguage(i18n.language === "en" ? "ar" : "en")
               }
-              className="flex items-center space-x-1 text-[#777E90] hover:text-gray-600 p-2 rounded-md transition"
+              className="flex items-center space-x-1 text-[#777E90] hover:text-gray-600 p-2 rounded-md transition cursor-pointer"
             >
               <Globe className="h-4 w-4" />
               <span className="text-sm font-medium capitalize">
@@ -82,7 +82,7 @@ const AuthNavbar = () => {
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={toggleMenu}
-                className="p-2 rounded-md text-[#777E90] hover:text-gray-500 hover:bg-gray-100 transition"
+                className="p-2 rounded-md text-[#777E90] hover:text-gray-500 hover:bg-gray-100 transition cursor-pointer"
               >
                 <Menu className="h-6 w-6" />
               </button>
@@ -124,7 +124,7 @@ const AuthNavbar = () => {
                   {/* Login / Sign Up */}
                   <button
                      onClick={handleSignupClick}
-                    className={`block px-4 py-2 mt-2  w-full  rounded-xl font-bold text-sm text-[#23262F] hover:bg-gray-50 transition-colors duration-200
+                    className={`block px-4 py-2 mt-2  w-full  rounded-xl font-bold text-sm text-[#23262F] hover:bg-gray-50 transition-colors duration-200 cursor-pointer
                        ${i18n.language === "ar" ? " text-right lg:text-right  " : " text-left lg:text-left "}
                       `}
                   >

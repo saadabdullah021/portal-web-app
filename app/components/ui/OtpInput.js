@@ -82,7 +82,7 @@ const OtpInput = ({
             <div className={`bg-white rounded-2xl shadow-2xl w-[480px] p-8 relative ${className}`}>
                 <button
                     onClick={onClose}
-                    className="absolute -top-4 -right-0 lg:-right-4 bg-white rounded-full shadow-md text-gray-500 hover:text-gray-700 p-1 transition"
+                    className="absolute -top-4 -right-0 lg:-right-4 bg-white rounded-full shadow-md text-gray-500 hover:text-gray-700 p-1 transition cursor-pointer"
                 >
                     <X size={20} />
                 </button>
@@ -136,7 +136,7 @@ const OtpInput = ({
                     <button
                         onClick={handleResend}
                         disabled={loading}
-                        className="text-[#3B71FE] text-sm hover:underline font-semibold disabled:opacity-50"
+                        className="text-[#3B71FE] text-sm hover:underline font-semibold disabled:opacity-50 cursor-pointer"
                     >
                         Didnt receive the code? Resend
                     </button>
@@ -146,7 +146,7 @@ const OtpInput = ({
                     <button
                         onClick={() => handleSubmit(otp.join(''))}
                         disabled={loading || otp.some(digit => digit === '')}
-                        className="bg-gray-200 text-gray-600 font-medium py-3 px-8 rounded-lg hover:bg-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="bg-gray-200 text-gray-600 font-medium py-3 px-8 rounded-lg hover:bg-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                     >
                         Continue
                     </button>

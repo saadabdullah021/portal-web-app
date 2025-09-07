@@ -479,7 +479,7 @@ const AuthModals = () => {
               {t('signup.already_account') || 'Already have an account?'} {" "}
               <button 
                 onClick={handleSignupLoginClick}
-                className="text-[#3B71FE] text-xs hover:underline font-semibold"
+                className="text-[#3B71FE] text-xs hover:underline font-semibold cursor-pointer"
               >
                 {t('signup.login') || 'Login'}
               </button>

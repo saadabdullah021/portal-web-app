@@ -121,7 +121,7 @@ const changeLanguage = (lng) => {
                       <button
                         key={lang.code}
                         onClick={() => changeLanguage(lang.code)}
-                        className={`w-full text-left px-3 py-3 rounded-xl hover:bg-gray-50 transition-colors duration-200 ${
+                        className={`w-full text-left px-3 py-3 rounded-xl hover:bg-gray-50 transition-colors duration-200 cursor-pointer ${
                           i18n.language === lang.code ? 'bg-[#F4F5F6] rounded-[8px]' : ''
                           
                         }
@@ -257,7 +257,7 @@ const changeLanguage = (lng) => {
                   <button
                   
                      onClick={handleSignupClick}
-                    className={`block px-4 py-2 mt-2  w-full  rounded-xl font-bold text-sm text-[#23262F] hover:bg-gray-50 transition-colors duration-200
+                    className={`block px-4 py-2 mt-2  w-full  rounded-xl font-bold text-sm text-[#23262F] hover:bg-gray-50 transition-colors duration-200 cursor-pointer
                        ${i18n.language === "ar" ? " text-right lg:text-right  " : " text-left lg:text-left "}
                       `}
                   >
