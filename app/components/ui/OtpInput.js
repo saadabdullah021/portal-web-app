@@ -6,6 +6,8 @@ const OtpInput = ({
     onClose, 
     onSubmit, 
     onResend,
+    error = false,
+    errorMessage = "",
     className = "" 
 }) => {
     const [otp, setOtp] = useState(['', '', '', '']);
@@ -82,23 +84,37 @@ const OtpInput = ({
                     We texted you on {phoneNumber}
                 </p>
 
-                <div className="flex justify-center gap-4 mb-8">
+                <div className="flex justify-center gap-4 mb-4">
                     {otp.map((digit, index) => (
-                        <input
-                            key={index}
-                            ref={el => inputRefs.current[index] = el}
-                            type="text"
-                            inputMode="numeric"
-                            pattern="[0-9]*"
-                            maxLength={1}
-                            value={digit}
-                            onChange={(e) => handleInputChange(index, e.target.value)}
-                            onKeyDown={(e) => handleKeyDown(index, e)}
-                            className="w-16 h-16 text-center text-2xl font-bold border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none bg-gray-50"
-                            disabled={loading}
-                        />
+                        <div key={index} className="relative">
+                            <input
+                                ref={el => inputRefs.current[index] = el}
+                                type="text"
+                                inputMode="numeric"
+                                pattern="[0-9]*"
+                                maxLength={1}
+                                value={digit}
+                                onChange={(e) => handleInputChange(index, e.target.value)}
+                                onKeyDown={(e) => handleKeyDown(index, e)}
+                                className={`w-16 h-16 text-center text-2xl font-bold border-2 rounded-lg focus:outline-none bg-gray-50 pr-8 ${
+                                    error ? 'border-red-500' : 'border-gray-200 focus:border-blue-500'
+                                }`}
+                                disabled={loading}
+                            />
+                            {error && (
+                                <div className="absolute top-1/2 right-2 transform -translate-y-1/2 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
+                                    <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                                    </svg>
+                                </div>
+                            )}
+                        </div>
                     ))}
                 </div>
+
+                {error && errorMessage && (
+                    <p className="text-red-500 text-sm text-center mb-4">{errorMessage}</p>
+                )}
 
                 <div className="text-center">
                     <button

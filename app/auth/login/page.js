@@ -10,21 +10,48 @@ import { useRouter } from "next/navigation";
 import PhoneInput from "@/app/components/ui/PhoneInput";
 import OtpInput from "@/app/components/ui/OtpInput";
 import axios from "@/lib/axios";
-import { showToast } from 'nextjs-toast-notify';
 
 export default function SignInPopup() {
   const [phoneData, setPhoneData] = useState({ countryCode: "+966", phoneNumber: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState({});
   const [showOtpInput, setShowOtpInput] = useState(false);
   const { t } = useTranslation('auth'); 
   const { popups, closePopup, openPopup } = usePopup();
   const router = useRouter();
 
+  const validatePhoneNumber = (phoneNumber) => {
+    if (!phoneNumber || phoneNumber.trim() === '') {
+      return 'Phone number is required';
+    }
+    if (phoneNumber.length < 8) {
+      return 'Phone number must be at least 8 digits';
+    }
+    if (!/^\d+$/.test(phoneNumber)) {
+      return 'Phone number must contain only digits';
+    }
+    return null;
+  };
+
+  const validateOtp = (otp) => {
+    if (!otp || otp.trim() === '') {
+      return 'OTP is required';
+    }
+    if (otp.length !== 6) {
+      return 'OTP must be 6 digits';
+    }
+    if (!/^\d+$/.test(otp)) {
+      return 'OTP must contain only digits';
+    }
+    return null;
+  };
+
   const handleClosePopup = () => {
     closePopup('login');
     setPhoneData({ countryCode: "+966", phoneNumber: "" });
     setError("");
+    setFieldErrors({});
     setShowOtpInput(false);
   };
 
@@ -33,16 +60,16 @@ export default function SignInPopup() {
   };
 
   const handlePhoneSubmit = async () => {
-    const fullPhone = phoneData.countryCode + phoneData.phoneNumber;
-    
-    if (!phoneData.phoneNumber) {
-      setError("Please enter your phone number");
-      showToast.error("Please enter your phone number", { position: "top-center" });
+    const phoneError = validatePhoneNumber(phoneData.phoneNumber);
+    if (phoneError) {
+      setFieldErrors({ phone: phoneError });
       return;
     }
 
+    const fullPhone = phoneData.countryCode + phoneData.phoneNumber;
     setLoading(true);
     setError("");
+    setFieldErrors({});
 
     try {
       const payload = {
@@ -56,29 +83,34 @@ export default function SignInPopup() {
       console.log(response);
       
       if(response.status === 200 && response.data.success){
-        showToast.success("OTP sent successfully!", { position: "top-center" });
         localStorage.setItem('loginPhone', fullPhone);
         closePopup('login');
         setShowOtpInput(true);
       } else {
-        showToast.error("Failed to send OTP. Please try again.", { position: "top-center" });
+        setError("Failed to send OTP. Please try again.");
       }
     } catch (error) {
       const errorMessage = error.response?.data?.message || "Failed to send OTP. Please try again.";
       setError(errorMessage);
-      showToast.error(errorMessage, { position: "top-center" });
     } finally {
       setLoading(false);
     }
   };
 
   const handleOtpSubmit = async (otp) => {
+    const otpError = validateOtp(otp);
+    if (otpError) {
+      setFieldErrors({ otp: otpError });
+      return;
+    }
+
     const fullPhone = phoneData.countryCode + phoneData.phoneNumber;
     const countryCode = phoneData.countryCode.replace('+', '');
     const phoneNumber = phoneData.phoneNumber;
     
     setLoading(true);
     setError("");
+    setFieldErrors({});
 
     try {
       const payload = {
@@ -100,20 +132,16 @@ export default function SignInPopup() {
         localStorage.setItem('user', JSON.stringify(userData));
         localStorage.setItem('isAuthenticated', 'true');
         
-        showToast.success("Login successful!", { position: "top-center" });
-        
         setShowOtpInput(false);
         
         router.push('/');
         
       } else {
-        showToast.error("Failed to verify OTP. Please try again.", { position: "top-center" });
         setError("Failed to verify OTP. Please try again.");
       }
     } catch (error) {
       const errorMessage = error.response?.data?.message || "Failed to verify OTP. Please try again.";
       setError(errorMessage);
-      showToast.error(errorMessage, { position: "top-center" });
     } finally {
       setLoading(false);
     }
@@ -132,13 +160,13 @@ export default function SignInPopup() {
       const response = await axios.post('/send-otp', payload);
       
       if(response.status === 200 && response.data.success){
-        showToast.success("OTP resent successfully!", { position: "top-center" });
+        // OTP resent successfully - no toast needed
       } else {
-        showToast.error("Failed to resend OTP. Please try again.", { position: "top-center" });
+        setError("Failed to resend OTP. Please try again.");
       }
     } catch (error) {
       const errorMessage = error.response?.data?.message || "Failed to resend OTP. Please try again.";
-      showToast.error(errorMessage, { position: "top-center" });
+      setError(errorMessage);
     }
   };
 
@@ -179,7 +207,8 @@ export default function SignInPopup() {
                   onChange={handlePhoneChange}
                   placeholder="Enter your phone number"
                   className="w-full"
-                  error={!!error}
+                  error={!!fieldErrors.phone}
+                  errorMessage={fieldErrors.phone}
                   onSubmit={handlePhoneSubmit}
                 />
               </div>
@@ -199,6 +228,8 @@ export default function SignInPopup() {
             onSubmit={handleOtpSubmit}
             onResend={handleOtpResend}
             onClose={handleCloseOtp}
+            error={!!fieldErrors.otp}
+            errorMessage={fieldErrors.otp}
           />
         )}
       </div>
