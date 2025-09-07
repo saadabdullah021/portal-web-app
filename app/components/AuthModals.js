@@ -16,6 +16,9 @@ const AuthModals = () => {
   const { popups, closePopup, openPopup } = usePopup();
   const router = useRouter();
 
+  // Debug logging
+  console.log('AuthModals - popups state:', popups);
+
   // Signup states
   const [signupPhoneData, setSignupPhoneData] = useState({ countryCode: "+966", phoneNumber: "", email: "" });
   const [signupLoading, setSignupLoading] = useState(false);
@@ -474,14 +477,12 @@ const AuthModals = () => {
 
             <div className="text-center mt-6 text-[#353945] text-xs">
               {t('signup.already_account') || 'Already have an account?'} {" "}
-              <Link href="/auth/login">
-                <button 
-                  onClick={handleSignupLoginClick}
-                  className="text-[#3B71FE] text-xs hover:underline font-semibold"
-                >
-                  {t('signup.login') || 'Login'}
-                </button>
-              </Link>
+              <button 
+                onClick={handleSignupLoginClick}
+                className="text-[#3B71FE] text-xs hover:underline font-semibold"
+              >
+                {t('signup.login') || 'Login'}
+              </button>
             </div>
           </div>
         </div>

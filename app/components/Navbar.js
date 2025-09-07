@@ -11,6 +11,7 @@ import ProfileDropdown from "./ui/ProfileDropdown";
 import host from '../../public/images/hostImage.png'
 import { useRouter } from "next/navigation";
 import { usePopup } from "../contexts/PopupContext";
+import AuthModals from "./AuthModals";
 
 const Navbar = ({ isAuthenticated }) => {
   const [activeDropdown, setActiveDropdown] = useState(null);
@@ -49,11 +50,10 @@ const changeLanguage = (lng) => {
 
 
   const handleSignupClick = () => {
+    console.log('Navbar - handleSignupClick called');
     toggleMenu();
-    router.push('/auth/signup');
-    setTimeout(() => {
-      openPopup('signup');
-    }, 100);
+    openPopup('signup');
+    console.log('Navbar - openPopup called');
   };
 
   // Language options
@@ -271,6 +271,9 @@ const changeLanguage = (lng) => {
           </div>
         </div>
       </div>
+      
+      {/* Auth Modals */}
+      <AuthModals />
     </nav>
   );
 };
