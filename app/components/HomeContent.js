@@ -34,7 +34,7 @@ export default function HomeContent() {
   }, [popups.login, popups.signup, popups.verification, popups.confirmIdentity]);
 
   useEffect(() => {
-    if (isAnyPopupOpen || hasFetchedData) {
+    if (isAnyPopupOpen) {
       setIsLoading(false);
       return;
     }
@@ -61,7 +61,7 @@ export default function HomeContent() {
     };
     fetchHome();
     return () => { mounted = false; };
-  }, [i18n.language, isAnyPopupOpen, hasFetchedData]);
+  }, [i18n.language, isAnyPopupOpen]);
 
 const renderedSections = useMemo(() => {
   if (homeComponents.length === 0) {
