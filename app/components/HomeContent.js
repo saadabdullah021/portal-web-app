@@ -77,8 +77,7 @@ const renderedSections = useMemo(() => {
         );
       }
       if (
-        section.component_design_type === 'slider' ||
-        section.component_title === 'Check out homes'
+        section.component_design_type === 'slider' 
       ) {
         console.log(`HomeContent - Creating slider for section ${idx}:`, section.items?.records);
         Comp = (
