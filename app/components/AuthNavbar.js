@@ -9,6 +9,7 @@ import { useTranslation } from "react-i18next";
 import i18n from "../../i18n/i18n";
 import { usePopup } from "../contexts/PopupContext";
 import { useRouter } from "next/navigation";
+import AuthModals from "./AuthModals";
 
 const AuthNavbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -40,12 +41,7 @@ const AuthNavbar = () => {
 
   const handleSignupClick = () => {
     toggleMenu();
-    // Pehle signup page pe navigate karein
-    router.push('/auth/signup');
-    // Thoda delay ke baad popup open karein
-    setTimeout(() => {
-      openPopup('signup');
-    }, 100);
+    openPopup('signup');
   };
   return (
     <nav className="bg-white shadow-sm sticky top-0 z-50">
@@ -125,7 +121,6 @@ const AuthNavbar = () => {
                   <hr className="text-gray-300  my-2" />
                   {/* Login / Sign Up */}
                   <button
-                  
                      onClick={handleSignupClick}
                     className={`block px-4 py-2 mt-2  w-full  rounded-xl font-bold text-sm text-[#23262F] hover:bg-gray-50 transition-colors duration-200
                        ${i18n.language === "ar" ? " text-right lg:text-right  " : " text-left lg:text-left "}
@@ -139,6 +134,9 @@ const AuthNavbar = () => {
           </div>
         </div>
       </div>
+      
+      {/* Auth Modals */}
+      <AuthModals />
     </nav>
   );
 };
