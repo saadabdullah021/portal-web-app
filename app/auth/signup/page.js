@@ -203,15 +203,14 @@ export default function SignUpPage() {
             const response = await axios.post('/send-otp', payload);
             
             if(response.status === 200 && response.data.success){
-                showToast.success("OTP sent successfully!", { position: "top-center" });
                 setShowIdentityConfirmation(false);
                 setShowOtpInput(true);
             } else {
-                showToast.error("Failed to send OTP. Please try again.", { position: "top-center" });
+                setError("Failed to send OTP. Please try again.");
             }
         } catch (error) {
             const errorMessage = error.response?.data?.message || "Failed to send OTP. Please try again.";
-            showToast.error(errorMessage, { position: "top-center" });
+            setError(errorMessage);
         }
     };
 

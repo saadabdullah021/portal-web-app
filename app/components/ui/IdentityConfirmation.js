@@ -18,7 +18,14 @@ const IdentityConfirmation = ({
         if (!phone) return '';
         const length = phone.length;
         if (length <= 8) return phone;
-        return phone;
+        
+        // Keep country code and first 2 digits, mask the rest
+        const countryCode = phone.substring(0, 4); // +966
+        const firstDigits = phone.substring(4, 6); // 55
+        const maskedDigits = '•••';
+        const lastDigits = phone.substring(length - 2); // 84
+        
+        return `${countryCode} ${firstDigits} ${maskedDigits} ${lastDigits}`;
     };
 
     const maskEmail = (email) => {

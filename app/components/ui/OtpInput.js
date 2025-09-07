@@ -14,6 +14,20 @@ const OtpInput = ({
     const inputRefs = useRef([]);
     const [loading, setLoading] = useState(false);
 
+    const maskPhoneNumber = (phone) => {
+        if (!phone) return '';
+        const length = phone.length;
+        if (length <= 8) return phone;
+        
+        // Keep country code and first 2 digits, mask the rest
+        const countryCode = phone.substring(0, 4); // +966
+        const firstDigits = phone.substring(4, 6); // 55
+        const maskedDigits = '•••';
+        const lastDigits = phone.substring(length - 2); // 84
+        
+        return `${countryCode} ${firstDigits} ${maskedDigits} ${lastDigits}`;
+    };
+
     useEffect(() => {
         if (inputRefs.current[0]) {
             inputRefs.current[0].focus();
@@ -81,7 +95,7 @@ const OtpInput = ({
                 </h2>
                 
                 <p className="text-[#777E90] text-center text-[16px] mb-8">
-                    We texted you on {phoneNumber}
+                    We texted you on {maskPhoneNumber(phoneNumber)}
                 </p>
 
                 <div className="flex justify-center gap-4 mb-4">
