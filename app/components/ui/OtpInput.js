@@ -45,10 +45,6 @@ const OtpInput = ({
         if (value && index < 3) {
             inputRefs.current[index + 1]?.focus();
         }
-
-        if (newOtp.every(digit => digit !== '') && index === 3) {
-            handleSubmit(newOtp.join(''));
-        }
     };
 
     const handleKeyDown = (index, e) => {
