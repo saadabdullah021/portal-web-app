@@ -39,25 +39,14 @@ const AuthModals = () => {
   // Clear signup states when popup opens
   useEffect(() => {
     if (popups.signup) {
-      setSignupPhoneData({ countryCode: "+966", phoneNumber: "", email: "" });
-      setSignupError("");
-      setSignupSuccessMessage("");
-      setSignupFieldErrors({});
-      setShowSignupOtpInput(false);
-      setShowIdentityConfirmation(false);
-      setSignupLoading(false);
+      clearSignupState();
     }
   }, [popups.signup]);
 
   // Clear login states when popup opens
   useEffect(() => {
     if (popups.login) {
-      setLoginPhoneData({ countryCode: "+966", phoneNumber: "" });
-      setLoginError("");
-      setLoginSuccessMessage("");
-      setLoginFieldErrors({});
-      setShowLoginOtpInput(false);
-      setLoginLoading(false);
+      clearLoginState();
     }
   }, [popups.login]);
 
@@ -101,7 +90,29 @@ const AuthModals = () => {
     setShowIdentityConfirmation(false);
   };
 
+  const clearSignupState = () => {
+    setSignupPhoneData({ countryCode: "+966", phoneNumber: "", email: "" });
+    setSignupError("");
+    setSignupSuccessMessage("");
+    setSignupFieldErrors({});
+    setShowSignupOtpInput(false);
+    setShowIdentityConfirmation(false);
+    setSignupLoading(false);
+  };
+
+  const clearLoginState = () => {
+    setLoginPhoneData({ countryCode: "+966", phoneNumber: "" });
+    setLoginError("");
+    setLoginSuccessMessage("");
+    setLoginFieldErrors({});
+    setShowLoginOtpInput(false);
+    setLoginLoading(false);
+  };
+
   const handleSignupLoginClick = () => {
+    // Clear login state before opening login modal
+    clearLoginState();
+    
     closePopup('signup');
     openPopup('login');
   };
