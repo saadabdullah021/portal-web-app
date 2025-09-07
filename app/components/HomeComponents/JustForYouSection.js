@@ -106,7 +106,7 @@ const JustForYouSection = ({ items, sectionData  }) => {
         <div className="absolute top-4 left-4">
           {hasDiscount ? (
             <span className="bg-[#58C27D] text-white text-xs font-poppins font-bold px-3 py-2 rounded">
-              {listing.discount}
+              {listing.discount}% OFF
             </span>
           ) : listing.added_by_super_host ? (
             <span className="bg-[#FCFCFD] font-poppins text-[#23262F] text-xs font-bold p-2 rounded">
@@ -142,10 +142,10 @@ const JustForYouSection = ({ items, sectionData  }) => {
             </span>
           )}
           <div className="flex items-baseline gap-1">
-            <span className="text-lg font-semibold font-poppins text-gray-900">
-              {hasDiscount ? listing.discounted_price : listing.actual_price}
+             <span className={`text-sm font-bold font-poppins ${hasDiscount ? 'text-[#58C27D]' : 'text-[#141416]'}`}>
+              {hasDiscount ? listing.discounted_price : listing.actual_price} SAR
             </span>
-            <span className="text-[#777E90] text-sm">/ {t('lastMinuteDeals.night')}</span>
+            <span className="text-[#777E90] font-medium font-poppins text-xs">/ {t('lastMinuteDeals.night')}</span>
           </div>
         </div>
       </div>

@@ -260,27 +260,33 @@ const SearchBar = ({ onSearch }) => {
           </div>
 
           <div className={`
-            absolute custom-scrollbar-hide z-100 bg-[#fff] shadow-xl rounded-3xl lg:top-30 max-h-[400px] w-full lg:w-[400px] overflow-y-auto
+            absolute z-[9999] bg-[#fff] shadow-xl rounded-3xl lg:top-30 max-h-[300px] w-full lg:w-[400px] overflow-y-auto
             transition-all duration-300 ease-in-out origin-top 
             ${i18n.language === "ar" ? "lg:right-0" : "lg:-left-4"}
             ${activeDropdown === "location" && (filteredLocations.length > 0 || recentSearches.length > 0)
               ? "opacity-100 scale-100 translate-y-0 "
               : "opacity-0 scale-95 -translate-y-2 pointer-events-none "
             }
+            [&::-webkit-scrollbar]:w-1
+            [&::-webkit-scrollbar-track]:bg-transparent
+            [&::-webkit-scrollbar-thumb]:bg-gray-300
+            [&::-webkit-scrollbar-thumb]:rounded-full
+            [&::-webkit-scrollbar-thumb:hover]:bg-gray-400
+            pr-2
           `}>
-            <div className="p-4">
+            <div className="p-4 pb-6">
               {filteredLocations.length > 0 && (
                 <div>
                   <h3 className="text-sm font-semibold text-gray-700 mb-3 px-2">
                     {location.trim() === '' ? 'Search destinations' : 'Search results'}
                   </h3>
-                  {filteredLocations.slice(0, 10).map((location, idx) => (
+                  {filteredLocations.slice(0, 15).map((location, idx) => (
                     <div
                       key={`${location.cityId}-${location.districtId}`}
                       onClick={() => handleLocationSelect(location)}
                       className={`px-2 py-3 cursor-pointer flex items-center space-x-3 rounded-xl transition-colors duration-200 ${
                         selectedIndex === idx ? 'bg-[#3B71FE]/10' : 'hover:bg-[#F4F5F6]'
-                      }`}
+                      } ${idx === 14 ? 'mb-2' : ''}`}
                     >
                       <span className='bg-[#FCFCFD] border-[#E6E8EC] border-[1px] rounded-full w-8 h-8 flex items-center justify-center'>
                         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -295,6 +301,13 @@ const SearchBar = ({ onSearch }) => {
                       </div>
                     </div>
                   ))}
+                  {filteredLocations.length > 15 && (
+                    <div className="px-2 py-3 text-center border-t border-gray-100 mt-2">
+                      <p className="text-sm text-[#777E91]">
+                        {filteredLocations.length - 15} more results available
+                      </p>
+                    </div>
+                  )}
                 </div>
               )}
 
