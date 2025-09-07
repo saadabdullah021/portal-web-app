@@ -114,7 +114,7 @@ const menuItems = [
                   {user.full_name || 'Guest User'}
                 </p>
                 <p className="text-xs text-gray-500">
-                  {user.phone_number ? `+${user.country_code} ${user.phone_number}` : 'No phone'}
+                  {user.phone_number ? `+${user.phone_number}` : 'No phone'}
                 </p>
               </div>
             </div>
