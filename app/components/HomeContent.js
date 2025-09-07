@@ -24,15 +24,17 @@ import { useTranslation } from 'react-i18next';
 export default function HomeContent() {
   const [homeComponents, setHomeComponents] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [hasFetchedData, setHasFetchedData] = useState(false);
   const { i18n } = useTranslation();
   const { popups } = usePopup();
 
-  // Check if any popup is open
-  const isAnyPopupOpen = popups.login || popups.signup || popups.verification || popups.confirmIdentity;
+
+  const isAnyPopupOpen = useMemo(() => {
+    return popups.login || popups.signup || popups.verification || popups.confirmIdentity;
+  }, [popups.login, popups.signup, popups.verification, popups.confirmIdentity]);
 
   useEffect(() => {
-    // Don't make API calls if any popup is open
-    if (isAnyPopupOpen) {
+    if (isAnyPopupOpen || hasFetchedData) {
       setIsLoading(false);
       return;
     }
@@ -47,6 +49,7 @@ export default function HomeContent() {
         });
         if (!mounted) return;
         setHomeComponents(Array.isArray(data?.data?.records) ? data.data?.records : []);
+        setHasFetchedData(true);
       } catch (error) {
         console.error('HomeContent - API error:', error);
         setHomeComponents([]);
@@ -58,7 +61,7 @@ export default function HomeContent() {
     };
     fetchHome();
     return () => { mounted = false; };
-  }, [i18n.language, isAnyPopupOpen]);
+  }, [i18n.language, isAnyPopupOpen, hasFetchedData]);
 
 const renderedSections = useMemo(() => {
   if (homeComponents.length === 0) {
