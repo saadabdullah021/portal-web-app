@@ -13,7 +13,6 @@ const HeroSection = () => {
   }, []);
 
   const handleSearch = (searchData) => {
-    console.log(searchData); 
   };
 
   return (

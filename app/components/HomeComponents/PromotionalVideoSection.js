@@ -23,7 +23,6 @@ const PromotionalVideoSection = () => {
     const playPromise = videoRef.current.play();
     if (playPromise !== undefined) {
       playPromise.catch(error => {
-        console.log("Play failed:", error);
       });
     }
   }

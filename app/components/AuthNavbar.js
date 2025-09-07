@@ -40,10 +40,8 @@ const AuthNavbar = () => {
   };
 
   const handleSignupClick = () => {
-    console.log('AuthNavbar - handleSignupClick called');
     toggleMenu();
     openPopup('signup');
-    console.log('AuthNavbar - openPopup called');
   };
   return (
     <nav className="bg-white shadow-sm sticky top-0 z-50">

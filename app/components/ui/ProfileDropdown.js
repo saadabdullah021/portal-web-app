@@ -1,16 +1,27 @@
 "use client";
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { useAppDispatch } from "../../../store/hooks";
+import { logoutSuccess } from "../../../store/actions/authActions";
 
 
 
 const ProfileDropdown = ({ user }) => {
   const { i18n, t } = useTranslation("home");
+  const dispatch = useAppDispatch();
+  
 
   const handleLogout = () => {
     localStorage.removeItem('user');
     localStorage.removeItem('authToken');
     localStorage.removeItem('isAuthenticated');
+    
+    // Update Redux state
+    dispatch(logoutSuccess());
+    
+    // Dispatch custom event to notify navbar
+    window.dispatchEvent(new CustomEvent('authStateChanged'));
+    
     window.location.reload();
   };
 

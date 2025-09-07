@@ -31,16 +31,11 @@ export default function HomeContent() {
   const isAnyPopupOpen = popups.login || popups.signup || popups.verification || popups.confirmIdentity;
 
   useEffect(() => {
-    console.log('HomeContent useEffect - isAnyPopupOpen:', isAnyPopupOpen);
-    
     // Don't make API calls if any popup is open
     if (isAnyPopupOpen) {
-      console.log('HomeContent - Popup is open, skipping API call');
       setIsLoading(false);
       return;
     }
-
-    console.log('HomeContent - Making API call to /get-home-components with language:', i18n.language);
     let mounted = true;
     const fetchHome = async () => {
       try {
@@ -51,7 +46,6 @@ export default function HomeContent() {
           }
         });
         if (!mounted) return;
-        console.log('HomeContent - API response:', data);
         setHomeComponents(Array.isArray(data?.data?.records) ? data.data?.records : []);
       } catch (error) {
         console.error('HomeContent - API error:', error);
@@ -67,18 +61,13 @@ export default function HomeContent() {
   }, [i18n.language, isAnyPopupOpen]);
 
 const renderedSections = useMemo(() => {
-  console.log('HomeContent - homeComponents length:', homeComponents.length);
-  console.log('HomeContent - homeComponents:', homeComponents);
-  
   if (homeComponents.length === 0) {
-    console.log('HomeContent - No components to render, showing static sections only');
     return null;
   }
   
   return homeComponents
     .map((section, idx) => {
       let Comp = null;
-      console.log(`HomeContent - Section ${idx}:`, section);
 
       if (section.component_design_type === 'grid') {
         Comp = (
@@ -92,7 +81,6 @@ const renderedSections = useMemo(() => {
       if (
         section.component_design_type === 'slider' 
       ) {
-        console.log(`HomeContent - Creating slider for section ${idx}:`, section.items?.records);
         Comp = (
           <LastMinuteDealsSection
             data={section}

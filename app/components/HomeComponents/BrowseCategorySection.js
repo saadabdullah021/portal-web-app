@@ -39,7 +39,6 @@ const BrowseCategorySection = () => {
           'LampDesk'
         ];
         const normalized = list.map((c, idx) => {
-          console.log(c,'cinnormalized');
           
           const randomIcon = iconPool[Math.floor(Math.random() * iconPool.length)] || 'HelpCircle';
           return {

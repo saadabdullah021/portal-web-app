@@ -12,6 +12,8 @@ import host from '../../public/images/hostImage.png'
 import { useRouter } from "next/navigation";
 import { usePopup } from "../contexts/PopupContext";
 import AuthModals from "./AuthModals";
+import { useAppSelector, useAppDispatch } from "../../store/hooks";
+import { setCredentials, logoutSuccess } from "../../store/actions/authActions";
 
 const Navbar = () => {
   const [activeDropdown, setActiveDropdown] = useState(null);
@@ -22,11 +24,13 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const [selectedLabel, setSelectedLabel] = useState("Language");
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState(null);
+  
+  // Redux state
+  const dispatch = useAppDispatch();
+  const { isAuthenticated, user, token } = useAppSelector(state => state.auth);
 
 
-  // Check authentication status from localStorage
+  // Check authentication status from localStorage and sync with Redux
   useEffect(() => {
     const checkAuthStatus = () => {
       try {
@@ -35,16 +39,24 @@ const Navbar = () => {
         const isAuth = localStorage.getItem('isAuthenticated');
         
         if (authToken && userData && isAuth === 'true') {
-          setIsAuthenticated(true);
-          setUser(JSON.parse(userData));
+          const parsedUser = JSON.parse(userData);
+          
+          // Update Redux state
+          dispatch(setCredentials({
+            user: parsedUser,
+            token: authToken
+          }));
         } else {
-          setIsAuthenticated(false);
-          setUser(null);
+          // Clear Redux state if no valid auth data
+          if (isAuthenticated) {
+            dispatch(logoutSuccess());
+          }
         }
       } catch (error) {
         console.error('Error checking auth status:', error);
-        setIsAuthenticated(false);
-        setUser(null);
+        if (isAuthenticated) {
+          dispatch(logoutSuccess());
+        }
       }
     };
 
@@ -53,8 +65,14 @@ const Navbar = () => {
     // Listen for storage changes (when user logs in/out in another tab)
     window.addEventListener('storage', checkAuthStatus);
     
-    return () => window.removeEventListener('storage', checkAuthStatus);
-  }, []);
+    // Listen for custom auth events
+    window.addEventListener('authStateChanged', checkAuthStatus);
+    
+    return () => {
+      window.removeEventListener('storage', checkAuthStatus);
+      window.removeEventListener('authStateChanged', checkAuthStatus);
+    };
+  }, [dispatch, isAuthenticated]);
 
   // ✅ Outside click handler
   useEffect(() => {
@@ -82,10 +100,8 @@ const changeLanguage = (lng) => {
 
 
   const handleSignupClick = () => {
-    console.log('Navbar - handleSignupClick called');
     toggleMenu();
     openPopup('signup');
-    console.log('Navbar - openPopup called');
   };
 
   // Language options

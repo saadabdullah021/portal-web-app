@@ -10,14 +10,15 @@ import axios from "@/lib/axios";
 import PhoneInput from "./ui/PhoneInput";
 import OtpInput from "./ui/OtpInput";
 import IdentityConfirmation from "./ui/IdentityConfirmation";
+import { useAppDispatch } from "../../store/hooks";
+import { setCredentials } from "../../store/actions/authActions";
 
 const AuthModals = () => {
   const { t } = useTranslation('auth');
   const { popups, closePopup, openPopup } = usePopup();
   const router = useRouter();
+  const dispatch = useAppDispatch();
 
-  // Debug logging
-  console.log('AuthModals - popups state:', popups);
 
   // Signup states
   const [signupPhoneData, setSignupPhoneData] = useState({ countryCode: "+966", phoneNumber: "", email: "" });
@@ -149,7 +150,6 @@ const AuthModals = () => {
       };
 
       const response = await axios.post('/verify-otp', payload);
-      console.log(response);
       
       if(response.status === 200 && response.data.success){
         const userData = response.data.data;
@@ -158,6 +158,15 @@ const AuthModals = () => {
         localStorage.setItem('authToken', userData.token);
         localStorage.setItem('isAuthenticated', 'true');
         
+        // Update Redux state
+        dispatch(setCredentials({
+          user: userData,
+          token: userData.token
+        }));
+        
+        // Dispatch custom event to notify navbar
+        window.dispatchEvent(new CustomEvent('authStateChanged'));
+        
         setSignupSuccessMessage(response.data.message || "Account created successfully!");
         
         setTimeout(() => {
@@ -165,7 +174,6 @@ const AuthModals = () => {
           handleSignupClosePopup();
         }, 2000);
         
-        console.log('User profile created:', userData);
         
       } else {
         setSignupError(response.data.message || "Failed to verify OTP. Please try again.");
@@ -193,7 +201,6 @@ const AuthModals = () => {
       };
 
       const response = await axios.post('/send-otp', payload);
-      console.log(response);
       
       if(response.status === 200 && response.data.success){
         localStorage.setItem('signupPhone', fullPhone);
@@ -234,7 +241,6 @@ const AuthModals = () => {
       };
 
       const response = await axios.post('/send-otp', payload);
-      console.log(response);
       
       if(response.status === 200 && response.data.success){
         localStorage.setItem('signupPhone', fullPhone);
@@ -318,7 +324,6 @@ const AuthModals = () => {
       };
 
       const response = await axios.post('/send-otp', payload);
-      console.log(response);
       
       if(response.status === 200 && response.data.success){
         localStorage.setItem('loginPhone', fullPhone);
@@ -363,7 +368,6 @@ const AuthModals = () => {
       };
 
       const response = await axios.post('/verify-otp', payload);
-      console.log(response);
       
       if(response.status === 200 && response.data.success){
         const userData = response.data.data;
@@ -371,6 +375,15 @@ const AuthModals = () => {
         localStorage.setItem('user', JSON.stringify(userData));
         localStorage.setItem('authToken', userData.token);
         localStorage.setItem('isAuthenticated', 'true');
+        
+        // Update Redux state
+        dispatch(setCredentials({
+          user: userData,
+          token: userData.token
+        }));
+        
+        // Dispatch custom event to notify navbar
+        window.dispatchEvent(new CustomEvent('authStateChanged'));
         
         setLoginSuccessMessage(response.data.message || "Login successful!");
         

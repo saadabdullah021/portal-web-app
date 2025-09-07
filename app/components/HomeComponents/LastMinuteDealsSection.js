@@ -78,9 +78,6 @@ const LastMinuteDealsSection = ({ items , data }) => {
 
   // ✅ Items per view
   const itemsPerView = isMobile ? 1 : 4;
-  console.log('LastMinuteDealsSection - items:', items);
-  console.log('LastMinuteDealsSection - computedData:', computedData);
-  console.log('LastMinuteDealsSection - data:', data);
   // ✅ Clone properties for infinite loop
   const properties = [
     ...computedData.slice(-itemsPerView),
@@ -128,7 +125,6 @@ const LastMinuteDealsSection = ({ items , data }) => {
     const thumbnail = listing.thumbnail || {};
     const hasDiscount = listing.discounted_price && String(listing.discounted_price) !== '0';
     const imageSrc = thumbnail?.thumbnail_url || placeholderImage;
-    console.log(property);
     
     return (
     <div className="bg-white -z-10  rounded-2xl overflow-hidden shadow-sm  transition-all duration-300 transform  flex-shrink-0 w-full md:w-auto group">
@@ -171,8 +167,6 @@ const LastMinuteDealsSection = ({ items , data }) => {
         </h3>
 
         {/* Amenities */}
-        {console.log(property,'check properyunksddksjb')
-        }
         <div className="flex items-center gap-4 mb-6">
           {(Array.isArray(property.amenities) ? property.amenities : []).map((amenity, index) => (
             <div key={index} className="flex items-center gap-2 text-[#777E90]">
@@ -198,16 +192,8 @@ const LastMinuteDealsSection = ({ items , data }) => {
     </div>
   ); };
 
-  console.log('LastMinuteDealsSection - properties:', properties);
-  console.log('LastMinuteDealsSection - currentSlide:', currentSlide);
-  console.log('LastMinuteDealsSection - isRTL:', isRTL);
-  console.log('LastMinuteDealsSection - itemsPerView:', itemsPerView);
-  console.log('LastMinuteDealsSection - computedData.length:', computedData.length);
-  console.log('LastMinuteDealsSection - transform value:', `translateX(-${currentSlide * (100 / itemsPerView)}%)`);
-  
   // Ensure we always have data to render
   if (!properties || properties.length === 0) {
-    console.log('LastMinuteDealsSection: No properties to render');
     return null;
   }
   
