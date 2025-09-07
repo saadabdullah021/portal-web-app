@@ -142,7 +142,7 @@ const SearchBar = ({ onSearch }) => {
   }, []);
 
   const handleLocationSelect = (selectedLocation) => {
-    const fullLocation = `${selectedLocation.label}, ${selectedLocation.cityName}`;
+    const fullLocation = `${selectedLocation.label}`;
     setLocation(fullLocation);
     dispatch(setSelectedLocation(selectedLocation));
     setLocationSelected(true);
@@ -291,7 +291,7 @@ const SearchBar = ({ onSearch }) => {
                       </span>
                       <div className="flex flex-col">
                         <span className="text-[16px] font-medium text-[#23262F]">{location.label}</span>
-                        <span className="text-[14px] text-[#777E91]">{location.cityName}</span>
+                        {/* <span className="text-[14px] text-[#777E91]">{location.cityName}</span> */}
                       </div>
                     </div>
                   ))}
