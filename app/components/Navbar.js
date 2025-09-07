@@ -218,14 +218,22 @@ const changeLanguage = (lng) => {
                     className="flex items-center space-x-2 p-1 rounded-full transition-colors duration-200"
                   >
                     <div className="w-10 h-10 rounded-full overflow-hidden">
-                      <Image
-                        src={user?.profile_image || host}
-                        alt={user?.full_name || "user image"}
-                        className="object-cover"
-                        width={40}
-                        height={40}
-                        loading="lazy"
-                      />
+                      {user?.profile_image ? (
+                        <Image
+                          src={user.profile_image}
+                          alt={user?.full_name || "user image"}
+                          className="object-cover"
+                          width={40}
+                          height={40}
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                          <span className="text-sm font-bold text-gray-600">
+                            {user?.full_name ? user.full_name.charAt(0).toUpperCase() : 'G'}
+                          </span>
+                        </div>
+                      )}
                     </div>
                   </button>
                   {activeDropdown === "profile" && <ProfileDropdown user={user} />}

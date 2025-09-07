@@ -173,8 +173,6 @@ const AuthModals = () => {
           setShowSignupOtpInput(false);
           handleSignupClosePopup();
         }, 2000);
-        
-        
       } else {
         setSignupError(response.data.message || "Failed to verify OTP. Please try again.");
       }
@@ -387,11 +385,8 @@ const AuthModals = () => {
         
         setLoginSuccessMessage(response.data.message || "Login successful!");
         
-        setTimeout(() => {
-          setShowLoginOtpInput(false);
-          router.push('/');
-        }, 2000);
-        
+        setShowLoginOtpInput(false);
+        handleLoginClosePopup();
       } else {
         setLoginError(response.data.message || "Failed to verify OTP. Please try again.");
       }
