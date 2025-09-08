@@ -8,9 +8,11 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import { PopupProvider } from "./contexts/PopupContext";
 import { Providers } from './providers';
+import Loading from './loading';
 
 export default function RootLayout({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(true);
+  const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {
     const loggedIn = localStorage.getItem("isLoggedIn") === "true";
@@ -23,7 +25,19 @@ export default function RootLayout({ children }) {
     if (i18n.language !== savedLanguage) {
       i18n.changeLanguage(savedLanguage);
     }
+    
+    setIsHydrated(true);
   }, []);
+
+  if (!isHydrated) {
+    return (
+      <html lang="en">
+        <body>
+          <Loading />
+        </body>
+      </html>
+    );
+  }
 
   return (
     <html lang="en">
