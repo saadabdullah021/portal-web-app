@@ -8,17 +8,36 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import { PopupProvider } from "./contexts/PopupContext";
 import { Providers } from './providers';
+import Loading from './loading';
 
 export default function RootLayout({ children }) {
-  // ⚡ abhi ke liye dummy state
   const [isAuthenticated, setIsAuthenticated] = useState(true);
+  const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {
-    // 👇 yahan pe baad me actual login status ayega
-    // abhi ke liye localStorage se check kar rahe hain
     const loggedIn = localStorage.getItem("isLoggedIn") === "true";
     setIsAuthenticated(loggedIn);
+    
+    const savedLanguage = localStorage.getItem("i18nextLng") || "en";
+    document.documentElement.dir = savedLanguage === "ar" ? "rtl" : "ltr";
+    document.documentElement.lang = savedLanguage;
+    
+    if (i18n.language !== savedLanguage) {
+      i18n.changeLanguage(savedLanguage);
+    }
+    
+    setIsHydrated(true);
   }, []);
+
+  if (!isHydrated) {
+    return (
+      <html lang="en">
+        <body>
+          <Loading />
+        </body>
+      </html>
+    );
+  }
 
   return (
     <html lang="en">
@@ -26,9 +45,11 @@ export default function RootLayout({ children }) {
         <Providers>
           <I18nextProvider i18n={i18n}>
             <PopupProvider>
-              <Navbar isAuthenticated={isAuthenticated} />
-              <main>{children}</main>
-               <Footer />
+              <div className="min-h-screen">
+                <Navbar isAuthenticated={isAuthenticated} />
+                <main>{children}</main>
+                <Footer />
+              </div>
             </PopupProvider>
           </I18nextProvider>
         </Providers>

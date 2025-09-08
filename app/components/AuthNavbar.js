@@ -33,7 +33,8 @@ const AuthNavbar = () => {
 
   const changeLanguage = (lng) => {
     i18n.changeLanguage(lng);
-    document.dir = lng === "ar" ? "rtl" : "ltr";
+    document.documentElement.dir = lng === "ar" ? "rtl" : "ltr";
+    document.documentElement.lang = lng;
     try {
       localStorage.setItem('i18nextLng', lng);
     } catch {}
