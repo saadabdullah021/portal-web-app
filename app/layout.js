@@ -31,9 +31,11 @@ export default function RootLayout({ children }) {
         <Providers>
           <I18nextProvider i18n={i18n}>
             <PopupProvider>
-              <Navbar isAuthenticated={isAuthenticated} />
-              <main>{children}</main>
-              <Footer />
+              <div className="overflow-x-hidden">
+                <Navbar isAuthenticated={isAuthenticated} />
+                <main>{children}</main>
+                <Footer />
+              </div>
             </PopupProvider>
           </I18nextProvider>
         </Providers>

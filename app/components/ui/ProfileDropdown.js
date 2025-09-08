@@ -88,7 +88,7 @@ const menuItems = [
     <div
       className={`
         bg-white shadow-lg border border-gray-100 py-2 z-50
-        fixed top-16 left-0 w-full rounded-r-2xl h-[40%]
+        fixed top-16 left-0 w-full max-w-sm rounded-r-2xl h-[40%]
         md:fixed-none 
         md:w-74 md:h-88 md:rounded-3xl
         overflow-y-auto md:absolute lg:absolute
