@@ -4,13 +4,7 @@ import { useState, useEffect } from 'react';
 import SearchBar from '../ui/SearchBar';
 
 const HeroSection = () => {
-  const { t } = useTranslation('hero'); 
-  const [subtitle, setSubtitle] = useState('');
-
-  useEffect(() => {
-    const dummyText = "Find the best places to stay, eat, and explore around the world."; 
-    setSubtitle(dummyText);
-  }, []);
+  const { t } = useTranslation('hero');
 
   const handleSearch = (searchData) => {
   };

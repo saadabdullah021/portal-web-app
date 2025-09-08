@@ -75,9 +75,21 @@ const Navbar = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const languageOptions = [
+    { code: 'en', label: 'English', country: 'United States' },
+    { code: 'ar', label: 'Arabic', country: 'Saudi Arabia' }
+  ];
+
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem("i18nextLng") || "en";
+    const lang = languageOptions.find(lang => lang.code === savedLanguage);
+    setSelectedLabel(lang ? lang.label : "Language");
+  }, []);
+
 const changeLanguage = (lng) => {
   i18n.changeLanguage(lng);
-  document.dir = lng === "ar" ? "rtl" : "ltr";
+  document.documentElement.dir = lng === "ar" ? "rtl" : "ltr";
+  document.documentElement.lang = lng;
   try {
     localStorage.setItem("i18nextLng", lng);
   } catch {}
@@ -88,16 +100,10 @@ const changeLanguage = (lng) => {
   setActiveDropdown(null);
 };
 
-
   const handleSignupClick = () => {
     toggleMenu();
     openPopup('signup');
   };
-
-  const languageOptions = [
-    { code: 'en', label: 'English', country: 'United States' },
-    { code: 'ar', label: 'Arabic', country: 'Saudi Arabia' }
-  ];
 
 
   return (

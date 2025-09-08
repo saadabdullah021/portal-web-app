@@ -13,16 +13,22 @@ i18n
       order: ["localStorage", "navigator"],
       caches: ["localStorage"],
     },
+    interpolation: {
+      escapeValue: false,
+    },
+    react: {
+      useSuspense: false,
+    },
     resources: {
       en: {
         home: require("../locales/en/home.json"),
-        hero: require("../locales/en/hero.json"), // ✅ add this
-        auth: require("../locales/en/auth.json"), // ✅ add this
+        hero: require("../locales/en/hero.json"),
+        auth: require("../locales/en/auth.json"),
       },
       ar: {
         home: require("../locales/ar/home.json"),
-        hero: require("../locales/ar/hero.json"), // ✅ add this
-        auth: require("../locales/ar/auth.json"), // ✅ add this
+        hero: require("../locales/ar/hero.json"),
+        auth: require("../locales/ar/auth.json"),
       },
     },
   });

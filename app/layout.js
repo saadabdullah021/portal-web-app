@@ -10,14 +10,19 @@ import { PopupProvider } from "./contexts/PopupContext";
 import { Providers } from './providers';
 
 export default function RootLayout({ children }) {
-  // ⚡ abhi ke liye dummy state
   const [isAuthenticated, setIsAuthenticated] = useState(true);
 
   useEffect(() => {
-    // 👇 yahan pe baad me actual login status ayega
-    // abhi ke liye localStorage se check kar rahe hain
     const loggedIn = localStorage.getItem("isLoggedIn") === "true";
     setIsAuthenticated(loggedIn);
+    
+    const savedLanguage = localStorage.getItem("i18nextLng") || "en";
+    document.documentElement.dir = savedLanguage === "ar" ? "rtl" : "ltr";
+    document.documentElement.lang = savedLanguage;
+    
+    if (i18n.language !== savedLanguage) {
+      i18n.changeLanguage(savedLanguage);
+    }
   }, []);
 
   return (
@@ -28,7 +33,7 @@ export default function RootLayout({ children }) {
             <PopupProvider>
               <Navbar isAuthenticated={isAuthenticated} />
               <main>{children}</main>
-               <Footer />
+              <Footer />
             </PopupProvider>
           </I18nextProvider>
         </Providers>

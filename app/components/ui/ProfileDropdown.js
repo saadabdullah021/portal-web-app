@@ -88,15 +88,11 @@ const menuItems = [
     <div
       className={`
         bg-white shadow-lg border border-gray-100 py-2 z-50
-
-        
         fixed top-16 left-0 w-full rounded-r-2xl h-[40%]
-
-        :-right-
         md:fixed-none 
         md:w-74 md:h-88 md:rounded-3xl
         overflow-y-auto md:absolute lg:absolute
-        ${i18n.language === "ar" ? "md:top-16 md:left-6 lg:-right-70 xl:-right-56 2xl:-right-70 lg:top-16" : " md:top-16 md:-left-70 lg:-left-62 xl:-left-55 2xl:-left-72  lg:top-16 "}
+        ${i18n.language === "ar" ? "md:top-16 md:right-6 lg:right-6 xl:right-6 2xl:right-6 lg:top-16" : "md:top-16 md:left-6 lg:left-6 xl:left-6 2xl:left-6 lg:top-16"}
       `}
     >
       <div className="px-2">
