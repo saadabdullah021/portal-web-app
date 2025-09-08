@@ -31,7 +31,7 @@ export default function RootLayout({ children }) {
         <Providers>
           <I18nextProvider i18n={i18n}>
             <PopupProvider>
-              <div className="overflow-x-hidden">
+              <div className="min-h-screen">
                 <Navbar isAuthenticated={isAuthenticated} />
                 <main>{children}</main>
                 <Footer />

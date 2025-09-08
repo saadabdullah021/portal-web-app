@@ -88,15 +88,15 @@ const menuItems = [
     <div
       className={`
         bg-white shadow-lg border border-gray-100 py-2 z-50
-        fixed top-16 left-0 w-full max-w-sm rounded-r-2xl h-[40%]
+        fixed top-16 w-80 rounded-r-2xl h-[40%]
         md:fixed-none 
         md:w-74 md:h-88 md:rounded-3xl
         overflow-y-auto md:absolute lg:absolute
-        ${i18n.language === "ar" ? "md:top-16 md:right-6 lg:right-6 xl:right-6 2xl:right-6 lg:top-16" : "md:top-16 md:left-6 lg:left-6 xl:left-6 2xl:left-6 lg:top-16"}
+        ${i18n.language === "ar" ? "left-0 md:top-16 md:left-6 lg:left-6 xl:left-6 2xl:left-6 lg:top-16" : "right-0 md:top-16 md:right-6 lg:right-6 xl:right-6 2xl:right-6 lg:top-16"}
       `}
     >
       <div className="px-2">
-        {/* User Info Section */}
+        {/* User Info Section
         {user && (
           <div className="px-3 py-3 border-b border-gray-200">
             <div className="flex items-center space-x-3">
@@ -115,7 +115,7 @@ const menuItems = [
               </div>
             </div>
           </div>
-        )}
+        )} */}
         
         {menuItems.map((item, index) =>
           item.divider ? (
