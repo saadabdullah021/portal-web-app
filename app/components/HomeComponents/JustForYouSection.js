@@ -4,6 +4,7 @@ import { MoveLeft, MoveRight, Star } from "lucide-react";
 import { useTranslation } from 'react-i18next';
 import Image from "next/image";
 import justForYou from '../../../public/images/justforyou.png';
+import { getComponentData } from '../../../lib/componentApi';
 
 const JustForYouSection = ({ items, sectionData  }) => {
   const { t, i18n } = useTranslation("home");
@@ -11,6 +12,10 @@ const JustForYouSection = ({ items, sectionData  }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [allItems, setAllItems] = useState([]);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [currentOffset, setCurrentOffset] = useState(0);
   const sliderRef = useRef(null);
 
   // ✅ Same image for all properties
@@ -29,7 +34,14 @@ const JustForYouSection = ({ items, sectionData  }) => {
     }
   }));
 
-  const data = Array.isArray(items) && items.length > 0 ? items : originalProperties;
+  const data = Array.isArray(allItems) && allItems.length > 0 ? allItems : originalProperties;
+
+  useEffect(() => {
+    if (Array.isArray(items) && items.length > 0) {
+      setAllItems(items);
+      setCurrentOffset(1);
+    }
+  }, [items]);
 
   useEffect(() => {
     const checkIsMobile = () => {
@@ -82,6 +94,35 @@ const JustForYouSection = ({ items, sectionData  }) => {
     if (isTransitioning) return;
     setIsTransitioning(true);
     setCurrentSlide(prev => prev - 1);
+  };
+
+  const loadMoreItems = async () => {
+    if (isLoadingMore || !hasMore || !sectionData?.component_id) return;
+    
+    setIsLoadingMore(true);
+    try {
+      const response = await getComponentData(
+        sectionData.component_id,
+        currentOffset,
+        10,
+        i18n.language
+      );
+      
+      if (response?.data?.items?.records && response.data.items.records.length > 0) {
+        setAllItems(prev => [...prev, ...response.data.items.records]);
+        setCurrentOffset(prev => prev + 3);
+        
+        if (response.data.items.records.length < 3) {
+          setHasMore(false);
+        }
+      } else {
+        setHasMore(false);
+      }
+    } catch (error) {
+      console.error('Error loading more items:', error);
+    } finally {
+      setIsLoadingMore(false);
+    }
   };
 
   const PropertyCard = ({ property }) => {
@@ -170,10 +211,24 @@ const JustForYouSection = ({ items, sectionData  }) => {
       </div>
 
       {/* Desktop Layout (Grid - No Change) */}
-      <div className="hidden lg:grid lg:grid-cols-4 gap-8">
-        {data.map((property, idx) => (
-          <PropertyCard key={property?.listing?.listing_id ?? idx} property={property} />
-        ))}
+      <div className="hidden lg:block">
+        <div className="grid lg:grid-cols-4 gap-8">
+          {data.map((property, idx) => (
+            <PropertyCard key={property?.listing?.listing_id ?? idx} property={property} />
+          ))}
+        </div>
+        
+        {hasMore && (
+          <div className="flex justify-center mt-8">
+            <button
+              onClick={loadMoreItems}
+              disabled={isLoadingMore}
+              className="bg-[#58C27D] text-white px-8 py-3 rounded-lg font-medium hover:bg-[#4a9f6a] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isLoadingMore ? 'Loading...' : 'Load More'}
+            </button>
+          </div>
+        )}
       </div>
 
       {/* ✅ Mobile Infinite Slider */}

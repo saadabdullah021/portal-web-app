@@ -4,11 +4,16 @@ import { Star, MoveLeft, MoveRight } from 'lucide-react';
 import justForYou from '../../../public/images/justforyou.png';
 import { useTranslation } from 'react-i18next';
 import Image from 'next/image';
+import { getComponentData } from '../../../lib/componentApi';
 
 const LastMinuteDealsSection = ({ items , data }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [allItems, setAllItems] = useState([]);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [currentOffset, setCurrentOffset] = useState(0);
   const sliderRef = useRef(null);
   const { t, i18n } = useTranslation("home");
   const isRTL = i18n.language === "ar";
@@ -64,7 +69,14 @@ const LastMinuteDealsSection = ({ items , data }) => {
     period: "night",
   }));
 
-  const computedData = Array.isArray(items) && items.length > 0 ? items : originalProperties;
+  const computedData = Array.isArray(allItems) && allItems.length > 0 ? allItems : originalProperties;
+
+  useEffect(() => {
+    if (Array.isArray(items) && items.length > 0) {
+      setAllItems(items);
+      setCurrentOffset(1);
+    }
+  }, [items]);
 
   useEffect(() => {
     const checkIsMobile = () => {
@@ -104,12 +116,49 @@ const LastMinuteDealsSection = ({ items , data }) => {
     }
   };
 
-  // ✅ Next Slide - infinite loop
-  const nextSlide = () => {
+  const loadMoreItems = async () => {
+    if (isLoadingMore || !hasMore || !data?.component_id) return;
+    
+    setIsLoadingMore(true);
+    try {
+      const response = await getComponentData(
+        data.component_id,
+        currentOffset,
+        1,
+        i18n.language
+      );
+      
+      if (response?.data?.items?.records && response.data.items.records.length > 0) {
+        setAllItems(prev => [...prev, ...response.data.items.records]);
+        setCurrentOffset(prev => prev + 1);
+        
+        if (response.data.items.records.length < 1) {
+          setHasMore(false);
+        }
+      } else {
+        setHasMore(false);
+      }
+    } catch (error) {
+      console.error('Error loading more items:', error);
+    } finally {
+      setIsLoadingMore(false);
+    }
+  };
+
+  // ✅ Next Slide - infinite loop with load more
+  const nextSlide = async () => {
     if (isTransitioning) return;
     
     setIsTransitioning(true);
-    setCurrentSlide(prev => prev + 1);
+    
+    const newSlide = currentSlide + 1;
+    const maxSlide = computedData.length + itemsPerView - 1;
+    
+    if (newSlide >= maxSlide && hasMore) {
+      await loadMoreItems();
+    }
+    
+    setCurrentSlide(newSlide);
   };
 
   // ✅ Previous Slide - infinite loop
@@ -227,10 +276,13 @@ const LastMinuteDealsSection = ({ items , data }) => {
           </button>
           <button
             onClick={nextSlide}
-            className="border border-gray-200 rounded-full p-3 hover:bg-gray-50 transition-colors"
+            disabled={isLoadingMore}
+            className="border border-gray-200 rounded-full p-3 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             aria-label="Next deal"
           >
-            {isRTL ? (
+            {isLoadingMore ? (
+              <div className="w-5 h-5 border-2 border-gray-300 border-t-gray-700 rounded-full animate-spin"></div>
+            ) : isRTL ? (
               <MoveLeft className="w-5 h-5 text-gray-700" />
             ) : (
               <MoveRight className="w-5 h-5 text-gray-700" />
@@ -290,10 +342,13 @@ const LastMinuteDealsSection = ({ items , data }) => {
           </button>
           <button
             onClick={nextSlide}
-            className="border border-gray-200 rounded-full p-3 hover:bg-gray-50 transition-colors"
+            disabled={isLoadingMore}
+            className="border border-gray-200 rounded-full p-3 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             aria-label="Next deal"
           >
-            {isRTL ? (
+            {isLoadingMore ? (
+              <div className="w-5 h-5 border-2 border-gray-300 border-t-gray-700 rounded-full animate-spin"></div>
+            ) : isRTL ? (
               <MoveLeft className="w-5 h-5 text-gray-700" />
             ) : (
               <MoveRight className="w-5 h-5 text-gray-700" />
