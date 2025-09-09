@@ -25,7 +25,12 @@
     "Wishlist": "Wishlist",
     "Settings": "Settings",
     "Logout": "Logout",
-    "Support": "Support"
+    "Support": "Support",
+    "go_Home" :"Go Home",
+    "show_all_photos": "Show all photos",
+      "reviews": "reviews",
+            "Superhost":"Superhost"
+ 
   },
   "search": {
     "where": "Where are you going?",

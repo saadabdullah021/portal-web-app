@@ -24,7 +24,13 @@
     "Wishlist": "قائمة الرغبات",
     "Settings": "الإعدادات",
     "Logout": "تسجيل الخروج",
-    "Support": "الدعم"
+    "Support": "الدعم",
+      "go_Home" :"اذهب للمنزل",
+         "show_all_photos": "عرض جميع الصور",
+           "reviews": "مراجعات",
+       
+               "Superhost": "مضيف خارق"
+     
   },
   "search": {
     "where": "إلى أين ستذهب؟",

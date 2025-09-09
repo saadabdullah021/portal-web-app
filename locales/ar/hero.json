@@ -1,4 +1,3 @@
-
 {
   "title": "احجز، ابقَ، وتجول",
   "subtitle": "ابحث عن إقامتك القادمة من بين أكثر من مليون إعلان في أكثر من 200 دولة.",
@@ -15,6 +14,28 @@
   "Infants": "الرضع",
   "Ages 13 and above": "الأعمار 13 وما فوق",
   "Ages 2 - 12": "2 - 12 الأعمار",
-  "Under 2 years": "تحت 2 سنوات"
-
+  "Under 2 years": "تحت 2 سنوات",
+  "hosted_by": "مُستضاف بواسطة",
+  "Amenities": "وسائل الراحة ",
+  "More detail": "مزيد من التفاصيل",
+  "night": "ليلة",
+  "reviews": "مراجعات",
+  "Reserve": "احتياطي",
+  "Save": "حفظ",
+  "Total": "المجموع",
+  "Report this property": "الإبلاغ عن هذه الخاصية",
+  "Superhost": "مضيف خارق",
+  "Contact": "اتصال",
+  "Member since": "عضو منذ",
+  "Report this host": "الإبلاغ عن هذا المضيف",
+  "Add a review": "أضف مراجعة",
+  "Be the first to review": "كن أول من يراجع",
+  "Post it": "انشرها",
+  "Reply": "رد",
+  "Like": "يحب",
+  "Send": "يرسل",
+    "Loading comments":"تحميل التعليقات",
+    "Cleaning Fee":"رسوم التنظيف",
+    "Service fee":"رسوم الخدمة",
+    "nights":"الليالي"
 }
