@@ -39,7 +39,7 @@ const JustForYouSection = ({ items, sectionData  }) => {
   useEffect(() => {
     if (Array.isArray(items) && items.length > 0) {
       setAllItems(items);
-      setCurrentOffset(0);
+      setCurrentOffset(1);
     }
   }, [items]);
 
@@ -104,7 +104,7 @@ const JustForYouSection = ({ items, sectionData  }) => {
       const response = await getComponentData(
         sectionData.component_id,
         currentOffset,
-        3,
+        10,
         i18n.language
       );
       

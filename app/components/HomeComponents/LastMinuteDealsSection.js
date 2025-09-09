@@ -74,7 +74,7 @@ const LastMinuteDealsSection = ({ items , data }) => {
   useEffect(() => {
     if (Array.isArray(items) && items.length > 0) {
       setAllItems(items);
-      setCurrentOffset(0);
+      setCurrentOffset(1);
     }
   }, [items]);
 
