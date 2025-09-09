@@ -9,7 +9,7 @@ const PropertyListing = () => {
 
 
   return (
-    <div className="">
+    <div className=""> 
 
 
 <PropertyListingUnitDetails/>

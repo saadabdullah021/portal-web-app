@@ -103,7 +103,7 @@ const SearchBar = ({ onSearch }) => {
       setFilteredLocations(locationsData);
     } else {
       // Filter locations based on current input
-      const filtered = locationsData.filter(loc => 
+      const filtered = locationsData.filter(loc =>
         loc.label.toLowerCase().includes(location.toLowerCase()) ||
         loc.cityName.toLowerCase().includes(location.toLowerCase())
       );
@@ -117,7 +117,7 @@ const SearchBar = ({ onSearch }) => {
       if (location.trim() === '') {
         setFilteredLocations(locationsData);
       } else {
-        const filtered = locationsData.filter(loc => 
+        const filtered = locationsData.filter(loc =>
           loc.label.toLowerCase().includes(location.toLowerCase()) ||
           loc.cityName.toLowerCase().includes(location.toLowerCase())
         );
@@ -216,7 +216,7 @@ const SearchBar = ({ onSearch }) => {
           >
             <div
               className="flex items-start gap-2 cursor-pointer"
-            onClick={handleLocationFocus}
+              onClick={handleLocationFocus}
             >
               <Navigation color="#B1B5C3" size={24} className="lg:mt-4 pr-1" />
               <div className="flex flex-col w-full">
@@ -247,9 +247,9 @@ const SearchBar = ({ onSearch }) => {
                       onClick={handleClearLocation}
                       className="absolute right-1 top-1/2 transform -translate-y-1/2 w-8 h-8 flex items-center justify-center"
                     >
-                      <img 
-                        src="/images/Line.svg" 
-                        alt="Close" 
+                      <img
+                        src="/images/Line.svg"
+                        alt="Close"
                         className="w-7 h-7"
                       />
                     </button>
@@ -284,9 +284,8 @@ const SearchBar = ({ onSearch }) => {
                     <div
                       key={`${location.cityId}-${location.districtId}`}
                       onClick={() => handleLocationSelect(location)}
-                      className={`px-2 py-3 cursor-pointer flex items-center space-x-3 rounded-xl transition-colors duration-200 ${
-                        selectedIndex === idx ? 'bg-[#3B71FE]/10' : 'hover:bg-[#F4F5F6]'
-                      } ${idx === 14 ? 'mb-2' : ''}`}
+                      className={`px-2 py-3 cursor-pointer flex items-center space-x-3 rounded-xl transition-colors duration-200 ${selectedIndex === idx ? 'bg-[#3B71FE]/10' : 'hover:bg-[#F4F5F6]'
+                        } ${idx === 14 ? 'mb-2' : ''}`}
                     >
                       <span className='bg-[#FCFCFD] border-[#E6E8EC] border-[1px] rounded-full w-8 h-8 flex items-center justify-center'>
                         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -337,6 +336,8 @@ const SearchBar = ({ onSearch }) => {
               icon={Calendar}
               value={checkIn}
               onChange={setCheckIn}
+              dropdownPosition="top-full  lg:top-27"
+            dropdownAlign={i18n.language === "ar" ? "lg:-left-20" : "lg:left-0"}
             />
           </div>
         </div>
@@ -356,6 +357,8 @@ const SearchBar = ({ onSearch }) => {
               icon={Calendar}
               value={checkOut}
               onChange={setCheckOut}
+               dropdownPosition="top-full  lg:top-27"
+            dropdownAlign={i18n.language === "ar" ? "lg:-left-20" : "lg:left-0"}
             />
           </div>
         </div>
