@@ -220,7 +220,7 @@ const SearchBar = ({ onSearch }) => {
             >
               <Navigation color="#B1B5C3" size={24} className="lg:mt-4 pr-1" />
               <div className="flex flex-col w-full">
-                <label className={`text-lg lg:text-[24px] text-[#23262F] font-semibold pl-2 pt-2 mb-1 hidden lg:block
+                <label className={`text-lg lg:text-[24px] cursor-pointer text-[#23262F] font-semibold pl-2 pt-2 mb-1 hidden lg:block
                 
                   `}>
                   {t("locationLabel")}
@@ -322,9 +322,9 @@ const SearchBar = ({ onSearch }) => {
         </div>
 
         {/* Check In */}
-        <div className="">
+        <div className=" ">
           <div
-            className={`rounded-xl p-3 lg:p-0 cursor-pointer transition-all duration-300 ease-in-out
+            className={`rounded-xl p-3 lg:p-0  cursor-pointer transition-all duration-300 ease-in-out
               ${activeDropdown === "checkIn" ? " lg:bg-transparent" : "lg:bg-transparent "} 
               bg-white/60`}
             onClick={() =>
@@ -376,7 +376,7 @@ const SearchBar = ({ onSearch }) => {
             <div className="flex items-start space-x-2">
               <UserRound color='#B1B5C3' size={24} className='mt-0 lg:mt-2.5' />
               <div className="flex flex-col w-full">
-                <label className={`text-lg lg:text-[24px]  font-semibold pl-2 pt-2 lg:pt-1 mb-1 hidden lg:block
+                <label className={`text-lg lg:text-[24px]  cursor-pointer font-semibold pl-2 pt-2 lg:pt-1 mb-1 hidden lg:block
                     ${i18n.language === "ar" ? "lg:mr-2  " : " "}
                   `}>
                   {t('travelers')}

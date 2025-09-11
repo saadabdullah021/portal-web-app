@@ -107,8 +107,8 @@ const changeLanguage = (lng) => {
 
 
   return (
-    <nav className="bg-white shadow-lg border-b border-gray-100 sticky top-0 z-50">
-      <div className="max-w-6xl 2xl:max-w-[1280px] mx-auto px-4">
+    <nav className="bg-white  border-b border-gray-200 sticky top-0 z-50">
+      <div className="max-w-7xl 2xl:max-w-[1450px] mx-auto  px-8 lg:px-6 2xl:px-8 ">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex-shrink-0">

@@ -13,7 +13,7 @@ import { TiLocationArrowOutline } from "react-icons/ti";
 
 import { RiArrowDropLeftLine } from "react-icons/ri";
 import { HiOutlineFlag } from "react-icons/hi2";
-
+import hostImage from "../../../public/images/hostImage.png"
 import heroImage from "../../../public/images/unit_details_hero.png"
 import heroImage2 from "../../../public/images/unit_details_2nd.png"
 import heroImage3 from "../../../public/images/unit_details_3rd.png"
@@ -21,8 +21,9 @@ import heroImage4 from "../../../public/images/unit_details_4th.jpg"
 import Image from 'next/image';
 import ShareModal from '../ui/ShareModal';
 import { useTranslation } from 'react-i18next';
-const PropertyListingUnitDetails = ({listingData}) => {
-    const { t} = useTranslation("home");
+import Link from 'next/link';
+const PropertyListingUnitDetails = ({ listingData }) => {
+  const { t } = useTranslation("home");
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
@@ -93,13 +94,15 @@ const PropertyListingUnitDetails = ({listingData}) => {
     <div className=" max-w-6xl 2xl:max-w-[1280px] mx-auto px-4 bg-white">
       {/* Header */}
       <header className="lg:flex items-center justify-between  hidden  pt-6 pb-3">
-        <div className='px-4 py-2 flex items-center gap-1  border-2 border-[#E6E8EC] rounded-[90px]'>
+        <Link href="/">
+          <div className='px-4 py-2 flex items-center gap-1  border-2 border-[#E6E8EC] rounded-[90px]'>
 
-          <button className=" text-gray-700 hover:text-gray-900 transition-colors">
-            <RiArrowDropLeftLine size={24} />
-          </button>
-          <span className="font-bold text-sm text-[#23262F] font-dm-sans">{t('buttons.go_Home')}</span>
-        </div>
+            <button className=" text-gray-700 hover:text-gray-900 transition-colors">
+              <RiArrowDropLeftLine size={24} />
+            </button>
+            <span className="font-bold text-sm text-[#23262F] font-dm-sans">{t('buttons.go_Home')}</span>
+          </div>
+        </Link>
 
         <div className="flex items-center gap-1  text-sm text-[#777E90] font-dm-sans font-bold">
           <span>{listingData?.data?.location?.split(', ')[1] || "City"}</span>
@@ -123,12 +126,22 @@ const PropertyListingUnitDetails = ({listingData}) => {
 
             <div className="flex flex-wrap items-center justify-center lg:justify-start gap-8 lg:gap-4 text-sm text-gray-600">
               <div className="flex items-center gap-4 lg:gap-1">
-                <div className="w-8 h-8 mr-2 bg-gray-300 rounded-full flex items-center justify-center">
-                  <Crown size={20} />
+                <div className="flex items-center mr-4 gap-2 w-6 h-6 rounded-full">
+                  <Image
+                    src={hostImage}
+                    alt='host Image'
+                    className="fill w-full h-full object-center rounded-full transition-transform duration-500"
+
+                    loading="lazy"
+
+                  />
                 </div>
                 <div className="flex items-center gap-1">
-                  <Star size={16} className="fill-yellow-400 text-yellow-400" />
-                  <span className="font-medium text-sm text-[#23262F]">{listingData?.data?.rating || "0"}</span>
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fillRule="evenodd" clipRule="evenodd" d="M12.1128 1.28584L13.9159 4.83396L17.9638 5.40522C19.8601 5.67275 20.7269 8.01285 19.2651 9.39572L16.3576 12.1438L17.0419 16.016C17.3923 17.9996 15.287 19.3318 13.6291 18.4871L9.99981 16.6358L6.37157 18.4865C4.71128 19.334 2.60769 17.9973 2.95771 16.016L3.64202 12.1438L0.734896 9.3961C-0.727985 8.01223 0.141887 5.67263 2.03558 5.40525L6.08384 4.83394L7.88786 1.28584C8.75914 -0.428539 11.2417 -0.428688 12.1128 1.28584Z" fill="#FFD166" />
+                  </svg>
+
+                  <span className="font-semibold lg:font-medium text-sm text-[#23262F]">{listingData?.data?.rating || "0"}</span>
                   <span className='text-sm text-[#777E90] font-normal pl-1 lg:block hidden'>({listingData?.data?.reviews || 0} {t('buttons.reviews')})</span>
                 </div>
               </div>
@@ -237,6 +250,18 @@ const PropertyListingUnitDetails = ({listingData}) => {
                     loading='lazy'
                   />
                 )}
+                <button
+                  onClick={() => openGallery()}
+                  className="absolute top-[40%] left-[40%] bg-[#FCFCFD] shadow-lg  w-12 h-12 justify-center rounded-full items-center gap-2 hover:bg-gray-50 transition-colors shadow-sm hidden lg:flex"
+                >
+
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fillRule="evenodd" clipRrule="evenodd" d="M9.93677 10.8799C9.03365 11.582 7.89882 12 6.66634 12C3.72082 12 1.33301 9.61223 1.33301 6.66671C1.33301 3.72119 3.72082 1.33337 6.66634 1.33337C9.61186 1.33337 11.9997 3.72119 11.9997 6.66671C11.9997 7.89918 11.5816 9.03401 10.8796 9.93714L14.4711 13.5286C14.7314 13.789 14.7314 14.2111 14.4711 14.4714C14.2107 14.7318 13.7886 14.7318 13.5283 14.4714L9.93677 10.8799ZM10.6663 6.66671C10.6663 8.87585 8.87548 10.6667 6.66634 10.6667C4.4572 10.6667 2.66634 8.87585 2.66634 6.66671C2.66634 4.45757 4.4572 2.66671 6.66634 2.66671C8.87548 2.66671 10.6663 4.45757 10.6663 6.66671Z" fill="#777E91" />
+                    <path d="M6.66667 4C6.29848 4 6 4.29848 6 4.66667V6H4.66667C4.29848 6 4 6.29848 4 6.66667C4 7.03486 4.29848 7.33333 4.66667 7.33333H6V8.66667C6 9.03486 6.29848 9.33333 6.66667 9.33333C7.03486 9.33333 7.33333 9.03486 7.33333 8.66667V7.33333H8.66667C9.03486 7.33333 9.33333 7.03486 9.33333 6.66667C9.33333 6.29848 9.03486 6 8.66667 6H7.33333V4.66667C7.33333 4.29848 7.03486 4 6.66667 4Z" fill="#777E91" />
+                  </svg>
+
+                </button>
+
               </div>
 
               <div className="flex-1 w-64  relative overflow-hidden rounded-xl group cursor-pointer">
@@ -248,6 +273,7 @@ const PropertyListingUnitDetails = ({listingData}) => {
                     onClick={() => openGallery(2)}
                     loading='lazy'
                   />
+
                 ) : (
                   <Image
                     src={images[2]}
@@ -287,7 +313,7 @@ const PropertyListingUnitDetails = ({listingData}) => {
 
           {/* Mobile Slider - No arrows, only swipe */}
           <div className="lg:hidden relative" ref={sliderRef}>
-            <div className="relative h-[476px] sm:h-[490px] overflow-hidden rounded-lg">
+            <div className="relative h-[476px] sm:h-[490px] overflow-hidden rounded-2xl">
               {isExternalImage(images[currentImageIndex]) ? (
                 <img
                   src={images[currentImageIndex]}

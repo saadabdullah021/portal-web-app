@@ -86,17 +86,17 @@ const AdventureSection = () => {
   };
 
   // ✅ Modified Auto-play functionality for infinite loop
-  useEffect(() => {
-    if (isAutoPlaying) {
-      const interval = setInterval(() => {
-        if (!isTransitioning) {
-          setIsTransitioning(true);
-          setCurrentSlide(prev => prev + 1);
-        }
-      }, 4000);
-      return () => clearInterval(interval);
-    }
-  }, [isAutoPlaying, isTransitioning]);
+  // useEffect(() => {
+  //   if (isAutoPlaying) {
+  //     const interval = setInterval(() => {
+  //       if (!isTransitioning) {
+  //         setIsTransitioning(true);
+  //         setCurrentSlide(prev => prev + 1);
+  //       }
+  //     }, 4000);
+  //     return () => clearInterval(interval);
+  //   }
+  // }, [isAutoPlaying, isTransitioning]);
 
   // ✅ Next Slide - infinite loop
   const nextSlide = () => {
