@@ -4,6 +4,7 @@ import { Star, MoveLeft, MoveRight } from 'lucide-react';
 import justForYou from '../../../public/images/justforyou.png';
 import { useTranslation } from 'react-i18next';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { getComponentData } from '../../../lib/componentApi';
 
 const LastMinuteDealsSection = ({ items , data }) => {
@@ -16,6 +17,7 @@ const LastMinuteDealsSection = ({ items , data }) => {
   const [currentOffset, setCurrentOffset] = useState(0);
   const sliderRef = useRef(null);
   const { t, i18n } = useTranslation("home");
+  const router = useRouter();
   const isRTL = i18n.language === "ar";
 
   const placeholderImage = justForYou;
@@ -175,8 +177,17 @@ const LastMinuteDealsSection = ({ items , data }) => {
     const hasDiscount = listing.discounted_price && String(listing.discounted_price) !== '0';
     const imageSrc = thumbnail?.thumbnail_url || placeholderImage;
     
+    const handleCardClick = () => {
+      if (listing.unique_id) {
+        router.push(`/unit-details?slug=${listing.unique_id}`);
+      }
+    };
+    
     return (
-    <div className="bg-white -z-10  rounded-2xl overflow-hidden shadow-sm  transition-all duration-300 transform  flex-shrink-0 w-full md:w-auto group">
+    <div 
+      className="bg-white -z-10  rounded-2xl overflow-hidden shadow-sm  transition-all duration-300 transform  flex-shrink-0 w-full md:w-auto group cursor-pointer hover:shadow-lg"
+      onClick={handleCardClick}
+    >
       <div className="relative ">
         <div className="aspect-[4/3] bg-gradient-to-br from-amber-100 to-orange-200   relative overflow-hidden">
           <Image

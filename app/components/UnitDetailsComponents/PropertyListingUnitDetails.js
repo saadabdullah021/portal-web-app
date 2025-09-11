@@ -21,7 +21,7 @@ import heroImage4 from "../../../public/images/unit_details_4th.jpg"
 import Image from 'next/image';
 import ShareModal from '../ui/ShareModal';
 import { useTranslation } from 'react-i18next';
-const PropertyListingUnitDetails = () => {
+const PropertyListingUnitDetails = ({listingData}) => {
     const { t} = useTranslation("home");
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
@@ -29,15 +29,13 @@ const PropertyListingUnitDetails = () => {
   const sliderRef = useRef(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const apiImages = listingData?.data?.listing_images?.map(img => img.url).filter(url => url && url.trim() !== '') || [];
+  const fallbackImages = [heroImage, heroImage2, heroImage3, heroImage4];
+  const images = apiImages.length > 0 ? apiImages : fallbackImages;
 
-  // Dummy images - replace with your API images later
-  const images = [
-    heroImage,
-    heroImage2,
-    heroImage3,
-    heroImage4,
-
-  ];
+  const isExternalImage = (src) => {
+    return src && (src.startsWith('http://') || src.startsWith('https://'));
+  };
 
   const nextImage = () => {
     setCurrentImageIndex((prev) => (prev + 1) % images.length);
@@ -104,9 +102,9 @@ const PropertyListingUnitDetails = () => {
         </div>
 
         <div className="flex items-center gap-1  text-sm text-[#777E90] font-dm-sans font-bold">
-          <span>Riyadh</span>
+          <span>{listingData?.data?.location?.split(', ')[1] || "City"}</span>
           <ChevronRight size={16} />
-          <span className='text-[#B1B5C3]'>Al Rawdah</span>
+          <span className='text-[#B1B5C3]'>{listingData?.data?.location?.split(', ')[0] || "Area"}</span>
         </div>
       </header>
 
@@ -119,9 +117,7 @@ const PropertyListingUnitDetails = () => {
 
               <RiArrowDropLeftLine size={70} className='lg:hidden block' />
               <h1 className="text-3xl md:text-5xl lg:leading-16 font-bold text-[#23262F] font-dm-sans mb-4">
-                2-Bed Exquisite Villa in Al
-                <br className='hidden lg:block' />
-                Rawdah Villa
+                {listingData?.data?.title || "Property Title"}
               </h1>
             </div>
 
@@ -132,24 +128,24 @@ const PropertyListingUnitDetails = () => {
                 </div>
                 <div className="flex items-center gap-1">
                   <Star size={16} className="fill-yellow-400 text-yellow-400" />
-                  <span className="font-medium text-sm text-[#23262F]">4.8</span>
-                  <span className='text-sm text-[#777E90] font-normal pl-1 lg:block hidden'>(256 {t('buttons.reviews')})</span>
+                  <span className="font-medium text-sm text-[#23262F]">{listingData?.data?.rating || "0"}</span>
+                  <span className='text-sm text-[#777E90] font-normal pl-1 lg:block hidden'>({listingData?.data?.reviews || 0} {t('buttons.reviews')})</span>
                 </div>
               </div>
 
-              <div className="flex items-center gap-1">
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path fillRule="evenodd" clipRule="evenodd" d="M9.9928 3.47598L9.99978 3.47236L10.0071 3.47614L13.7183 5.70286L14.9998 6.47496V15.6667C14.9998 16.1609 14.9985 16.4313 14.9826 16.6256L14.9807 16.6476L14.9587 16.6495C14.7644 16.6654 14.494 16.6667 13.9998 16.6667H5.99978C5.50556 16.6667 5.23514 16.6654 5.04083 16.6495L5.01886 16.6476L5.01695 16.6256C5.00107 16.4313 4.99978 16.1609 4.99978 15.6667V6.47498L6.27658 5.70571L9.9928 3.47598ZM5.41785 4.2773L1.23772 6.78538C0.84307 7.02217 0.715099 7.53405 0.95189 7.9287C1.18868 8.32335 1.70056 8.45132 2.09521 8.21453L3.33311 7.4718V15.6667C3.33311 16.6001 3.33311 17.0668 3.51477 17.4233C3.67455 17.7369 3.92952 17.9919 4.24313 18.1517C4.59964 18.3334 5.06636 18.3334 5.99978 18.3334H13.9998C14.9332 18.3334 15.3999 18.3334 15.7564 18.1517C16.07 17.9919 16.325 17.7369 16.4848 17.4233C16.6664 17.0668 16.6664 16.6001 16.6664 15.6667V7.47177L17.9044 8.21453C18.299 8.45132 18.8109 8.32335 19.0477 7.9287C19.2845 7.53405 19.1565 7.02217 18.7619 6.78538L14.5769 4.27441L11.376 2.34585C11.1432 2.20563 10.9646 2.09803 10.8133 2.01712C10.778 1.99736 10.7421 1.97898 10.7058 1.96199C10.5798 1.90052 10.4706 1.85961 10.3584 1.83489C10.1222 1.78282 9.87738 1.78282 9.6411 1.83489C9.52864 1.85967 9.41918 1.90074 9.29281 1.96247C9.25714 1.97919 9.22192 1.99723 9.18722 2.01662C9.03567 2.09758 8.85682 2.20534 8.62361 2.34584L5.41785 4.2773Z" fill="#777E91" />
-                  <path fillRule="evenodd" clipRule="evenodd" d="M10.8333 16.6666V13.3333C10.8333 12.8731 10.4602 12.5 10 12.5C9.53976 12.5 9.16667 12.8731 9.16667 13.3333V16.6666H10.8333ZM10 10.8333C8.61929 10.8333 7.5 11.9526 7.5 13.3333V18.3333H12.5V13.3333C12.5 11.9526 11.3807 10.8333 10 10.8333Z" fill="#777E91" />
-                </svg>
-
-                <span className='text-sm text-[#777E90] font-normal pl-1'>{t('buttons.Superhost')}</span>
-              </div>
+              {listingData?.data?.added_by_super_host && (
+                <div className="flex items-center gap-1">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fillRule="evenodd" clipRule="evenodd" d="M9.9928 3.47598L9.99978 3.47236L10.0071 3.47614L13.7183 5.70286L14.9998 6.47496V15.6667C14.9998 16.1609 14.9985 16.4313 14.9826 16.6256L14.9807 16.6476L14.9587 16.6495C14.7644 16.6654 14.494 16.6667 13.9998 16.6667H5.99978C5.50556 16.6667 5.23514 16.6654 5.04083 16.6495L5.01886 16.6476L5.01695 16.6256C5.00107 16.4313 4.99978 16.1609 4.99978 15.6667V6.47498L6.27658 5.70571L9.9928 3.47598ZM5.41785 4.2773L1.23772 6.78538C0.84307 7.02217 0.715099 7.53405 0.95189 7.9287C1.18868 8.32335 1.70056 8.45132 2.09521 8.21453L3.33311 7.4718V15.6667C3.33311 16.6001 3.33311 17.0668 3.51477 17.4233C3.67455 17.7369 3.92952 17.9919 4.24313 18.1517C4.59964 18.3334 5.06636 18.3334 5.99978 18.3334H13.9998C14.9332 18.3334 15.3999 18.3334 15.7564 18.1517C16.07 17.9919 16.325 17.7369 16.4848 17.4233C16.6664 17.0668 16.6664 16.6001 16.6664 15.6667V7.47177L17.9044 8.21453C18.299 8.45132 18.8109 8.32335 19.0477 7.9287C19.2845 7.53405 19.1565 7.02217 18.7619 6.78538L14.5769 4.27441L11.376 2.34585C11.1432 2.20563 10.9646 2.09803 10.8133 2.01712C10.778 1.99736 10.7421 1.97898 10.7058 1.96199C10.5798 1.90052 10.4706 1.85961 10.3584 1.83489C10.1222 1.78282 9.87738 1.78282 9.6411 1.83489C9.52864 1.85967 9.41918 1.90074 9.29281 1.96247C9.25714 1.97919 9.22192 1.99723 9.18722 2.01662C9.03567 2.09758 8.85682 2.20534 8.62361 2.34584L5.41785 4.2773Z" fill="#777E91" />
+                    <path fillRule="evenodd" clipRule="evenodd" d="M10.8333 16.6666V13.3333C10.8333 12.8731 10.4602 12.5 10 12.5C9.53976 12.5 9.16667 12.8731 9.16667 13.3333V16.6666H10.8333ZM10 10.8333C8.61929 10.8333 7.5 11.9526 7.5 13.3333V18.3333H12.5V13.3333C12.5 11.9526 11.3807 10.8333 10 10.8333Z" fill="#777E91" />
+                  </svg>
+                  <span className='text-sm text-[#777E90] font-normal pl-1'>{t('buttons.Superhost')}</span>
+                </div>
+              )}
 
               <div className="lg:flex items-center gap-1 hidden ">
                 <HiOutlineFlag size={20} />
-
-                <span className='text-sm text-[#777E90] font-normal pl-1'>Al Rawdah, Riyadh</span>
+                <span className='text-sm text-[#777E90] font-normal pl-1'>{listingData?.data?.location || "Location"}</span>
               </div>
             </div>
           </div>
@@ -198,45 +194,93 @@ const PropertyListingUnitDetails = () => {
           <div className="hidden lg:flex lg:gap-2 lg:h-96">
             {/* Left Side - Big Image */}
             <div className="flex-1 lg:w-[850px] lg:h-[780px] w-[300px] h-[470px] relative overflow-hidden rounded-xl group cursor-pointer">
-              <Image
-                src={images[0]}
-                alt="Main villa interior"
-                className="w-full h-full object-cover  transition-transform duration-300"
-                onClick={() => openGallery(0)}
-                loading='lazy'
-              />
+              {isExternalImage(images[0]) ? (
+                <img
+                  src={images[0]}
+                  alt={listingData?.data?.title || "Property image"}
+                  className="w-full h-full object-cover transition-transform duration-300"
+                  onClick={() => openGallery(0)}
+                  loading='lazy'
+                />
+              ) : (
+                <Image
+                  src={images[0]}
+                  alt={listingData?.data?.title || "Property image"}
+                  width={850}
+                  height={780}
+                  className="w-full h-full object-cover transition-transform duration-300"
+                  onClick={() => openGallery(0)}
+                  loading='lazy'
+                />
+              )}
             </div>
 
             {/* Right Side - 3 Small Images Stacked */}
             <div className=" flex h-[780px] flex-col gap-2">
               <div className="flex-1 w-64  relative overflow-hidden rounded-xl group cursor-pointer">
-                <Image
-                  src={images[1]}
-                  alt="Villa pool"
-                  className="w-full h-full object-cover  transition-transform duration-300"
-                  onClick={() => openGallery(1)}
-                  loading='lazy'
-                />
+                {isExternalImage(images[1]) ? (
+                  <img
+                    src={images[1]}
+                    alt={`${listingData?.data?.title || "Property"} - Image 2`}
+                    className="w-full h-full object-cover transition-transform duration-300"
+                    onClick={() => openGallery(1)}
+                    loading='lazy'
+                  />
+                ) : (
+                  <Image
+                    src={images[1]}
+                    alt={`${listingData?.data?.title || "Property"} - Image 2`}
+                    width={256}
+                    height={390}
+                    className="w-full h-full object-cover transition-transform duration-300"
+                    onClick={() => openGallery(1)}
+                    loading='lazy'
+                  />
+                )}
               </div>
 
               <div className="flex-1 w-64  relative overflow-hidden rounded-xl group cursor-pointer">
-                <Image
-                  src={images[2]}
-                  alt="Villa bedroom"
-                  className="w-full h-full object-cover  transition-transform duration-300"
-                  onClick={() => openGallery(2)}
-                  loading='lazy'
-                />
+                {isExternalImage(images[2]) ? (
+                  <img
+                    src={images[2]}
+                    alt={`${listingData?.data?.title || "Property"} - Image 3`}
+                    className="w-full h-full object-cover transition-transform duration-300"
+                    onClick={() => openGallery(2)}
+                    loading='lazy'
+                  />
+                ) : (
+                  <Image
+                    src={images[2]}
+                    alt={`${listingData?.data?.title || "Property"} - Image 3`}
+                    width={256}
+                    height={390}
+                    className="w-full h-full object-cover transition-transform duration-300"
+                    onClick={() => openGallery(2)}
+                    loading='lazy'
+                  />
+                )}
               </div>
 
               <div className="flex-1 w-64  relative overflow-hidden rounded-xl group cursor-pointer">
-                <Image
-                  src={images[3]}
-                  alt="Villa dining"
-                  className="w-full h-full object-cover  transition-transform duration-300"
-                  onClick={() => openGallery(3)}
-                  loading='lazy'
-                />
+                {isExternalImage(images[3]) ? (
+                  <img
+                    src={images[3]}
+                    alt={`${listingData?.data?.title || "Property"} - Image 4`}
+                    className="w-full h-full object-cover transition-transform duration-300"
+                    onClick={() => openGallery(3)}
+                    loading='lazy'
+                  />
+                ) : (
+                  <Image
+                    src={images[3]}
+                    alt={`${listingData?.data?.title || "Property"} - Image 4`}
+                    width={256}
+                    height={390}
+                    className="w-full h-full object-cover transition-transform duration-300"
+                    onClick={() => openGallery(3)}
+                    loading='lazy'
+                  />
+                )}
               </div>
             </div>
           </div>
@@ -244,12 +288,23 @@ const PropertyListingUnitDetails = () => {
           {/* Mobile Slider - No arrows, only swipe */}
           <div className="lg:hidden relative" ref={sliderRef}>
             <div className="relative h-[476px] sm:h-[490px] overflow-hidden rounded-lg">
-              <Image
-                src={images[currentImageIndex]}
-                alt={`Villa image ${currentImageIndex + 1}`}
-                className="w-full h-full object-cover"
-                loading='lazy'
-              />
+              {isExternalImage(images[currentImageIndex]) ? (
+                <img
+                  src={images[currentImageIndex]}
+                  alt={`${listingData?.data?.title || "Property"} - Image ${currentImageIndex + 1}`}
+                  className="w-full h-full object-cover"
+                  loading='lazy'
+                />
+              ) : (
+                <Image
+                  src={images[currentImageIndex]}
+                  alt={`${listingData?.data?.title || "Property"} - Image ${currentImageIndex + 1}`}
+                  width={400}
+                  height={490}
+                  className="w-full h-full object-cover"
+                  loading='lazy'
+                />
+              )}
 
               {/* Image Counter */}
               {/* <div className="absolute bottom-4 right-4 bg-black/70 text-white px-3 py-1 rounded-full text-sm">
@@ -308,7 +363,7 @@ const PropertyListingUnitDetails = () => {
 
           <img
             src={images[currentImageIndex]}
-            alt={`Villa image ${currentImageIndex + 1}`}
+            alt={`${listingData?.data?.title || "Property"} - Image ${currentImageIndex + 1}`}
             className="max-w-full max-h-full object-contain"
           />
 

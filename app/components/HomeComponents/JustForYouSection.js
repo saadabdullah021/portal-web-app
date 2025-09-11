@@ -3,11 +3,13 @@ import React, { useState, useEffect, useRef } from "react";
 import { MoveLeft, MoveRight, Star } from "lucide-react";
 import { useTranslation } from 'react-i18next';
 import Image from "next/image";
+import { useRouter } from 'next/navigation';
 import justForYou from '../../../public/images/justforyou.png';
 import { getComponentData } from '../../../lib/componentApi';
 
 const JustForYouSection = ({ items, sectionData  }) => {
   const { t, i18n } = useTranslation("home");
+  const router = useRouter();
   const isRTL = i18n.language === "ar";
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
@@ -130,8 +132,18 @@ const JustForYouSection = ({ items, sectionData  }) => {
     const thumbnail = listing.thumbnail || {};
     const imageSrc = thumbnail?.thumbnail_url || placeholderImage;
     const hasDiscount = listing.discounted_price && String(listing.discounted_price) !== '0';
+    
+    const handleCardClick = () => {
+      if (listing.unique_id) {
+        router.push(`/unit-details?slug=${listing.unique_id}`);
+      }
+    };
+    
     return (
-    <div className="bg-white -z-10 rounded-3xl overflow-hidden shadow-sm transition-all duration-300 transform flex-shrink-0 w-full md:w-auto">
+    <div 
+      className="bg-white  rounded-3xl overflow-hidden shadow-sm transition-all duration-300 transform flex-shrink-0 w-full md:w-auto cursor-pointer hover:shadow-lg"
+      onClick={handleCardClick}
+    >
       <div className="relative">
         <div className="aspect-[4/3] relative overflow-hidden">
           <Image

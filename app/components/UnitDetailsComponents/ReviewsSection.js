@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-const ReviewsSection = () => {
+const ReviewsSection = ({ listingData }) => {
   const { t,i18n} = useTranslation("hero");
     const isRTL = i18n.language === 'ar';
   const [reviewText, setReviewText] = useState('');
@@ -260,7 +260,7 @@ const ReviewsSection = () => {
               <div className='flex lg:flex-row flex-col items-start lg:items-center lg:justify-between'>
 
                 <p className="text-[#777E90] mb-4">
-                  {t('Be the first to review')} <span className="text-[#23262F] font-medium">2-Bed Exquisite Villa in Al Rawdah Villa</span>
+                  {t('Be the first to review')} <span className="text-[#23262F] font-medium">{listingData?.data?.title || "Property"}</span>
                 </p>
 
                 {/* Star Rating */}
@@ -313,7 +313,7 @@ const ReviewsSection = () => {
               <div className="pb-6 px-6 ">
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-2xl font-semibold text-[#23262F]">
-                    {reviews.length} {t('reviews')}
+                    {listingData?.data?.reviews || reviews.length} {t('reviews')}
                   </h3>
 
                   <div className="relative">
