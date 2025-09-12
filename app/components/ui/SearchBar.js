@@ -494,7 +494,7 @@ const SearchBar = ({ onSearch }) => {
           {/* Button */}
           <button
             onClick={handleSearch}
-            className="w-full lg:w-auto bg-[#3B71FE] hover:bg-blue-700 rounded-full py-4 lg:p-4 px-6 flex items-center justify-center transition-colors duration-300"
+            className="w-full lg:w-auto bg-[#3B71FE] cursor-pointer hover:bg-blue-700 rounded-full py-4 lg:p-4 px-6 flex items-center justify-center transition-colors duration-300"
           >
             <span className="text-white font-medium lg:hidden">{t('search')}</span>
             <svg width="24" height="24" className='hidden lg:block' viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

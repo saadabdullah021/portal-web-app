@@ -20,6 +20,7 @@ import heroImage3 from "../../../public/images/unit_details_3rd.png"
 import heroImage4 from "../../../public/images/unit_details_4th.jpg"
 import Image from 'next/image';
 import ShareModal from '../ui/ShareModal';
+import Shimmer from '../ui/Shimmer';
 import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
 const PropertyListingUnitDetails = ({ listingData }) => {
@@ -27,15 +28,33 @@ const PropertyListingUnitDetails = ({ listingData }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
+  const [imageLoadingStates, setImageLoadingStates] = useState({});
   const sliderRef = useRef(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const apiImages = listingData?.data?.listing_images?.map(img => img.url).filter(url => url && url.trim() !== '') || [];
   const fallbackImages = [heroImage, heroImage2, heroImage3, heroImage4];
   const images = apiImages.length > 0 ? apiImages : fallbackImages;
+  
+  console.log('API Images:', apiImages);
+  console.log('Final Images Array:', images);
 
   const isExternalImage = (src) => {
     return src && (src.startsWith('http://') || src.startsWith('https://'));
+  };
+
+  const handleImageLoad = (imageIndex) => {
+    setImageLoadingStates(prev => ({
+      ...prev,
+      [imageIndex]: false
+    }));
+  };
+
+  const handleImageStart = (imageIndex) => {
+    setImageLoadingStates(prev => ({
+      ...prev,
+      [imageIndex]: true
+    }));
   };
 
   const nextImage = () => {
@@ -203,31 +222,96 @@ const PropertyListingUnitDetails = ({ listingData }) => {
 
         {/* Images Section */}
         <div className="relative">
-          {/* Desktop Layout - Exact copy of your design */}
+          {/* Desktop Layout - Dynamic based on number of images */}
           <div className="hidden lg:flex lg:gap-2 lg:h-96">
-            {/* Left Side - Big Image */}
+            {images.length === 1 ? (
+              /* Single Image - Full Width */
+              <div className="w-full h-[400px] relative overflow-hidden rounded-xl group cursor-pointer">
+                {images[0] && (
+                  <>
+                    {imageLoadingStates[0] && <Shimmer type="imageCard" />}
+                    {isExternalImage(images[0]) ? (
+                      <img
+                        src={images[0]}
+                        alt={listingData?.data?.title || "Property image"}
+                        className={`w-full h-full object-cover transition-transform duration-300 ${imageLoadingStates[0] ? 'hidden' : ''}`}
+                        onClick={() => openGallery(0)}
+                        loading='lazy'
+                        onLoad={() => handleImageLoad(0)}
+                        onLoadStart={() => handleImageStart(0)}
+                        onError={(e) => {
+                          console.error('Main image failed to load:', images[0]);
+                          e.target.style.display = 'none';
+                          handleImageLoad(0);
+                        }}
+                      />
+                    ) : (
+                      <Image
+                        src={images[0]}
+                        alt={listingData?.data?.title || "Property image"}
+                        width={1200}
+                        height={400}
+                        className={`w-full h-full object-cover transition-transform duration-300 ${imageLoadingStates[0] ? 'hidden' : ''}`}
+                        onClick={() => openGallery(0)}
+                        loading='lazy'
+                        onLoad={() => handleImageLoad(0)}
+                        onLoadStart={() => handleImageStart(0)}
+                        onError={(e) => {
+                          console.error('Main image failed to load:', images[0]);
+                          e.target.style.display = 'none';
+                          handleImageLoad(0);
+                        }}
+                      />
+                    )}
+                  </>
+                )}
+              </div>
+            ) : (
+              /* 2+ Images - Big Image + Cards Layout */
+              <>
+                {/* Left Side - Big Image */}
             <div className="flex-1 lg:w-[850px] lg:h-[780px] w-[300px] h-[470px] relative overflow-hidden rounded-xl group cursor-pointer">
-              {isExternalImage(images[0]) ? (
-                <img
-                  src={images[0]}
-                  alt={listingData?.data?.title || "Property image"}
-                  className="w-full h-full object-cover transition-transform duration-300"
-                  onClick={() => openGallery(0)}
-                  loading='lazy'
-                />
-              ) : (
-                <Image
-                  src={images[0]}
-                  alt={listingData?.data?.title || "Property image"}
-                  width={850}
-                  height={780}
-                  className="w-full h-full object-cover transition-transform duration-300"
-                  onClick={() => openGallery(0)}
-                  loading='lazy'
-                />
+              {images[0] && (
+                <>
+                  {imageLoadingStates[0] && <Shimmer type="imageCard" />}
+                  {isExternalImage(images[0]) ? (
+                    <img
+                      src={images[0]}
+                      alt={listingData?.data?.title || "Property image"}
+                      className={`w-full h-full object-cover transition-transform duration-300 ${imageLoadingStates[0] ? 'hidden' : ''}`}
+                      onClick={() => openGallery(0)}
+                      loading='lazy'
+                      onLoad={() => handleImageLoad(0)}
+                      onLoadStart={() => handleImageStart(0)}
+                      onError={(e) => {
+                        console.error('Main image failed to load:', images[0]);
+                        e.target.style.display = 'none';
+                        handleImageLoad(0);
+                      }}
+                    />
+                  ) : (
+                    <Image
+                      src={images[0]}
+                      alt={listingData?.data?.title || "Property image"}
+                      width={850}
+                      height={780}
+                      className={`w-full h-full object-cover transition-transform duration-300 ${imageLoadingStates[0] ? 'hidden' : ''}`}
+                      onClick={() => openGallery(0)}
+                      loading='lazy'
+                      onLoad={() => handleImageLoad(0)}
+                      onLoadStart={() => handleImageStart(0)}
+                      onError={(e) => {
+                        console.error('Main image failed to load:', images[0]);
+                        e.target.style.display = 'none';
+                        handleImageLoad(0);
+                      }}
+                    />
+                  )}
+                </>
               )}
             </div>
 
+<<<<<<< HEAD
             {/* Right Side - 3 Small Images Stacked */}
             <div className=" flex h-[780px] flex-col gap-2">
               <div className="flex-1 w-64  relative overflow-hidden rounded-xl group cursor-pointer">
@@ -309,10 +393,65 @@ const PropertyListingUnitDetails = ({ listingData }) => {
                 )}
               </div>
             </div>
+=======
+                <div className=" flex h-[780px] flex-col gap-2">
+                  {Array.from({ length: 3 }, (_, index) => {
+                    const imageIndex = index + 1;
+                    const image = images[imageIndex];
+                    return (
+                      <div key={imageIndex} className="flex-1 w-64 relative overflow-hidden rounded-xl group cursor-pointer">
+                        {image ? (
+                          <>
+                            {imageLoadingStates[imageIndex] && <Shimmer type="imageCard" />}
+                            {isExternalImage(image) ? (
+                              <img
+                                src={image}
+                                alt={`${listingData?.data?.title || "Property"} - Image ${imageIndex + 1}`}
+                                className={`w-full h-full object-cover transition-transform duration-300 ${imageLoadingStates[imageIndex] ? 'hidden' : ''}`}
+                                onClick={() => openGallery(imageIndex)}
+                                loading='lazy'
+                                onLoad={() => handleImageLoad(imageIndex)}
+                                onLoadStart={() => handleImageStart(imageIndex)}
+                                onError={(e) => {
+                                  console.error('Image failed to load:', image);
+                                  e.target.style.display = 'none';
+                                  handleImageLoad(imageIndex);
+                                }}
+                              />
+                            ) : (
+                              <Image
+                                src={image}
+                                alt={`${listingData?.data?.title || "Property"} - Image ${imageIndex + 1}`}
+                                width={256}
+                                height={390}
+                                className={`w-full h-full object-cover transition-transform duration-300 ${imageLoadingStates[imageIndex] ? 'hidden' : ''}`}
+                                onClick={() => openGallery(imageIndex)}
+                                loading='lazy'
+                                onLoad={() => handleImageLoad(imageIndex)}
+                                onLoadStart={() => handleImageStart(imageIndex)}
+                                onError={(e) => {
+                                  console.error('Image failed to load:', image);
+                                  e.target.style.display = 'none';
+                                  handleImageLoad(imageIndex);
+                                }}
+                              />
+                            )}
+                          </>
+                        ) : (
+                          <></>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </>
+            )}
+>>>>>>> 3640e3bf3c2a6e8387cdadd3b9528593f35cb117
           </div>
 
           {/* Mobile Slider - No arrows, only swipe */}
           <div className="lg:hidden relative" ref={sliderRef}>
+<<<<<<< HEAD
             <div className="relative h-[476px] sm:h-[490px] overflow-hidden rounded-2xl">
               {isExternalImage(images[currentImageIndex]) ? (
                 <img
@@ -330,6 +469,44 @@ const PropertyListingUnitDetails = ({ listingData }) => {
                   className="w-full h-full object-cover"
                   loading='lazy'
                 />
+=======
+            <div className="relative h-[476px] sm:h-[490px] overflow-hidden rounded-lg">
+              {images[currentImageIndex] && (
+                <>
+                  {imageLoadingStates[currentImageIndex] && <Shimmer type="imageCard" />}
+                  {isExternalImage(images[currentImageIndex]) ? (
+                    <img
+                      src={images[currentImageIndex]}
+                      alt={`${listingData?.data?.title || "Property"} - Image ${currentImageIndex + 1}`}
+                      className={`w-full h-full object-cover ${imageLoadingStates[currentImageIndex] ? 'hidden' : ''}`}
+                      loading='lazy'
+                      onLoad={() => handleImageLoad(currentImageIndex)}
+                      onLoadStart={() => handleImageStart(currentImageIndex)}
+                      onError={(e) => {
+                        console.error('Mobile image failed to load:', images[currentImageIndex]);
+                        e.target.style.display = 'none';
+                        handleImageLoad(currentImageIndex);
+                      }}
+                    />
+                  ) : (
+                    <Image
+                      src={images[currentImageIndex]}
+                      alt={`${listingData?.data?.title || "Property"} - Image ${currentImageIndex + 1}`}
+                      width={400}
+                      height={490}
+                      className={`w-full h-full object-cover ${imageLoadingStates[currentImageIndex] ? 'hidden' : ''}`}
+                      loading='lazy'
+                      onLoad={() => handleImageLoad(currentImageIndex)}
+                      onLoadStart={() => handleImageStart(currentImageIndex)}
+                      onError={(e) => {
+                        console.error('Mobile image failed to load:', images[currentImageIndex]);
+                        e.target.style.display = 'none';
+                        handleImageLoad(currentImageIndex);
+                      }}
+                    />
+                  )}
+                </>
+>>>>>>> 3640e3bf3c2a6e8387cdadd3b9528593f35cb117
               )}
 
               {/* Image Counter */}
@@ -387,11 +564,17 @@ const PropertyListingUnitDetails = ({ listingData }) => {
             <ChevronRight size={24} />
           </button>
 
-          <img
-            src={images[currentImageIndex]}
-            alt={`${listingData?.data?.title || "Property"} - Image ${currentImageIndex + 1}`}
-            className="max-w-full max-h-full object-contain"
-          />
+          {images[currentImageIndex] && (
+            <img
+              src={images[currentImageIndex]}
+              alt={`${listingData?.data?.title || "Property"} - Image ${currentImageIndex + 1}`}
+              className="max-w-full max-h-full object-contain"
+              onError={(e) => {
+                console.error('Gallery image failed to load:', images[currentImageIndex]);
+                e.target.style.display = 'none';
+              }}
+            />
+          )}
 
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white text-lg">
             {currentImageIndex + 1} / {images.length}

@@ -26,7 +26,7 @@ export default function Footer() {
   
   return (
     <footer className="bg-white border-t border-gray-200 text-gray-700">
-      <div className="max-w-7xl 2xl:max-w-[1400px] mx-auto px-4 sm:px-12 lg:px-20 py-10 grid grid-cols-1 lg:grid-cols-4 gap-4">
+      <div className="max-w-7xl 2xl:max-w-[1400px] mx-auto px-8 sm:px-12 lg:px-20 py-10 grid grid-cols-1 lg:grid-cols-4 gap-4">
         
         {/* Logo & Description */}
         <div>

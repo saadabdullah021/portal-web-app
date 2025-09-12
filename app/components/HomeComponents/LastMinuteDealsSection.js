@@ -92,29 +92,34 @@ const LastMinuteDealsSection = ({ items , data }) => {
 
   // ✅ Items per view
   const itemsPerView = isMobile ? 1 : 4;
-  // ✅ Clone properties for infinite loop
-  const properties = [
+  // ✅ Clone properties for infinite loop (only if we have enough items)
+  const properties = computedData.length > itemsPerView ? [
     ...computedData.slice(-itemsPerView),
     ...computedData,
     ...computedData.slice(0, itemsPerView),
-  ];
+  ] : computedData;
 
   // ✅ Start from first real slide (after cloned items)
   useEffect(() => {
-    setCurrentSlide(itemsPerView);
-  }, [itemsPerView]);
+    if (computedData.length > 0) {
+      setCurrentSlide(computedData.length > itemsPerView ? itemsPerView : 0);
+    }
+  }, [itemsPerView, computedData.length]);
 
   // ✅ Handle transition end for seamless loop
   const handleTransitionEnd = () => {
     setIsTransitioning(false);
     
-    // If we're at the beginning clones, jump to real beginning
-    if (currentSlide === 0) {
-      setCurrentSlide(computedData.length);
-    }
-    // If we're at the end clones, jump to real start
-    else if (currentSlide >= computedData.length + itemsPerView) {
-      setCurrentSlide(itemsPerView);
+    // Only handle infinite loop if we have enough items for cloning
+    if (computedData.length > itemsPerView) {
+      // If we're at the beginning clones, jump to real beginning
+      if (currentSlide === 0) {
+        setCurrentSlide(computedData.length);
+      }
+      // If we're at the end clones, jump to real start
+      else if (currentSlide >= computedData.length + itemsPerView) {
+        setCurrentSlide(itemsPerView);
+      }
     }
   };
 
@@ -154,9 +159,9 @@ const LastMinuteDealsSection = ({ items , data }) => {
     setIsTransitioning(true);
     
     const newSlide = currentSlide + 1;
-    const maxSlide = computedData.length + itemsPerView - 1;
+    const maxSlide = computedData.length > itemsPerView ? computedData.length + itemsPerView - 1 : computedData.length - 1;
     
-    if (newSlide >= maxSlide && hasMore) {
+    if (newSlide >= maxSlide && hasMore && computedData.length > itemsPerView) {
       await loadMoreItems();
     }
     

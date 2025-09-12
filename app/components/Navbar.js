@@ -108,7 +108,7 @@ const changeLanguage = (lng) => {
 
   return (
     <nav className="bg-white  border-b border-gray-200 sticky top-0 z-50">
-      <div className="max-w-7xl 2xl:max-w-[1450px] mx-auto  px-8 lg:px-6 2xl:px-8 ">
+      <div className="max-w-6xl 2xl:max-w-[1450px] mx-auto  px-8 lg:px-6 2xl:px-8 ">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex-shrink-0">
@@ -128,7 +128,7 @@ const changeLanguage = (lng) => {
           <div className="flex items-center space-x-4" ref={dropdownRef}>
             {/* Support link */}
             <Link
-              href="/unit-details"
+              href="/checkout"
               className="text-[#777E90] hidden lg:block capitalize hover:text-blue-800 text-sm font-medium transition-colors duration-200"
             >
               {t("navbar.support")}

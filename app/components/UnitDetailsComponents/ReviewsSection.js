@@ -19,7 +19,8 @@ import {
 import { useTranslation } from 'react-i18next';
 import ShareModal from '../ui/ShareModal';
 import { FaXTwitter } from 'react-icons/fa6';
-
+import EmojiPicker from 'emoji-picker-react';
+import EmojiPickerDropdown from '../ui/EmojiPickerDropdown';
 const ReviewsSection = ({ listingData }) => {
   const { t, i18n } = useTranslation("hero");
   const isRTL = i18n.language === 'ar';
@@ -33,6 +34,8 @@ const ReviewsSection = ({ listingData }) => {
   const [activeReplyId, setActiveReplyId] = useState(null);
   const [replyText, setReplyText] = useState("");
 
+
+  
 
   const [reviews, setReviews] = useState([
     {
@@ -297,10 +300,13 @@ const ReviewsSection = ({ listingData }) => {
                     />
 
                     <div className="flex items-center gap-3 ml-4">
-                      <button className="text-gray-400 hover:text-gray-600 transition-colors">
+                      {/* Smile button for emojies*/}
+                      {/* <button className="text-gray-400 hover:text-gray-600 transition-colors">
                         <Smile size={20} />
-                      </button>
-
+                      </button> */}
+     <EmojiPickerDropdown
+        onEmojiSelect={(emoji) => setReviewText((prev) => prev + emoji)}
+      />
                       <button
                         onClick={handleSubmitReview}
                         disabled={!reviewText.trim()}
