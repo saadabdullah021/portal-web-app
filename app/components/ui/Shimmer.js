@@ -42,8 +42,13 @@ const Shimmer = ({ type = 'card', count = 6 }) => {
     </div>
   );
 
+  const renderImageCardShimmer = () => (
+    <div className="w-full h-full bg-gray-200 animate-pulse rounded-xl"></div>
+  );
+
   if (type === 'grid') return renderGridShimmer();
   if (type === 'slider') return renderSliderShimmer();
+  if (type === 'imageCard') return renderImageCardShimmer();
   return renderCardShimmer();
 };
 
