@@ -32,6 +32,9 @@ const PropertyListingUnitDetails = ({listingData}) => {
   const apiImages = listingData?.data?.listing_images?.map(img => img.url).filter(url => url && url.trim() !== '') || [];
   const fallbackImages = [heroImage, heroImage2, heroImage3, heroImage4];
   const images = apiImages.length > 0 ? apiImages : fallbackImages;
+  
+  console.log('API Images:', apiImages);
+  console.log('Final Images Array:', images);
 
   const isExternalImage = (src) => {
     return src && (src.startsWith('http://') || src.startsWith('https://'));
@@ -190,110 +193,134 @@ const PropertyListingUnitDetails = ({listingData}) => {
 
         {/* Images Section */}
         <div className="relative">
-          {/* Desktop Layout - Exact copy of your design */}
+          {/* Desktop Layout - Dynamic based on number of images */}
           <div className="hidden lg:flex lg:gap-2 lg:h-96">
-            {/* Left Side - Big Image */}
-            <div className="flex-1 lg:w-[850px] lg:h-[780px] w-[300px] h-[470px] relative overflow-hidden rounded-xl group cursor-pointer">
-              {isExternalImage(images[0]) ? (
-                <img
-                  src={images[0]}
-                  alt={listingData?.data?.title || "Property image"}
-                  className="w-full h-full object-cover transition-transform duration-300"
-                  onClick={() => openGallery(0)}
-                  loading='lazy'
-                />
-              ) : (
-                <Image
-                  src={images[0]}
-                  alt={listingData?.data?.title || "Property image"}
-                  width={850}
-                  height={780}
-                  className="w-full h-full object-cover transition-transform duration-300"
-                  onClick={() => openGallery(0)}
-                  loading='lazy'
-                />
-              )}
-            </div>
-
-            {/* Right Side - 3 Small Images Stacked */}
-            <div className=" flex h-[780px] flex-col gap-2">
-              <div className="flex-1 w-64  relative overflow-hidden rounded-xl group cursor-pointer">
-                {isExternalImage(images[1]) ? (
+            {images.length === 1 ? (
+              /* Single Image - Full Width */
+              <div className="w-full h-[400px] relative overflow-hidden rounded-xl group cursor-pointer">
+                {isExternalImage(images[0]) ? (
                   <img
-                    src={images[1]}
-                    alt={`${listingData?.data?.title || "Property"} - Image 2`}
+                    src={images[0]}
+                    alt={listingData?.data?.title || "Property image"}
                     className="w-full h-full object-cover transition-transform duration-300"
-                    onClick={() => openGallery(1)}
+                    onClick={() => openGallery(0)}
                     loading='lazy'
+                    onError={(e) => {
+                      console.error('Main image failed to load:', images[0]);
+                      e.target.style.display = 'none';
+                    }}
                   />
                 ) : (
                   <Image
-                    src={images[1]}
-                    alt={`${listingData?.data?.title || "Property"} - Image 2`}
-                    width={256}
-                    height={390}
+                    src={images[0]}
+                    alt={listingData?.data?.title || "Property image"}
+                    width={1200}
+                    height={400}
                     className="w-full h-full object-cover transition-transform duration-300"
-                    onClick={() => openGallery(1)}
+                    onClick={() => openGallery(0)}
                     loading='lazy'
+                    onError={(e) => {
+                      console.error('Main image failed to load:', images[0]);
+                      e.target.style.display = 'none';
+                    }}
                   />
                 )}
               </div>
+            ) : (
+              /* 2+ Images - Big Image + Cards Layout */
+              <>
+                {/* Left Side - Big Image */}
+                <div className="flex-1 lg:w-[850px] lg:h-[780px] w-[300px] h-[470px] relative overflow-hidden rounded-xl group cursor-pointer">
+                  {images[0] && (isExternalImage(images[0]) ? (
+                    <img
+                      src={images[0]}
+                      alt={listingData?.data?.title || "Property image"}
+                      className="w-full h-full object-cover transition-transform duration-300"
+                      onClick={() => openGallery(0)}
+                      loading='lazy'
+                      onError={(e) => {
+                        console.error('Main image failed to load:', images[0]);
+                        e.target.style.display = 'none';
+                      }}
+                    />
+                  ) : (
+                    <Image
+                      src={images[0]}
+                      alt={listingData?.data?.title || "Property image"}
+                      width={850}
+                      height={780}
+                      className="w-full h-full object-cover transition-transform duration-300"
+                      onClick={() => openGallery(0)}
+                      loading='lazy'
+                      onError={(e) => {
+                        console.error('Main image failed to load:', images[0]);
+                        e.target.style.display = 'none';
+                      }}
+                    />
+                  ))}
+                </div>
 
-              <div className="flex-1 w-64  relative overflow-hidden rounded-xl group cursor-pointer">
-                {isExternalImage(images[2]) ? (
-                  <img
-                    src={images[2]}
-                    alt={`${listingData?.data?.title || "Property"} - Image 3`}
-                    className="w-full h-full object-cover transition-transform duration-300"
-                    onClick={() => openGallery(2)}
-                    loading='lazy'
-                  />
-                ) : (
-                  <Image
-                    src={images[2]}
-                    alt={`${listingData?.data?.title || "Property"} - Image 3`}
-                    width={256}
-                    height={390}
-                    className="w-full h-full object-cover transition-transform duration-300"
-                    onClick={() => openGallery(2)}
-                    loading='lazy'
-                  />
-                )}
-              </div>
-
-              <div className="flex-1 w-64  relative overflow-hidden rounded-xl group cursor-pointer">
-                {isExternalImage(images[3]) ? (
-                  <img
-                    src={images[3]}
-                    alt={`${listingData?.data?.title || "Property"} - Image 4`}
-                    className="w-full h-full object-cover transition-transform duration-300"
-                    onClick={() => openGallery(3)}
-                    loading='lazy'
-                  />
-                ) : (
-                  <Image
-                    src={images[3]}
-                    alt={`${listingData?.data?.title || "Property"} - Image 4`}
-                    width={256}
-                    height={390}
-                    className="w-full h-full object-cover transition-transform duration-300"
-                    onClick={() => openGallery(3)}
-                    loading='lazy'
-                  />
-                )}
-              </div>
-            </div>
+                {/* Right Side - Small Images Stacked */}
+                <div className=" flex h-[780px] flex-col gap-2">
+                  {Array.from({ length: 3 }, (_, index) => {
+                    const imageIndex = index + 1;
+                    const image = images[imageIndex];
+                    return (
+                      <div key={imageIndex} className="flex-1 w-64 relative overflow-hidden rounded-xl group cursor-pointer">
+                        {image ? (
+                          isExternalImage(image) ? (
+                            <img
+                              src={image}
+                              alt={`${listingData?.data?.title || "Property"} - Image ${imageIndex + 1}`}
+                              className="w-full h-full object-cover transition-transform duration-300"
+                              onClick={() => openGallery(imageIndex)}
+                              loading='lazy'
+                              onError={(e) => {
+                                console.error('Image failed to load:', image);
+                                e.target.style.display = 'none';
+                              }}
+                            />
+                          ) : (
+                            <Image
+                              src={image}
+                              alt={`${listingData?.data?.title || "Property"} - Image ${imageIndex + 1}`}
+                              width={256}
+                              height={390}
+                              className="w-full h-full object-cover transition-transform duration-300"
+                              onClick={() => openGallery(imageIndex)}
+                              loading='lazy'
+                              onError={(e) => {
+                                console.error('Image failed to load:', image);
+                                e.target.style.display = 'none';
+                              }}
+                            />
+                          )
+                        ) : (<></>
+                          // <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                          //   <span className="text-gray-400 text-sm">No image</span>
+                          // </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </>
+            )}
           </div>
 
           {/* Mobile Slider - No arrows, only swipe */}
           <div className="lg:hidden relative" ref={sliderRef}>
             <div className="relative h-[476px] sm:h-[490px] overflow-hidden rounded-lg">
-              {isExternalImage(images[currentImageIndex]) ? (
+              {images[currentImageIndex] && (isExternalImage(images[currentImageIndex]) ? (
                 <img
                   src={images[currentImageIndex]}
                   alt={`${listingData?.data?.title || "Property"} - Image ${currentImageIndex + 1}`}
                   className="w-full h-full object-cover"
                   loading='lazy'
+                  onError={(e) => {
+                    console.error('Mobile image failed to load:', images[currentImageIndex]);
+                    e.target.style.display = 'none';
+                  }}
                 />
               ) : (
                 <Image
@@ -303,8 +330,12 @@ const PropertyListingUnitDetails = ({listingData}) => {
                   height={490}
                   className="w-full h-full object-cover"
                   loading='lazy'
+                  onError={(e) => {
+                    console.error('Mobile image failed to load:', images[currentImageIndex]);
+                    e.target.style.display = 'none';
+                  }}
                 />
-              )}
+              ))}
 
               {/* Image Counter */}
               {/* <div className="absolute bottom-4 right-4 bg-black/70 text-white px-3 py-1 rounded-full text-sm">
@@ -361,11 +392,17 @@ const PropertyListingUnitDetails = ({listingData}) => {
             <ChevronRight size={24} />
           </button>
 
-          <img
-            src={images[currentImageIndex]}
-            alt={`${listingData?.data?.title || "Property"} - Image ${currentImageIndex + 1}`}
-            className="max-w-full max-h-full object-contain"
-          />
+          {images[currentImageIndex] && (
+            <img
+              src={images[currentImageIndex]}
+              alt={`${listingData?.data?.title || "Property"} - Image ${currentImageIndex + 1}`}
+              className="max-w-full max-h-full object-contain"
+              onError={(e) => {
+                console.error('Gallery image failed to load:', images[currentImageIndex]);
+                e.target.style.display = 'none';
+              }}
+            />
+          )}
 
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white text-lg">
             {currentImageIndex + 1} / {images.length}
