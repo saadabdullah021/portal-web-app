@@ -86,14 +86,17 @@ const ReviewsSection = ({ listingData }) => {
   ]);
 
   const hostInfo = {
-    name: 'Faisal A.',
-    avatar: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=80&h=80&fit=crop&crop=face',
-    rating: 4.8,
-    totalReviews: 256,
-    isSuperhosst: true,
-    memberSince: 'Sep 15, 2025',
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras nec arcu vel orci aliquam suscipit. Quisque in mattis diam.',
-    isVerified: true
+    name: listingData?.data?.host_details?.host_name || 'Host',
+    avatar: listingData?.data?.host_details?.host_profile_picture || 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=80&h=80&fit=crop&crop=face',
+    rating: parseFloat(listingData?.data?.host_details?.host_ratings) || 0,
+    totalReviews: listingData?.data?.host_details?.host_reviews || '0',
+    isSuperhosst: listingData?.data?.host_details?.host_type === 'Super Host',
+    memberSince: listingData?.data?.host_details?.joined_at || '',
+    description: listingData?.data?.host_details?.personal_bio || '',
+    isVerified: true,
+    facebook: listingData?.data?.host_details?.host_facebook_profile || '',
+    instagram: listingData?.data?.host_details?.host_instagram_profile || '',
+    twitter: listingData?.data?.host_details?.host_twitter_profile || ''
   };
 
   const handleLikeReview = (reviewId) => {
@@ -233,9 +236,21 @@ const ReviewsSection = ({ listingData }) => {
 
               {/* Social Links */}
               <div className="flex items-center justify-center gap-4 mb-6">
-                <Twitter size={20} className="text-gray-400 hover:text-gray-600 cursor-pointer" />
-                <Instagram size={20} className="text-gray-400 hover:text-gray-600 cursor-pointer" />
-                <Facebook size={20} className="text-gray-400 hover:text-gray-600 cursor-pointer" />
+                {hostInfo.twitter && (
+                  <a href={`https://twitter.com/${hostInfo.twitter}`} target="_blank" rel="noopener noreferrer">
+                    <Twitter size={20} className="text-gray-400 hover:text-gray-600 cursor-pointer" />
+                  </a>
+                )}
+                {hostInfo.instagram && (
+                  <a href={`https://instagram.com/${hostInfo.instagram}`} target="_blank" rel="noopener noreferrer">
+                    <Instagram size={20} className="text-gray-400 hover:text-gray-600 cursor-pointer" />
+                  </a>
+                )}
+                {hostInfo.facebook && (
+                  <a href={`https://facebook.com/${hostInfo.facebook}`} target="_blank" rel="noopener noreferrer">
+                    <Facebook size={20} className="text-gray-400 hover:text-gray-600 cursor-pointer" />
+                  </a>
+                )}
               </div>
 
               {/* Member Since */}
