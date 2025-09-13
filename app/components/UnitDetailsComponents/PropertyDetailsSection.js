@@ -32,9 +32,16 @@ const PropertyDetailsSection = ({ listingData }) => {
   const [children, setChildren] = useState(0);
   const [infants, setInfants] = useState(0);
   const [showMobileBooking, setShowMobileBooking] = useState(false);
-  const [nights, setNights] = useState(3);
+  
+  // Default dates: today for check-in, tomorrow for check-out
+  const today = new Date();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  
+  const [checkIn, setCheckIn] = useState(today.toISOString().split('T')[0]);
+  const [checkOut, setCheckOut] = useState(tomorrow.toISOString().split('T')[0]);
+  const [nights, setNights] = useState(1);
 
-  // Function to format host name as "First Name + Last Initial"
   const formatHostName = (fullName) => {
     if (!fullName) return 'Host';
     const nameParts = fullName.trim().split(' ');
@@ -42,6 +49,34 @@ const PropertyDetailsSection = ({ listingData }) => {
     const firstName = nameParts[0];
     const lastName = nameParts[nameParts.length - 1];
     return `${firstName} ${lastName.charAt(0)}.`;
+  };
+
+  const calculateNights = (checkInDate, checkOutDate) => {
+    const start = new Date(checkInDate);
+    const end = new Date(checkOutDate);
+    const diffTime = end - start;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays > 0 ? diffDays : 1;
+  };
+
+  const handleCheckInChange = (date) => {
+    setCheckIn(date);
+    const newNights = calculateNights(date, checkOut);
+    setNights(newNights);
+  };
+
+  const handleCheckOutChange = (date) => {
+    if (date <= checkIn) {
+      const nextDay = new Date(checkIn);
+      nextDay.setDate(nextDay.getDate() + 1);
+      const nextDayStr = nextDay.toISOString().split('T')[0];
+      setCheckOut(nextDayStr);
+      setNights(1);
+    } else {
+      setCheckOut(date);
+      const newNights = calculateNights(checkIn, date);
+      setNights(newNights);
+    }
   };
 
   const calculatePricing = () => {
@@ -53,7 +88,7 @@ const PropertyDetailsSection = ({ listingData }) => {
     
     const cleaningFee = parseFloat(listingData?.data?.listing_fee?.['Cleaning Fee']) || 19;
     const serviceFee = parseFloat(listingData?.data?.listing_fee?.['Serive Fee']) || 99;
-    const nightsCount = parseInt(listingData?.data?.nights) || nights;
+    const nightsCount = nights; 
     
     const baseTotal = basePrice * nightsCount;
     const total = baseTotal + cleaningFee + serviceFee;
@@ -100,11 +135,7 @@ const PropertyDetailsSection = ({ listingData }) => {
   //   );
   // };
   const [activeDropdown, setActiveDropdown] = useState(null);
-  const [checkIn, setCheckIn] = useState('');
-  const [checkOut, setCheckOut] = useState('');
-  // const isSaved = savedProperties.includes(propertyId);
 
-  // Use API amenities if available, otherwise fallback to default amenities
   const apiAmenities = listingData?.data?.amenities?.map(amenity => ({
     icon: Wifi, // Default icon, you can map based on amenity_name if needed
     label: amenity.amenity_name,
@@ -326,9 +357,10 @@ const PropertyDetailsSection = ({ listingData }) => {
                                 label={t('checkIn')}
                                 icon={Calendar}
                                 value={checkIn}
-                                onChange={setCheckIn}
+                                onChange={handleCheckInChange}
                                 dropdownPosition="top-full  lg:top-20"
                                 dropdownAlign={i18n.language === "ar" ? "lg:-left-48" : "lg:left-0"}
+                                minDate={today.toISOString().split('T')[0]}
                               />
                             </div>
                           </div>
@@ -346,8 +378,9 @@ const PropertyDetailsSection = ({ listingData }) => {
                                 label={t('checkOut')}
                                 icon={Calendar}
                                 value={checkOut}
-                                onChange={setCheckOut}
+                                onChange={handleCheckOutChange}
                                 dropdownPosition="top-full  lg:top-20"
+                                minDate={checkIn}
                                 dropdownAlign={i18n.language === "ar" ? "lg:left-2" : "lg:right-2"}
                               />
                             </div>
@@ -598,9 +631,10 @@ const PropertyDetailsSection = ({ listingData }) => {
                         label={t('checkIn')}
                         icon={Calendar}
                         value={checkIn}
-                        onChange={setCheckIn}
+                        onChange={handleCheckInChange}
                         dropdownPosition="top-full  lg:top-20"
                         dropdownAlign={i18n.language === "ar" ? "lg:-left-48" : "lg:left-0"}
+                        minDate={today.toISOString().split('T')[0]}
                       />
                     </div>
                   </div>
@@ -618,9 +652,10 @@ const PropertyDetailsSection = ({ listingData }) => {
                         label={t('checkOut')}
                         icon={Calendar}
                         value={checkOut}
-                        onChange={setCheckOut}
+                        onChange={handleCheckOutChange}
                         dropdownPosition="top-full  lg:top-20"
                         dropdownAlign={i18n.language === "ar" ? "lg:left-2" : "lg:right-2"}
+                        minDate={checkIn}
                       />
                     </div>
                   </div>
