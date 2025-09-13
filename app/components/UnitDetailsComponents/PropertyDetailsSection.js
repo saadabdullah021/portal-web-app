@@ -43,18 +43,25 @@ const PropertyDetailsSection = ({ listingData }) => {
     const lastName = nameParts[nameParts.length - 1];
     return `${firstName} ${lastName.charAt(0)}.`;
   };
-  console.log(listingData,'listingData')
-  // Function to calculate pricing dynamically
+
   const calculatePricing = () => {
-    const basePrice = parseFloat(listingData?.data?.actual_price || listingData?.data?.discounted_price || '');
-    const cleaningFee = parseFloat(listingData?.data?.listing_fee['Cleaning Fee'] || '');
-    const serviceFee = parseFloat(listingData?.data?.listing_fee['Serive Fee'] || '');
-    const nightsCount = parseInt(listingData?.data?.nights || nights);
+    const actualPrice = parseFloat((listingData?.data?.actual_price || '').replace(/,/g, '')) || 0;
+    const discountedPrice = parseFloat((listingData?.data?.discounted_price || '').replace(/,/g, '')) || 0;
+    
+    const basePrice = discountedPrice > 0 ? discountedPrice : actualPrice;
+    const hasDiscount = discountedPrice > 0;
+    
+    const cleaningFee = parseFloat(listingData?.data?.listing_fee?.['Cleaning Fee']) || 19;
+    const serviceFee = parseFloat(listingData?.data?.listing_fee?.['Serive Fee']) || 99;
+    const nightsCount = parseInt(listingData?.data?.nights) || nights;
     
     const baseTotal = basePrice * nightsCount;
     const total = baseTotal + cleaningFee + serviceFee;
     
     return {
+      actualPrice,
+      discountedPrice,
+      hasDiscount,
       basePrice,
       cleaningFee,
       serviceFee,
@@ -286,13 +293,11 @@ const PropertyDetailsSection = ({ listingData }) => {
                       {/* Price and Rating */}
                       <div className="space-y-3">
                         <div className="flex items-baseline gap-2">
-                          {listingData?.data?.discounted_price && listingData.data.discounted_price !== '0' && (
-                            <span className="text-[#B1B5C3] text-[32px] font-bold font-dm-sans line-through">{listingData.data.actual_price}</span>
+                          {pricing.hasDiscount && (
+                            <span className="text-[#B1B5C3] text-[32px] font-bold font-dm-sans line-through">{pricing.actualPrice.toLocaleString()}</span>
                           )}
-                          <span className="text-2xl md:text-3xl font-bold font-dm-sans text-[#23262F]">
-                            {listingData?.data?.discounted_price && listingData.data.discounted_price !== '0'
-                              ? listingData.data.discounted_price
-                              : listingData?.data?.actual_price || '0'} SAR
+                          <span className={`text-2xl md:text-3xl font-bold font-dm-sans ${pricing.hasDiscount ? 'text-[#58C27D]' : 'text-[#23262F]'}`}>
+                            {pricing.basePrice.toLocaleString()} SAR
                           </span>
                           <span className="text-[#777E90] text-[16px]">/ {t('night')}</span>
                         </div>
@@ -504,8 +509,19 @@ const PropertyDetailsSection = ({ listingData }) => {
                       {/* Price Breakdown */}
                       <div className="space-y-4 pt-4 ">
                         <div className="flex justify-between text-[#777E90] text-sm">
-                          <span>{pricing.basePrice.toLocaleString()} SAR × {pricing.nightsCount} {t('nights')}</span>
-                          <span className='font-medium text-[#23262F] '>{pricing.baseTotal.toLocaleString()} SAR</span>
+                          <div className="flex items-baseline gap-2">
+                            {pricing.hasDiscount && (
+                              <span className="text-[#B1B5C3] line-through">
+                                {pricing.actualPrice.toLocaleString()} SAR × {pricing.nightsCount} {t('nights')}
+                              </span>
+                            )}
+                            <span className={pricing.hasDiscount ? 'text-[#58C27D]' : ''}>
+                              {pricing.basePrice.toLocaleString()} SAR × {pricing.nightsCount} {t('nights')}
+                            </span>
+                          </div>
+                          <span className={`font-medium ${pricing.hasDiscount ? 'text-[#58C27D]' : 'text-[#23262F]'}`}>
+                            {pricing.baseTotal.toLocaleString()} SAR
+                          </span>
                         </div>
 
                         <div className="flex justify-between text-[#777E90] text-sm">
@@ -549,13 +565,11 @@ const PropertyDetailsSection = ({ listingData }) => {
               {/* Price and Rating */}
               <div className="space-y-3">
                 <div className="flex items-baseline gap-2">
-                  {listingData?.data?.discounted_price && listingData.data.discounted_price !== '0' && (
-                    <span className="text-[#B1B5C3] text-[32px] font-bold font-dm-sans line-through">{listingData.data.actual_price}</span>
+                  {pricing.hasDiscount && (
+                    <span className="text-[#B1B5C3] text-[32px] font-bold font-dm-sans line-through">{pricing.actualPrice.toLocaleString()}</span>
                   )}
-                  <span className="text-2xl md:text-3xl font-bold font-dm-sans text-[#23262F]">
-                    {listingData?.data?.discounted_price && listingData.data.discounted_price !== '0'
-                      ? listingData.data.discounted_price
-                      : listingData?.data?.actual_price || '0'} SAR
+                  <span className={`text-2xl md:text-3xl font-bold font-dm-sans ${pricing.hasDiscount ? 'text-[#58C27D]' : 'text-[#23262F]'}`}>
+                    {pricing.basePrice.toLocaleString()} SAR
                   </span>
                   <span className="text-[#777E90] text-[16px]">/ {t('night')}</span>
                 </div>
@@ -767,8 +781,19 @@ const PropertyDetailsSection = ({ listingData }) => {
               {/* Price Breakdown */}
               <div className="space-y-4 pt-4 ">
                 <div className="flex justify-between text-[#777E90] text-sm">
-                  <span>{pricing.basePrice.toLocaleString()} SAR × {pricing.nightsCount} {t('nights')}</span>
-                  <span className='font-medium text-[#23262F] '>{pricing.baseTotal.toLocaleString()} SAR</span>
+                  <div className="flex items-baseline gap-2">
+                    {pricing.hasDiscount && (
+                      <span className="text-[#B1B5C3] line-through">
+                        {pricing.actualPrice.toLocaleString()} SAR × {pricing.nightsCount} {t('nights')}
+                      </span>
+                    )}
+                    <span className={pricing.hasDiscount ? 'text-[#58C27D]' : ''}>
+                      {pricing.basePrice.toLocaleString()} SAR × {pricing.nightsCount} {t('nights')}
+                    </span>
+                  </div>
+                  <span className={`font-medium ${pricing.hasDiscount ? 'text-[#58C27D]' : 'text-[#23262F]'}`}>
+                    {pricing.baseTotal.toLocaleString()} SAR
+                  </span>
                 </div>
 
                 <div className="flex justify-between text-[#777E90] text-sm">
