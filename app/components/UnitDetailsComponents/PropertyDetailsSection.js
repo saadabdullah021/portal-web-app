@@ -101,10 +101,22 @@ const PropertyDetailsSection = ({ listingData }) => {
             <div className="flex items-center gap-3">
               <span className="text-[#777E90] text-sm">{t('hosted_by')}</span>
               <div className="flex items-center gap-2">
-                <div className="w-6 h-6 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                  <span className="text-white text-sm font-semibold">F</span>
-                </div>
-                <span className="font-medium  text-[16px] text-[#23262F]">Faisal A.</span>
+                {listingData?.data?.host_details?.host_profile_picture ? (
+                  <img
+                    src={listingData.data.host_details.host_profile_picture}
+                    alt={listingData.data.host_details.host_name}
+                    className="w-6 h-6 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="w-6 h-6 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                    <span className="text-white text-sm font-semibold">
+                      {listingData?.data?.host_details?.host_name?.charAt(0) || 'H'}
+                    </span>
+                  </div>
+                )}
+                <span className="font-medium text-[16px] text-[#23262F]">
+                  {listingData?.data?.host_details?.host_name || 'Host'}
+                </span>
               </div>
             </div>
 
