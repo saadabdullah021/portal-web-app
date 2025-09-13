@@ -19,8 +19,9 @@ import {
 import { useTranslation } from 'react-i18next';
 import ShareModal from '../ui/ShareModal';
 import { FaXTwitter } from 'react-icons/fa6';
+import Shimmer from '../ui/Shimmer';
 
-const ReviewsSection = ({ listingData }) => {
+const ReviewsSection = ({ listingData, isAuthenticated }) => {
   const { t, i18n } = useTranslation("hero");
   const isRTL = i18n.language === 'ar';
   const [reviewText, setReviewText] = useState('');
@@ -32,6 +33,16 @@ const ReviewsSection = ({ listingData }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeReplyId, setActiveReplyId] = useState(null);
   const [replyText, setReplyText] = useState("");
+
+  // Function to format host name as "First Name + Last Initial"
+  const formatHostName = (fullName) => {
+    if (!fullName) return 'Host';
+    const nameParts = fullName.trim().split(' ');
+    if (nameParts.length === 1) return nameParts[0];
+    const firstName = nameParts[0];
+    const lastName = nameParts[nameParts.length - 1];
+    return `${firstName} ${lastName.charAt(0)}.`;
+  };
 
 
   const [reviews, setReviews] = useState([
@@ -88,7 +99,7 @@ const ReviewsSection = ({ listingData }) => {
   ]);
 
   const hostInfo = {
-    name: listingData?.data?.host_details?.host_name || 'Host',
+    name: formatHostName(listingData?.data?.host_details?.host_name),
     avatar: listingData?.data?.host_details?.host_profile_picture || 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=80&h=80&fit=crop&crop=face',
     rating: parseFloat(listingData?.data?.host_details?.host_ratings) || 0,
     totalReviews: listingData?.data?.host_details?.host_reviews || '0',
@@ -242,7 +253,7 @@ const ReviewsSection = ({ listingData }) => {
                 </button>
 
                 {/* ✅ Share Modal */}
-                <ShareModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+                <ShareModal host_share_code={listingData?.data?.host_details?.host_share_code} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
                 <button className="p-2 hover:bg-gray-100 flex items-center rounded-full border-2 border-[#E6E8EC] transition-colors">
                   <MoreHorizontal size={20} color='#777E90' />
                 </button>
@@ -281,9 +292,12 @@ const ReviewsSection = ({ listingData }) => {
           </div>
 
           {/* Right Side - Reviews */}
+         
           <div className="space-y-6 col-span-2">
             {/* Add Review */}
-            <div className=" px-2 py-6 lg:p-6 ">
+             {
+            isAuthenticated && (
+                  <div className=" px-2 py-6 lg:p-6 ">
               <h3 className="text-2xl font-semibold text-[#23262F] mb-4">{t('Add a review')}</h3>
 
               <div className='flex lg:flex-row flex-col items-start lg:items-center lg:justify-between'>
@@ -297,8 +311,9 @@ const ReviewsSection = ({ listingData }) => {
                   {renderStars(selectedRating, true, 24)}
                 </div>
               </div>
-
-              <div className="w-full pt-2 lg:pt-6">
+            {
+              isAuthenticated &&
+                <div className="w-full pt-2 lg:pt-6">
                 {/* Review Input */}
                 <div className="relative bg-gray-50 rounded-3xl border-2 border-[#E6E8EC] p-4">
                   <div className="flex items-center justify-between">
@@ -333,11 +348,17 @@ const ReviewsSection = ({ listingData }) => {
                   </div>
                 </div>
               </div>
+            }
+            
             </div>
+            )
+          }
+          
 
             {/* Reviews List */}
-
-            <div className="space-y-6">
+            {
+               isAuthenticated && (
+ <div className="space-y-6">
               {/* Reviews List */}
               <div className="pb-6 px-6 ">
                 <div className="flex items-center justify-between mb-6">
@@ -442,7 +463,7 @@ const ReviewsSection = ({ listingData }) => {
 
                         {isLoadingMore ? (
                           <>
-                            <Loader size={16} className="animate-spin" />
+                            <Shimmer type="card" count={1} />
                             <span>{t('Loading comments')}...</span>
                           </>
                         ) : (
@@ -457,6 +478,9 @@ const ReviewsSection = ({ listingData }) => {
                 </div>
               </div>
             </div>
+               )
+            }
+           
 
           </div>
         </div>

@@ -9,6 +9,7 @@ import LastMinuteDealsSection from "../components/HomeComponents/LastMinuteDeals
 import JustForYouSection from "../components/HomeComponents/JustForYouSection";
 import { getListingBySlug } from "../../lib/apiClient";
 import { useAppSelector } from "../../store/hooks";
+import Loading from "../loading";
 
 const PropertyListing = () => {
   const searchParams = useSearchParams();
@@ -30,7 +31,13 @@ const PropertyListing = () => {
 
       try {
         setLoading(true);
-        const data = await getListingBySlug(slug);
+        
+        // Add minimum loading time to ensure loader is visible
+        const [data] = await Promise.all([
+          getListingBySlug(slug),
+          new Promise(resolve => setTimeout(resolve, 1000)) // Minimum 1 second loading
+        ]);
+        
         setListingData(data);
         
         if (data?.data?.listing_id) {
@@ -50,11 +57,7 @@ const PropertyListing = () => {
   }, [slug]);
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[#58C27D]"></div>
-      </div>
-    );
+    return <Loading />;
   }
 
   if (error) {
@@ -83,7 +86,7 @@ const PropertyListing = () => {
     <div className="">
       <PropertyListingUnitDetails listingData={listingData} />
       <PropertyDetailsSection listingData={listingData} />
-      {isAuthenticated && <ReviewsSection listingData={listingData} />}
+      { <ReviewsSection isAuthenticated={isAuthenticated} listingData={listingData} />}
       {similarProperties && similarProperties.items?.records.length > 0 && (
         <>
           {similarProperties.component_design_type === 'grid' ? (

@@ -199,7 +199,11 @@ const PropertyListingUnitDetails = ({ listingData }) => {
             </button>
 
             {/* ✅ Share Modal */}
-            <ShareModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+            <ShareModal 
+              isOpen={isModalOpen} 
+              onClose={() => setIsModalOpen(false)} 
+              host_share_code={listingData?.data?.host_details?.host_share_code}
+            />
 
             <button
               onClick={() => setIsLiked(!isLiked)}
