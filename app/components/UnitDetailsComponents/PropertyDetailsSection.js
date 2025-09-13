@@ -3,7 +3,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import {
   Star,
   CalendarDays,
-  User,
   Plus,
   Calendar,
   Flag,
@@ -22,8 +21,6 @@ import {
 import { HiOutlineFlag } from "react-icons/hi2";
 import DateInput from '../ui/DateInput';
 import { useTranslation } from 'react-i18next';
-import hostImage from "../../../public/images/hostImage.png"
-import Image from 'next/image';
 
 const PropertyDetailsSection = ({ listingData }) => {
   const { t, i18n } = useTranslation('hero');

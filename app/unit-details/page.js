@@ -8,6 +8,7 @@ import ReviewsSection from "../components/UnitDetailsComponents/ReviewsSection";
 import LastMinuteDealsSection from "../components/HomeComponents/LastMinuteDealsSection";
 import JustForYouSection from "../components/HomeComponents/JustForYouSection";
 import { getListingBySlug } from "../../lib/apiClient";
+import { useAppSelector } from "../../store/hooks";
 
 const PropertyListing = () => {
   const searchParams = useSearchParams();
@@ -16,6 +17,8 @@ const PropertyListing = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [similarProperties, setSimilarProperties] = useState(null);
+  
+  const { isAuthenticated } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
     const fetchListingData = async () => {
@@ -80,8 +83,8 @@ const PropertyListing = () => {
     <div className="">
       <PropertyListingUnitDetails listingData={listingData} />
       <PropertyDetailsSection listingData={listingData} />
-      <ReviewsSection listingData={listingData} />
-      {similarProperties && (
+      {isAuthenticated && <ReviewsSection listingData={listingData} />}
+      {similarProperties && similarProperties.items?.records.length > 0 && (
         <>
           {similarProperties.component_design_type === 'grid' ? (
             <JustForYouSection 
