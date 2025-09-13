@@ -13,7 +13,7 @@ import { TiLocationArrowOutline } from "react-icons/ti";
 
 import { RiArrowDropLeftLine } from "react-icons/ri";
 import { HiOutlineFlag } from "react-icons/hi2";
-
+import hostImage from "../../../public/images/hostImage.png"
 import heroImage from "../../../public/images/unit_details_hero.png"
 import heroImage2 from "../../../public/images/unit_details_2nd.png"
 import heroImage3 from "../../../public/images/unit_details_3rd.png"
@@ -22,8 +22,9 @@ import Image from 'next/image';
 import ShareModal from '../ui/ShareModal';
 import Shimmer from '../ui/Shimmer';
 import { useTranslation } from 'react-i18next';
-const PropertyListingUnitDetails = ({listingData}) => {
-    const { t} = useTranslation("home");
+import Link from 'next/link';
+const PropertyListingUnitDetails = ({ listingData }) => {
+  const { t } = useTranslation("home");
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
@@ -35,8 +36,6 @@ const PropertyListingUnitDetails = ({listingData}) => {
   const fallbackImages = [heroImage, heroImage2, heroImage3, heroImage4];
   const images = apiImages.length > 0 ? apiImages : fallbackImages;
   
-  console.log('API Images:', apiImages);
-  console.log('Final Images Array:', images);
 
   const isExternalImage = (src) => {
     return src && (src.startsWith('http://') || src.startsWith('https://'));
@@ -112,13 +111,15 @@ const PropertyListingUnitDetails = ({listingData}) => {
     <div className=" max-w-6xl 2xl:max-w-[1280px] mx-auto px-4 bg-white">
       {/* Header */}
       <header className="lg:flex items-center justify-between  hidden  pt-6 pb-3">
-        <div className='px-4 py-2 flex items-center gap-1  border-2 border-[#E6E8EC] rounded-[90px]'>
+        <Link href="/">
+          <div className='px-4 py-2 flex items-center gap-1  border-2 border-[#E6E8EC] rounded-[90px]'>
 
-          <button className=" text-gray-700 hover:text-gray-900 transition-colors">
-            <RiArrowDropLeftLine size={24} />
-          </button>
-          <span className="font-bold text-sm text-[#23262F] font-dm-sans">{t('buttons.go_Home')}</span>
-        </div>
+            <button className=" text-gray-700 hover:text-gray-900 transition-colors">
+              <RiArrowDropLeftLine size={24} />
+            </button>
+            <span className="font-bold text-sm text-[#23262F] font-dm-sans">{t('buttons.go_Home')}</span>
+          </div>
+        </Link>
 
         <div className="flex items-center gap-1  text-sm text-[#777E90] font-dm-sans font-bold">
           <span>{listingData?.data?.location?.split(', ')[1] || "City"}</span>
@@ -142,12 +143,22 @@ const PropertyListingUnitDetails = ({listingData}) => {
 
             <div className="flex flex-wrap items-center justify-center lg:justify-start gap-8 lg:gap-4 text-sm text-gray-600">
               <div className="flex items-center gap-4 lg:gap-1">
-                <div className="w-8 h-8 mr-2 bg-gray-300 rounded-full flex items-center justify-center">
-                  <Crown size={20} />
+                <div className="flex items-center mr-4 gap-2 w-6 h-6 rounded-full">
+                  <Image
+                    src={hostImage}
+                    alt='host Image'
+                    className="fill w-full h-full object-center rounded-full transition-transform duration-500"
+
+                    loading="lazy"
+
+                  />
                 </div>
                 <div className="flex items-center gap-1">
-                  <Star size={16} className="fill-yellow-400 text-yellow-400" />
-                  <span className="font-medium text-sm text-[#23262F]">{listingData?.data?.rating || "0"}</span>
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fillRule="evenodd" clipRule="evenodd" d="M12.1128 1.28584L13.9159 4.83396L17.9638 5.40522C19.8601 5.67275 20.7269 8.01285 19.2651 9.39572L16.3576 12.1438L17.0419 16.016C17.3923 17.9996 15.287 19.3318 13.6291 18.4871L9.99981 16.6358L6.37157 18.4865C4.71128 19.334 2.60769 17.9973 2.95771 16.016L3.64202 12.1438L0.734896 9.3961C-0.727985 8.01223 0.141887 5.67263 2.03558 5.40525L6.08384 4.83394L7.88786 1.28584C8.75914 -0.428539 11.2417 -0.428688 12.1128 1.28584Z" fill="#FFD166" />
+                  </svg>
+
+                  <span className="font-semibold lg:font-medium text-sm text-[#23262F]">{listingData?.data?.rating || "0"}</span>
                   <span className='text-sm text-[#777E90] font-normal pl-1 lg:block hidden'>({listingData?.data?.reviews || 0} {t('buttons.reviews')})</span>
                 </div>
               </div>
@@ -298,63 +309,63 @@ const PropertyListingUnitDetails = ({listingData}) => {
               )}
             </div>
 
-                <div className=" flex h-[780px] flex-col gap-2">
-                  {Array.from({ length: 3 }, (_, index) => {
-                    const imageIndex = index + 1;
-                    const image = images[imageIndex];
-                    return (
-                      <div key={imageIndex} className="flex-1 w-64 relative overflow-hidden rounded-xl group cursor-pointer">
-                        {image ? (
-                          <>
-                            {imageLoadingStates[imageIndex] && <Shimmer type="imageCard" />}
-                            {isExternalImage(image) ? (
-                              <img
-                                src={image}
-                                alt={`${listingData?.data?.title || "Property"} - Image ${imageIndex + 1}`}
-                                className={`w-full h-full object-cover transition-transform duration-300 ${imageLoadingStates[imageIndex] ? 'hidden' : ''}`}
-                                onClick={() => openGallery(imageIndex)}
-                                loading='lazy'
-                                onLoad={() => handleImageLoad(imageIndex)}
-                                onLoadStart={() => handleImageStart(imageIndex)}
-                                onError={(e) => {
-                                  console.error('Image failed to load:', image);
-                                  e.target.style.display = 'none';
-                                  handleImageLoad(imageIndex);
-                                }}
-                              />
-                            ) : (
-                              <Image
-                                src={image}
-                                alt={`${listingData?.data?.title || "Property"} - Image ${imageIndex + 1}`}
-                                width={256}
-                                height={390}
-                                className={`w-full h-full object-cover transition-transform duration-300 ${imageLoadingStates[imageIndex] ? 'hidden' : ''}`}
-                                onClick={() => openGallery(imageIndex)}
-                                loading='lazy'
-                                onLoad={() => handleImageLoad(imageIndex)}
-                                onLoadStart={() => handleImageStart(imageIndex)}
-                                onError={(e) => {
-                                  console.error('Image failed to load:', image);
-                                  e.target.style.display = 'none';
-                                  handleImageLoad(imageIndex);
-                                }}
-                              />
-                            )}
-                          </>
+            <div className=" flex h-[780px] flex-col gap-2">
+              {Array.from({ length: 3 }, (_, index) => {
+                const imageIndex = index + 1;
+                const image = images[imageIndex];
+                return (
+                  <div key={imageIndex} className="flex-1 w-64 relative overflow-hidden rounded-xl group cursor-pointer">
+                    {image ? (
+                      <>
+                        {imageLoadingStates[imageIndex] && <Shimmer type="imageCard" />}
+                        {isExternalImage(image) ? (
+                          <img
+                            src={image}
+                            alt={`${listingData?.data?.title || "Property"} - Image ${imageIndex + 1}`}
+                            className={`w-full h-full object-cover transition-transform duration-300 ${imageLoadingStates[imageIndex] ? 'hidden' : ''}`}
+                            onClick={() => openGallery(imageIndex)}
+                            loading='lazy'
+                            onLoad={() => handleImageLoad(imageIndex)}
+                            onLoadStart={() => handleImageStart(imageIndex)}
+                            onError={(e) => {
+                              console.error('Image failed to load:', image);
+                              e.target.style.display = 'none';
+                              handleImageLoad(imageIndex);
+                            }}
+                          />
                         ) : (
-                          <></>
+                          <Image
+                            src={image}
+                            alt={`${listingData?.data?.title || "Property"} - Image ${imageIndex + 1}`}
+                            width={256}
+                            height={390}
+                            className={`w-full h-full object-cover transition-transform duration-300 ${imageLoadingStates[imageIndex] ? 'hidden' : ''}`}
+                            onClick={() => openGallery(imageIndex)}
+                            loading='lazy'
+                            onLoad={() => handleImageLoad(imageIndex)}
+                            onLoadStart={() => handleImageStart(imageIndex)}
+                            onError={(e) => {
+                              console.error('Image failed to load:', image);
+                              e.target.style.display = 'none';
+                              handleImageLoad(imageIndex);
+                            }}
+                          />
                         )}
-                      </div>
-                    );
-                  })}
-                </div>
-              </>
+                      </>
+                    ) : (
+                      <></>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+            </>
             )}
           </div>
 
           {/* Mobile Slider - No arrows, only swipe */}
           <div className="lg:hidden relative" ref={sliderRef}>
-            <div className="relative h-[476px] sm:h-[490px] overflow-hidden rounded-lg">
+            <div className="relative h-[476px] sm:h-[490px] overflow-hidden rounded-2xl">
               {images[currentImageIndex] && (
                 <>
                   {imageLoadingStates[currentImageIndex] && <Shimmer type="imageCard" />}

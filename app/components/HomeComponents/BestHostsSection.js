@@ -74,7 +74,7 @@ const BestHostsSection = () => {
 
   useEffect(() => {
     const checkIsMobile = () => {
-      setIsMobile(window.innerWidth < 768);
+      setIsMobile(window.innerWidth < 7860);
     };
     checkIsMobile();
     window.addEventListener('resize', checkIsMobile);
@@ -123,7 +123,7 @@ const BestHostsSection = () => {
   };
 
   const HostCard = ({ host }) => (
-    <div className="bg-white rounded-3xl overflow-hidden shadow-sm transition-all duration-300 transform  flex-shrink-0 w-full md:w-auto group">
+    <div className="bg-white min-h-[280px] rounded-3xl overflow-hidden shadow-sm transition-all duration-300 transform  flex-shrink-0 w-full md:w-auto group">
       <div className="relative">
         {/* Property Image */}
         <div className="aspect-[4/3] bg-gradient-to-br from-gray-100 to-gray-200 relative overflow-hidden">
@@ -185,14 +185,14 @@ const BestHostsSection = () => {
       {/* Header */}
       <div className="flex items-start justify-between mb-12">
         <div className="flex flex-col md:flex md:flex-row items-start lg:items-center gap-4">
-          <h2 className="text-4xl font-bold md:text-5xl font-dm-sans">{t('besthost.title')}</h2>
+          <h2 className="text-4xl  font-bold md:text-5xl font-dm-sans">{t('besthost.title')}</h2>
           <div className="relative inline-block text-left">
             {/* Trigger */}
             <div
               className="flex items-center gap-2 cursor-pointer select-none"
               onClick={() => setOpen(!open)}
             >
-              <span className="text-4xl font-bold md:text-5xl font-dm-sans text-[#3B71FE]">
+              <span className="text-3xl font-bold md:text-5xl font-dm-sans text-[#3B71FE]">
                 {t(`besthost.options.${selected}`)}
               </span>
               <ChevronDown

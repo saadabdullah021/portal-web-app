@@ -181,7 +181,7 @@ const DateInput = ({ label, value, onChange, isCheckout = false, checkInDate = n
   };
 
   return (
-    <div className="flex items-start space-x-2 mt-1   relative" ref={calendarRef}
+    <div className="flex items-start space-x-2 mt-1    relative " ref={calendarRef}
       onClick={() => setIsOpen(!isOpen)}
     >
       {/* Calendar Icon */}
@@ -193,7 +193,7 @@ const DateInput = ({ label, value, onChange, isCheckout = false, checkInDate = n
 
       {/* Input Field */}
       <div className="flex flex-col w-full">
-        <label className={`text-[16px]  font-medium lg:text-[24px] lg:text-[#23262F] lg:font-semibold pl-2 pt-2 mb-1
+        <label className={`text-[16px] cursor-pointer  font-medium lg:text-[24px] lg:text-[#23262F] lg:font-semibold pl-2 pt-2 mb-1
             ${i18n.language === "ar" ? "pr-3  whitespace-nowrap  lg:pr-2" : "pr-0 "}
           `}>
           {label}
@@ -213,7 +213,7 @@ const DateInput = ({ label, value, onChange, isCheckout = false, checkInDate = n
         transition-all duration-300 ease-in-out origin-top
          
             ${isMobile
-            ? 'max-w-auto w-[75vw] -left-3.5  mx-auto'
+            ? 'max-w-auto w-[70vw] sm:w-[85vw] -left-4  mx-auto'
             : 'min-w-[340px]'
           }
           ${dropdownPosition}
