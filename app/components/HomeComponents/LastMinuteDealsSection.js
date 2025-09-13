@@ -71,7 +71,7 @@ const LastMinuteDealsSection = ({ items , data }) => {
     period: "night",
   }));
 
-  const computedData = Array.isArray(allItems) && allItems.length > 0 ? allItems : originalProperties;
+  const computedData = Array.isArray(allItems) && allItems.length > 0 ? allItems : [];
 
   useEffect(() => {
     if (Array.isArray(items) && items.length > 0) {

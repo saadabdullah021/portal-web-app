@@ -42,7 +42,7 @@ export default function HomeContent() {
     const fetchHome = async () => {
       try {
         setIsLoading(true);
-        const { data } = await axios.get('/get-home-components', {
+        const { data } = await axios.get('/get-home-components?offset=0&perPage=8', {
           params: {
             language: i18n.language
           }
