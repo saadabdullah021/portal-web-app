@@ -36,7 +36,7 @@ const JustForYouSection = ({ items, sectionData  }) => {
     }
   }));
 
-  const data = Array.isArray(allItems) && allItems.length > 0 ? allItems : originalProperties;
+  const data = Array.isArray(allItems) && allItems.length > 0 ? allItems : [];
 
   useEffect(() => {
     if (Array.isArray(items) && items.length > 0) {
