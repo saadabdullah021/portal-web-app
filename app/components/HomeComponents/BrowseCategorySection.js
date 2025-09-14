@@ -15,10 +15,29 @@ const BrowseCategorySection = () => {
   const sliderRef = useRef(null);
 
   const [categories, setCategories] = useState([]);
+  const hasFetchedCategoriesRef = useRef(false);
 
   useEffect(() => {
+    // Prevent duplicate API calls
+    if (hasFetchedCategoriesRef.current) {
+      return;
+    }
+
     let mounted = true;
+    hasFetchedCategoriesRef.current = true;
     const fetchCategories = async () => {
+      const cacheKey = 'categories_data';
+      const cachedData = localStorage.getItem(cacheKey);
+      const cacheTime = localStorage.getItem(`${cacheKey}_time`);
+      const now = Date.now();
+      
+      // Check if cached data exists and is less than 10 minutes old
+      if (cachedData && cacheTime && (now - parseInt(cacheTime)) < 600000) {
+        if (!mounted) return;
+        setCategories(JSON.parse(cachedData));
+        return;
+      }
+      
       try {
         const { data } = await axios.get('/get-categories');
         if (!mounted) return;
@@ -50,6 +69,10 @@ const BrowseCategorySection = () => {
           };
         });
         setCategories(normalized);
+        
+        // Cache the data
+        localStorage.setItem(cacheKey, JSON.stringify(normalized));
+        localStorage.setItem(`${cacheKey}_time`, now.toString());
       } catch {
         setCategories([]);
       }
@@ -59,16 +82,23 @@ const BrowseCategorySection = () => {
   }, []);
 
   useEffect(() => {
-    const checkIsMobile = () => {
-      setIsMobile(window.innerWidth < 768);
+    const checkScreenSize = () => {
+      if (window.innerWidth < 640) {
+        setIsMobile("mobile"); // ✅ mobile
+      } else if (window.innerWidth < 1024) {
+        setIsMobile("tablet"); // ✅ tablet
+      } else {
+        setIsMobile("desktop"); // ✅ desktop
+      }
     };
-    checkIsMobile();
-    window.addEventListener('resize', checkIsMobile);
-    return () => window.removeEventListener('resize', checkIsMobile);
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+    return () => window.removeEventListener('resize', checkScreenSize);
   }, []);
 
-  // ✅ Items per view
-  const itemsPerView = isMobile ? 1 : 4;
+  // ✅ Items per view (added tablet case)
+  const itemsPerView = isMobile === "mobile" ? 1 : isMobile === "tablet" ? 2 : 4;
+
 
   // ✅ Clone categories for infinite loop
   const clonedCategories = [
@@ -95,17 +125,17 @@ const BrowseCategorySection = () => {
   };
 
   // ✅ Auto-play with infinite loop
-  useEffect(() => {
-    if (isAutoPlaying) {
-      const interval = setInterval(() => {
-        if (!isTransitioning) {
-          setIsTransitioning(true);
-          setCurrentSlide((prev) => prev + 1);
-        }
-      }, 4000);
-      return () => clearInterval(interval);
-    }
-  }, [isAutoPlaying, isTransitioning]);
+  // useEffect(() => {
+  //   if (isAutoPlaying) {
+  //     const interval = setInterval(() => {
+  //       if (!isTransitioning) {
+  //         setIsTransitioning(true);
+  //         setCurrentSlide((prev) => prev + 1);
+  //       }
+  //     }, 4000);
+  //     return () => clearInterval(interval);
+  //   }
+  // }, [isAutoPlaying, isTransitioning]);
 
   // ✅ Next Slide
   const nextSlide = () => {
@@ -160,11 +190,11 @@ const BrowseCategorySection = () => {
                   className="flex-shrink-0 px-2 sm:px-3"
                   style={{ width: `${100 / itemsPerView}%` }}
                 >
-                  <div className={`bg-white rounded-3xl  p-8 shadow-sm  transition-shadow duration-200 cursor-pointer group
-                     ${i18n.language === "ar" ? "min-h-[300px]" : "min-h-[350px]"}
+                  <div className={`bg-white rounded-3xl  px-6 py-4 shadow-sm  transition-shadow duration-200 cursor-pointer group
+                     ${i18n.language === "ar" ? "min-h-[230px]" : "min-h-[260px] "}
                     `}>
                     {/* Count Badge */}
-                    <div className="inline-flex items-center justify-center bg-[#E6E8EC] text-[#23262F] text-xs font-bold font-poppins uppercase px-4 py-2 rounded-[32px] mb-4 sm:mb-6">
+                    <div className="inline-flex items-center justify-center bg-[#E6E8EC] text-[#23262F] text-xs font-bold font-poppins uppercase px-4 py-2 rounded-[32px] mb-3 sm:mb-4">
                       {category.count}
                     </div>
 
@@ -175,7 +205,7 @@ const BrowseCategorySection = () => {
 
                     {/* Content */}
                     <div>
-                      <h3 className="font-medium text-[#23262F] text-sm sm:text-[16px] font-poppins mt-8">
+                      <h3 className="font-medium text-[#23262F] text-sm sm:text-[16px] font-poppins mt-4 lg:mt-6">
                         {category.name}
                       </h3>
                       <p className="text-[#777E90] font-poppins font-normal text-xs mt-2">

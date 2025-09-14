@@ -3,7 +3,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import {
   Star,
   CalendarDays,
-  User,
   Plus,
   Calendar,
   Flag,
@@ -22,7 +21,7 @@ import {
 import { HiOutlineFlag } from "react-icons/hi2";
 import DateInput from '../ui/DateInput';
 import { useTranslation } from 'react-i18next';
-
+import Shimmer from '../ui/Shimmer';
 
 const PropertyDetailsSection = ({ listingData }) => {
   const { t, i18n } = useTranslation('hero');
@@ -32,7 +31,82 @@ const PropertyDetailsSection = ({ listingData }) => {
   const [adults, setAdults] = useState(0);
   const [children, setChildren] = useState(0);
   const [infants, setInfants] = useState(0);
-   const [showMobileBooking, setShowMobileBooking] = useState(false);
+  const [showMobileBooking, setShowMobileBooking] = useState(false);
+  
+  // Default dates: today for check-in, tomorrow for check-out
+  const today = new Date();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  
+  const [checkIn, setCheckIn] = useState(today.toISOString().split('T')[0]);
+  const [checkOut, setCheckOut] = useState(tomorrow.toISOString().split('T')[0]);
+  const [nights, setNights] = useState(1);
+
+  const formatHostName = (fullName) => {
+    if (!fullName) return 'Host';
+    const nameParts = fullName.trim().split(' ');
+    if (nameParts.length === 1) return nameParts[0];
+    const firstName = nameParts[0];
+    const lastName = nameParts[nameParts.length - 1];
+    return `${firstName} ${lastName.charAt(0)}.`;
+  };
+
+  const calculateNights = (checkInDate, checkOutDate) => {
+    const start = new Date(checkInDate);
+    const end = new Date(checkOutDate);
+    const diffTime = end - start;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays > 0 ? diffDays : 1;
+  };
+
+  const handleCheckInChange = (date) => {
+    setCheckIn(date);
+    const newNights = calculateNights(date, checkOut);
+    setNights(newNights);
+  };
+
+  const handleCheckOutChange = (date) => {
+    if (date <= checkIn) {
+      const nextDay = new Date(checkIn);
+      nextDay.setDate(nextDay.getDate() + 1);
+      const nextDayStr = nextDay.toISOString().split('T')[0];
+      setCheckOut(nextDayStr);
+      setNights(1);
+    } else {
+      setCheckOut(date);
+      const newNights = calculateNights(checkIn, date);
+      setNights(newNights);
+    }
+  };
+
+  const calculatePricing = () => {
+    const actualPrice = parseFloat((listingData?.data?.actual_price || '').replace(/,/g, '')) || 0;
+    const discountedPrice = parseFloat((listingData?.data?.discounted_price || '').replace(/,/g, '')) || 0;
+    
+    const basePrice = discountedPrice > 0 ? discountedPrice : actualPrice;
+    const hasDiscount = discountedPrice > 0;
+    
+    const cleaningFee = parseFloat(listingData?.data?.listing_fee?.['Cleaning Fee']) || 19;
+    const serviceFee = parseFloat(listingData?.data?.listing_fee?.['Serive Fee']) || 99;
+    const nightsCount = nights; 
+    
+    const baseTotal = basePrice * nightsCount;
+    const total = baseTotal + cleaningFee + serviceFee;
+    
+    return {
+      actualPrice,
+      discountedPrice,
+      hasDiscount,
+      basePrice,
+      cleaningFee,
+      serviceFee,
+      nightsCount,
+      baseTotal,
+      total
+    };
+  };
+
+  const pricing = calculatePricing();
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -61,11 +135,7 @@ const PropertyDetailsSection = ({ listingData }) => {
   //   );
   // };
   const [activeDropdown, setActiveDropdown] = useState(null);
-  const [checkIn, setCheckIn] = useState('');
-  const [checkOut, setCheckOut] = useState('');
-  // const isSaved = savedProperties.includes(propertyId);
 
-  // Use API amenities if available, otherwise fallback to default amenities
   const apiAmenities = listingData?.data?.amenities?.map(amenity => ({
     icon: Wifi, // Default icon, you can map based on amenity_name if needed
     label: amenity.amenity_name,
@@ -101,10 +171,22 @@ const PropertyDetailsSection = ({ listingData }) => {
             <div className="flex items-center gap-3">
               <span className="text-[#777E90] text-sm">{t('hosted_by')}</span>
               <div className="flex items-center gap-2">
-                <div className="w-6 h-6 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                  <span className="text-white text-sm font-semibold">F</span>
-                </div>
-                <span className="font-medium  text-[16px] text-[#23262F]">Faisal A.</span>
+                {listingData?.data?.host_details?.host_profile_picture ? (
+                  <img
+                    src={listingData.data.host_details.host_profile_picture}
+                    alt={listingData.data.host_details.host_name}
+                    className="w-6 h-6 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="w-6 h-6 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                    <span className="text-white text-sm font-semibold">
+                      {listingData?.data?.host_details?.host_name?.charAt(0) || 'H'}
+                    </span>
+                  </div>
+                )}
+                <span className="font-medium text-[16px] text-[#23262F]">
+                  {formatHostName(listingData?.data?.host_details?.host_name)}
+                </span>
               </div>
             </div>
 
@@ -129,7 +211,7 @@ const PropertyDetailsSection = ({ listingData }) => {
           </div>
 
           {/* Description */}
-          <div className="space-y-4 text-[#777E90] text-[16px] font-normal leading-relaxed">
+          <div className="space-y-4  text-[#777E90]  text-[16px] font-normal leading-relaxed">
             {listingData?.data?.description ? (
               <div dangerouslySetInnerHTML={{ __html: listingData.data.description }} />
             ) : (
@@ -165,11 +247,11 @@ const PropertyDetailsSection = ({ listingData }) => {
                 {loadingAmenities ? ( // new line
                   <>
                     <span>{t('More detail')}</span>
-                    <Loader size={16} className="animate-spin ml-1" />
+                    <Shimmer type="card" count={1} />
                   </>
                 ) : (
                   <>
-                  {t('More detail')}
+                    {t('More detail')}
                   </>
                 )}
               </button>
@@ -179,40 +261,40 @@ const PropertyDetailsSection = ({ listingData }) => {
 
 
         {/* Mobile reserve section */}
-<div className=" fixed bottom-0 left-0 right-0 z-50 w-full flex items-center lg:hidden justify-between bg-[#FCFCFD] rounded-tr-3xl rounded-tl-3xl  shadow-lg border border-[#E6E8EC] p-6">
+        <div onClick={() => setShowMobileBooking(true)} className=" fixed bottom-0 left-0 right-0 z-50 w-full flex items-center lg:hidden justify-between bg-[#FCFCFD] rounded-tr-3xl rounded-tl-3xl  shadow-lg border border-[#E6E8EC] p-6">
 
 
-      
-     <div className="space-y-3">
-                <div className="flex items-baseline gap-2">
-                  {listingData?.data?.discounted_price && listingData.data.discounted_price !== '0' && (
-                    <span className="text-[#B1B5C3] text-[24px] font-semibold font-dm-sans line-through">{listingData.data.actual_price}</span>
-                  )}
-                  <span className="text-2xl font-semibold font-dm-sans text-[#23262F]">
-                    {listingData?.data?.discounted_price && listingData.data.discounted_price !== '0' 
-                      ? listingData.data.discounted_price 
-                      : listingData?.data?.actual_price || '0'} SAR
-                  </span>
-                  <span className="text-[#777E90] text-[14px]">/ {t('night')}</span>
-                </div>
 
-                <div className="flex items-center gap-2">
-                  <Star size={16} className="fill-yellow-400 text-yellow-400" />
-                  <span className="font-semibold text-[#23262F] text-sm">{listingData?.data?.rating || '0'}</span>
-                  <span className="text-[#777E90] text-[14px]">({listingData?.data?.reviews || 0} {t('reviews')})</span>
-                </div>
-              </div>
+          <div className="space-y-3">
+            <div className="flex items-baseline gap-2">
+              {listingData?.data?.discounted_price && listingData.data.discounted_price !== '0' && (
+                <span className="text-[#B1B5C3] text-[24px] font-semibold font-dm-sans line-through">{listingData.data.actual_price}</span>
+              )}
+              <span className="text-2xl font-semibold font-dm-sans text-[#23262F]">
+                {listingData?.data?.discounted_price && listingData.data.discounted_price !== '0'
+                  ? listingData.data.discounted_price
+                  : listingData?.data?.actual_price || '0'} SAR
+              </span>
+              <span className="text-[#777E90] text-[14px]">/ {t('night')}</span>
+            </div>
 
-      {/* Reserve Button */}
-      <button
-        onClick={() => setShowMobileBooking(true)}
-      className="w-auto bg-[#3B71FE] hover:bg-blue-700 text-white py-4 px-6 rounded-full transition-colors duration-200 text-[16px] font-bold font-dm-sans">
-     {t('Reserve')}
-      </button>
-    </div>
+            <div className="flex items-center gap-2">
+              <Star size={16} className="fill-yellow-400 text-yellow-400" />
+              <span className="font-semibold text-[#23262F] text-sm">{listingData?.data?.rating || '0'}</span>
+              <span className="text-[#777E90] text-[14px]">({listingData?.data?.reviews || 0} {t('reviews')})</span>
+            </div>
+          </div>
+
+          {/* Reserve Button */}
+          <button
+            // onClick={() => setShowMobileBooking(true)}
+            className="w-auto bg-[#3B71FE] hover:bg-blue-700 text-white py-4 px-6 rounded-full transition-colors duration-200 text-[16px] font-bold font-dm-sans">
+            {t('Reserve')}
+          </button>
+        </div>
 
 
-     {/* Mobile Booking Popup */} {/* new line */}
+        {/* Mobile Booking Popup */} {/* new line */}
         {showMobileBooking && ( // new line
           <div className="fixed inset-0 z-50 lg:hidden flex items-end justify-center"> {/* new line */}
             {/* Overlay */} {/* new line */}
@@ -222,7 +304,7 @@ const PropertyDetailsSection = ({ listingData }) => {
             ></div>
 
             {/* Bottom Sheet */} {/* new line */}
-            <div className="relative w-full h-[85vh] md:h-[70vh] animate-slideUp"> {/* new line */}
+            <div className="relative w-full h-[85vh] md:h-[70vh] animate-slideUp "> {/* new line */}
               {/* Close Button */} {/* new line */}
               <button
                 onClick={() => setShowMobileBooking(false)} // new line
@@ -231,264 +313,275 @@ const PropertyDetailsSection = ({ listingData }) => {
                 ✕
               </button>
 
-     
-              <div className="overflow-y-auto overflow-x-hidden h-full"> 
-              
-              
-                     <div className="">
-          <div className="lg:w-[450px] mx-auto">
-            <div className="bg-white border border-[#E6E8EC] rounded-3xl shadow-lg p-6 space-y-6">
 
-              {/* Price and Rating */}
-              <div className="space-y-3">
-                <div className="flex items-baseline gap-2">
-                  {listingData?.data?.discounted_price && listingData.data.discounted_price !== '0' && (
-                    <span className="text-[#B1B5C3] text-[32px] font-bold font-dm-sans line-through">{listingData.data.actual_price}</span>
-                  )}
-                  <span className="text-2xl md:text-3xl font-bold font-dm-sans text-[#23262F]">
-                    {listingData?.data?.discounted_price && listingData.data.discounted_price !== '0' 
-                      ? listingData.data.discounted_price 
-                      : listingData?.data?.actual_price || '0'} SAR
-                  </span>
-                  <span className="text-[#777E90] text-[16px]">/ {t('night')}</span>
-                </div>
+              <div className="overflow-y-auto overflow-x-hidden h-full">
 
-                <div className="flex items-center gap-2">
-                  <Star size={16} className="fill-yellow-400 text-yellow-400" />
-                  <span className="font-semibold text-[#23262F] text-sm">{listingData?.data?.rating || '0'}</span>
-                  <span className="text-[#777E90] text-[14px]">({listingData?.data?.reviews || 0} {t('reviews')})</span>
-                </div>
-              </div>
 
-              {/* Booking Dates */}
-              <div className='bg-[#F4F5F6] rounded-[20px] p-2'>
+                <div className="">
+                  <div className="lg:w-[450px] mx-auto">
+                    <div className="bg-white border border-[#E6E8EC] rounded-3xl shadow-lg p-6 space-y-6">
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className=" rounded-lg p-3">
-                    <div
-                      className={`rounded-xl p-3 lg:p-0 cursor-pointer transition-all duration-300 ease-in-out
-              ${activeDropdown === "checkIn" ? " lg:bg-transparent" : "lg:bg-transparent "} 
-              bg-white/60`}
-                      onClick={() =>
-                        setActiveDropdown(activeDropdown === "checkIn" ? null : "checkIn")
-                      }
-                    >
-                      <DateInput
-                        label={t('checkIn')}
-                        icon={Calendar}
-                        value={checkIn}
-                        onChange={setCheckIn}
-                        dropdownPosition="top-full  lg:top-20"
-                        dropdownAlign={i18n.language === "ar" ? "lg:-left-48" : "lg:left-0"}
-                      />
-                    </div>
-                  </div>
-
-                  <div className=" rounded-lg p-3">
-                    <div
-                      className={`rounded-xl p-3 lg:p-0 cursor-pointer transition-all duration-300 ease-in-out
-              ${activeDropdown === "checkIn" ? " lg:bg-transparent" : "lg:bg-transparent  "} 
-              bg-white/60`}
-                      onClick={() =>
-                        setActiveDropdown(activeDropdown === "checkIn" ? null : "checkIn")
-                      }
-                    >
-                      <DateInput
-                        label={t('checkOut')}
-                        icon={Calendar}
-                        value={checkOut}
-                        onChange={setCheckOut}
-                        dropdownPosition="top-full  lg:top-20"
-                        dropdownAlign={i18n.language === "ar" ? "lg:left-2" : "lg:right-2"}
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Guests */}
-                <div className=" rounded-lg p-3">
-                  {/* Travelers */}
-                  <div className=" relative pt-1 " ref={travelersRef}>
-                    <div
-                      className={`lg:flex-1 rounded-xl p-3 lg:p-0 cursor-pointer transition-all duration-300 ease-in-out
-              ${activeDropdown === "travelers" ? " lg:bg-transparent " : "lg:bg-transparent  "} 
-              bg-white/60`}
-                      onClick={() =>
-                        setActiveDropdown(activeDropdown === "travelers" ? null : "travelers")
-                      }
-                    >
-                      <div className="flex items-start space-x-2">
-                        <UserRound color='#B1B5C3' size={24} className='mt-0 lg:mt-2.5' />
-                        <div className="flex flex-col w-full">
-                          <label className={`text-lg lg:text-[24px] cursor-pointer  font-semibold pl-2 pt-2 lg:pt-1 mb-1 hidden lg:block
-                    ${i18n.language === "ar" ? "lg:mr-2  " : " "}
-                  `}>
-                            {t('travelers')}
-                          </label>
-                          <span className="px-3 text-[#23262F] lg:pb-1 lg:text-[#777E90] text-[16px] font-medium">
-                            {totalTravelers > 0 ? `${totalTravelers} ${t('guestsPlaceholder')} ` : t('guestsPlaceholder')}
+                      {/* Price and Rating */}
+                      <div className="space-y-3">
+                        <div className="flex items-baseline gap-2">
+                          {pricing.hasDiscount && (
+                            <span className="text-[#B1B5C3] text-[32px] font-bold font-dm-sans line-through">{pricing.actualPrice.toLocaleString()}</span>
+                          )}
+                          <span className={`text-2xl md:text-3xl font-bold font-dm-sans ${pricing.hasDiscount ? 'text-[#58C27D]' : 'text-[#23262F]'}`}>
+                            {pricing.basePrice.toLocaleString()} SAR
                           </span>
+                          <span className="text-[#777E90] text-[16px]">/ {t('night')}</span>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <Star size={16} className="fill-yellow-400 text-yellow-400" />
+                          <span className="font-semibold text-[#23262F] text-sm">{listingData?.data?.rating || '0'}</span>
+                          <span className="text-[#777E90] text-[14px]">({listingData?.data?.reviews || 0} {t('reviews')})</span>
                         </div>
                       </div>
-                    </div>
 
-                    {/* Travelers Popup */}
-                    <div
-                      onClick={(e) => e.stopPropagation()}
-                      className={`
+                      {/* Booking Dates */}
+                      <div className='bg-[#F4F5F6] rounded-[20px] p-2'>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div className=" rounded-lg p-3">
+                            <div
+                              className={`rounded-xl p-3 lg:p-0 cursor-pointer transition-all duration-300 ease-in-out
+              ${activeDropdown === "checkIn" ? " lg:bg-transparent" : "lg:bg-transparent "} 
+              bg-white/60`}
+                              onClick={() =>
+                                setActiveDropdown(activeDropdown === "checkIn" ? null : "checkIn")
+                              }
+                            >
+                              <DateInput
+                                label={t('checkIn')}
+                                icon={Calendar}
+                                value={checkIn}
+                                onChange={handleCheckInChange}
+                                dropdownPosition="top-full  lg:top-20"
+                                dropdownAlign={i18n.language === "ar" ? "lg:-left-48" : "lg:left-0"}
+                                minDate={today.toISOString().split('T')[0]}
+                              />
+                            </div>
+                          </div>
+
+                          <div className=" rounded-lg p-3">
+                            <div
+                              className={`rounded-xl p-3 lg:p-0 cursor-pointer transition-all duration-300 ease-in-out
+              ${activeDropdown === "checkIn" ? " lg:bg-transparent" : "lg:bg-transparent  "} 
+              bg-white/60`}
+                              onClick={() =>
+                                setActiveDropdown(activeDropdown === "checkIn" ? null : "checkIn")
+                              }
+                            >
+                              <DateInput
+                                label={t('checkOut')}
+                                icon={Calendar}
+                                value={checkOut}
+                                onChange={handleCheckOutChange}
+                                dropdownPosition="top-full  lg:top-20"
+                                minDate={checkIn}
+                                dropdownAlign={i18n.language === "ar" ? "lg:left-2" : "lg:right-2"}
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Guests */}
+                        <div className=" rounded-lg p-3">
+                          {/* Travelers */}
+                          <div className=" relative pt-1 " ref={travelersRef}>
+                            <div
+                              className={`lg:flex-1 rounded-xl p-3 lg:p-0 cursor-pointer transition-all duration-300 ease-in-out
+              ${activeDropdown === "travelers" ? " lg:bg-transparent " : "lg:bg-transparent  "} 
+              bg-white/60`}
+                              onClick={() =>
+                                setActiveDropdown(activeDropdown === "travelers" ? null : "travelers")
+                              }
+                            >
+                              <div className="flex items-start space-x-2">
+                                <UserRound color='#B1B5C3' size={24} className='mt-0 lg:mt-2.5' />
+                                <div className="flex flex-col w-full">
+                                  <label className={`text-lg lg:text-[24px] cursor-pointer  font-semibold pl-2 pt-2 lg:pt-1 mb-1 hidden lg:block
+                    ${i18n.language === "ar" ? "lg:mr-2  " : " "}
+                  `}>
+                                    {t('travelers')}
+                                  </label>
+                                  <span className="px-3 text-[#23262F] lg:pb-1 lg:text-[#777E90] text-[16px] font-medium">
+                                    {totalTravelers > 0 ? `${totalTravelers} ${t('guestsPlaceholder')} ` : t('guestsPlaceholder')}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Travelers Popup */}
+                            <div
+                              onClick={(e) => e.stopPropagation()}
+                              className={`
               absolute z-50 bg-[#fff] shadow-xl bottom-12 lg:-bottom-70 rounded-3xl max-h-[300px] w-full lg:min-w-[420px] overflow-y-auto p-8 space-y-6
               transition-all duration-300 ease-in-out origin-top
               ${i18n.language === "ar" ? "right-0 lg:-right-8" : "right-0 lg:-right-8"}
               ${activeDropdown === "travelers"
-                          ? "opacity-100 scale-100 translate-y-0"
-                          : "opacity-0 scale-95 -translate-y-2 pointer-events-none"
-                        }
+                                  ? "opacity-100 scale-100 translate-y-0"
+                                  : "opacity-0 scale-95 -translate-y-2 pointer-events-none"
+                                }
             `}
-                    >
-                      {/* Adults */}
-                      <div className="flex items-center justify-between border-b pb-3 border-gray-300">
-                        <div>
-                          <p className="font-medium text-[16px] text-gray-900">
-                            {t('Adults')}
-                          </p>
-                          <p className="text-[12px] text-gray-500">
-                            {t('Ages 13 and above')}
-                          </p>
-                        </div>
-                        <div className="flex items-center space-x-3">
-                          <button
-                            onClick={() => setAdults(Math.max(0, adults - 1))}
-                            className="w-6 h-6 flex items-center justify-center border-[2px] border-[#B1B5C3] rounded-full transition-colors duration-200 hover:border-[#3B71FE]"
-                          >
-                            <Minus size={16} color='#B1B5C3' className="hover:#3B71FE" />
-                          </button>
-                          <span className={`w-4 text-center text-[16px] font-medium text-[#23262F]
+                            >
+                              {/* Adults */}
+                              <div className="flex items-center justify-between border-b pb-3 border-gray-300">
+                                <div>
+                                  <p className="font-medium text-[16px] text-gray-900">
+                                    {t('Adults')}
+                                  </p>
+                                  <p className="text-[12px] text-gray-500">
+                                    {t('Ages 13 and above')}
+                                  </p>
+                                </div>
+                                <div className="flex items-center space-x-3">
+                                  <button
+                                    onClick={() => setAdults(Math.max(0, adults - 1))}
+                                    className="w-6 h-6 flex items-center justify-center border-[2px] border-[#B1B5C3] rounded-full transition-colors duration-200 hover:border-[#3B71FE]"
+                                  >
+                                    <Minus size={16} color='#B1B5C3' className="hover:#3B71FE" />
+                                  </button>
+                                  <span className={`w-4 text-center text-[16px] font-medium text-[#23262F]
                                          ${i18n.language === "ar" ? " pl-6" : " "}
                   `}>{adults}</span>
-                          <button
-                            onClick={() => setAdults(adults + 1)}
-                            className="w-6 h-6 flex items-center justify-center border-[2px] border-[#B1B5C3] rounded-full transition-colors duration-200 hover:border-[#3B71FE]"
-                          >
-                            <Plus size={16} color='#B1B5C3' className="hover:#3B71FE" />
-                          </button>
-                        </div>
-                      </div>
-                      {/* Children */}
-                      <div className="flex items-center justify-between border-b pb-3 border-gray-300">
-                        <div>
-                          <p className="font-medium text-[16px] text-gray-900">
-                            {t('Children')}
-                          </p>
-                          <p className="text-[12px] text-gray-500">
-                            {t('Ages 2 - 12')}
-                          </p>
-                        </div>
-                        <div className="flex items-center space-x-3">
-                          <button
-                            onClick={() => setChildren(Math.max(0, children - 1))}
-                            className="w-6 h-6 border-[2px] flex items-center justify-center border-[#B1B5C3] rounded-full transition-colors duration-200 hover:border-[#3B71FE]"
-                          >
-                            <Minus size={16} color='#B1B5C3' />
-                          </button>
-                          <span className={`w-4 text-center text-[16px] font-medium text-[#23262F]
+                                  <button
+                                    onClick={() => setAdults(adults + 1)}
+                                    className="w-6 h-6 flex items-center justify-center border-[2px] border-[#B1B5C3] rounded-full transition-colors duration-200 hover:border-[#3B71FE]"
+                                  >
+                                    <Plus size={16} color='#B1B5C3' className="hover:#3B71FE" />
+                                  </button>
+                                </div>
+                              </div>
+                              {/* Children */}
+                              <div className="flex items-center justify-between border-b pb-3 border-gray-300">
+                                <div>
+                                  <p className="font-medium text-[16px] text-gray-900">
+                                    {t('Children')}
+                                  </p>
+                                  <p className="text-[12px] text-gray-500">
+                                    {t('Ages 2 - 12')}
+                                  </p>
+                                </div>
+                                <div className="flex items-center space-x-3">
+                                  <button
+                                    onClick={() => setChildren(Math.max(0, children - 1))}
+                                    className="w-6 h-6 border-[2px] flex items-center justify-center border-[#B1B5C3] rounded-full transition-colors duration-200 hover:border-[#3B71FE]"
+                                  >
+                                    <Minus size={16} color='#B1B5C3' />
+                                  </button>
+                                  <span className={`w-4 text-center text-[16px] font-medium text-[#23262F]
                      ${i18n.language === "ar" ? " pl-6" : " "}
                   `}>{children}</span>
-                          <button
-                            onClick={() => setChildren(children + 1)}
-                            className="w-6 h-6 border-[2px] flex items-center justify-center border-[#B1B5C3] rounded-full transition-colors duration-200 hover:border-[#3B71FE]"
-                          >
-                            <Plus size={16} color='#B1B5C3' />
-                          </button>
-                        </div>
-                      </div>
-                      {/* Infants */}
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium text-[16px] text-gray-900">
-                            {t('Infants')}
-                          </p>
-                          <p className="text-[12px] text-gray-500">
-                            {t('Under 2 years')}
-                          </p>
-                        </div>
-                        <div className="flex items-center space-x-3">
-                          <button
-                            onClick={() => setInfants(Math.max(0, infants - 1))}
-                            className="w-6 h-6 border-[2px] flex items-center justify-center border-[#B1B5C3] rounded-full transition-colors duration-200 hover:border-[#3B71FE]"
-                          >
-                            <Minus size={16} color='#B1B5C3' />
-                          </button>
-                          <span className={`w-4 text-center text-[16px] font-medium text-[#23262F]
+                                  <button
+                                    onClick={() => setChildren(children + 1)}
+                                    className="w-6 h-6 border-[2px] flex items-center justify-center border-[#B1B5C3] rounded-full transition-colors duration-200 hover:border-[#3B71FE]"
+                                  >
+                                    <Plus size={16} color='#B1B5C3' />
+                                  </button>
+                                </div>
+                              </div>
+                              {/* Infants */}
+                              <div className="flex items-center justify-between">
+                                <div>
+                                  <p className="font-medium text-[16px] text-gray-900">
+                                    {t('Infants')}
+                                  </p>
+                                  <p className="text-[12px] text-gray-500">
+                                    {t('Under 2 years')}
+                                  </p>
+                                </div>
+                                <div className="flex items-center space-x-3">
+                                  <button
+                                    onClick={() => setInfants(Math.max(0, infants - 1))}
+                                    className="w-6 h-6 border-[2px] flex items-center justify-center border-[#B1B5C3] rounded-full transition-colors duration-200 hover:border-[#3B71FE]"
+                                  >
+                                    <Minus size={16} color='#B1B5C3' />
+                                  </button>
+                                  <span className={`w-4 text-center text-[16px] font-medium text-[#23262F]
                      ${i18n.language === "ar" ? " pl-6" : " "}
                   `}>{infants}</span>
-                          <button
-                            onClick={() => setInfants(infants + 1)}
-                            className="w-6 h-6 border-[2px] flex items-center justify-center border-[#B1B5C3] rounded-full transition-colors duration-200 hover:border-[#3B71FE]"
-                          >
-                            <Plus size={16} color='#B1B5C3' />
-                          </button>
+                                  <button
+                                    onClick={() => setInfants(infants + 1)}
+                                    className="w-6 h-6 border-[2px] flex items-center justify-center border-[#B1B5C3] rounded-full transition-colors duration-200 hover:border-[#3B71FE]"
+                                  >
+                                    <Plus size={16} color='#B1B5C3' />
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+
+
+                          </div>
+                        </div>
+
+                      </div>
+                      {/* Action Buttons */}
+                      <div className="flex gap-3">
+                        <button
+                          onClick={toggleSave}
+                          className={`flex-shrink-0 px-6 py-2 border-2 border-[#E6E8EC] rounded-full font-medium transition-colors duration-200 ${isSaved
+                            ? 'bg-gray-100 text-gray-700'
+                            : 'hover:bg-gray-50 text-gray-700'
+                            }`}
+                        >
+                          <div className="flex items-center gap-2">
+                            <span className='text-[16px] text-[#23262F] font-bold font-dm-sans'>{t('Save')}</span>
+                            <Plus size={16} className={isSaved ? 'rotate-45' : ''} />
+                          </div>
+                        </button>
+
+                        <button className="flex-1 bg-[#3B71FE] hover:bg-blue-700 text-[16px]  font-bold font-dm-sans text-white  py-2 px-6 rounded-full transition-colors duration-200 flex items-center justify-center gap-2">
+                          <CalendarDays size={18} />
+                          {t('Reserve')}
+                        </button>
+                      </div>
+
+                      {/* Price Breakdown */}
+                      <div className="space-y-4 pt-4 ">
+                        <div className="flex justify-between text-[#777E90] text-sm">
+                          <div className="flex items-baseline gap-2">
+                            {pricing.hasDiscount && (
+                              <span className="text-[#B1B5C3] line-through">
+                                {pricing.actualPrice.toLocaleString()} SAR × {pricing.nightsCount} {t('nights')}
+                              </span>
+                            )}
+                            <span className={pricing.hasDiscount ? 'text-[#58C27D]' : ''}>
+                              {pricing.basePrice.toLocaleString()} SAR × {pricing.nightsCount} {t('nights')}
+                            </span>
+                          </div>
+                          <span className={`font-medium ${pricing.hasDiscount ? 'text-[#58C27D]' : 'text-[#23262F]'}`}>
+                            {pricing.baseTotal.toLocaleString()} SAR
+                          </span>
+                        </div>
+
+                        <div className="flex justify-between text-[#777E90] text-sm">
+                          <span>{t('Cleaning Fee')}</span>
+                          <span className='font-medium text-[#23262F] '>{pricing.cleaningFee} SAR</span>
+                        </div>
+
+                        <div className="flex justify-between text-[#777E90] text-sm">
+                          <span>{t('Service fee')}</span>
+                          <span className='font-medium text-[#23262F] '>{pricing.serviceFee} SAR</span>
+                        </div>
+
+                        <div className="flex justify-between font-semibold text-sm text-[#23262F] pt-3 bg-[#F4F5F6] px-3 py-2 rounded-lg">
+                          <span>{t('Total')}</span>
+                          <span>{pricing.total.toLocaleString()} SAR</span>
                         </div>
                       </div>
+
+                      {/* Report Link */}
+                      <div className="pt-4 w-full mx-auto">
+                        <button className="flex items-center justify-center gap-2 mx-auto text-[#777E90] text-[12px] hover:text-gray-900 text-sm transition-colors duration-200">
+                          <Flag size={14} />
+                          <span className="underline">{t('Report this property')}</span>
+                        </button>
+                      </div>
                     </div>
-
-
                   </div>
-                </div>
-
-              </div>
-              {/* Action Buttons */}
-              <div className="flex gap-3">
-                <button
-                  onClick={toggleSave}
-                  className={`flex-shrink-0 px-6 py-2 border-2 border-[#E6E8EC] rounded-full font-medium transition-colors duration-200 ${isSaved
-                    ? 'bg-gray-100 text-gray-700'
-                    : 'hover:bg-gray-50 text-gray-700'
-                    }`}
-                >
-                  <div className="flex items-center gap-2">
-                    <span className='text-[16px] text-[#23262F] font-bold font-dm-sans'>{t('Save')}</span>
-                    <Plus size={16} className={isSaved ? 'rotate-45' : ''} />
-                  </div>
-                </button>
-
-                <button className="flex-1 bg-[#3B71FE] hover:bg-blue-700 text-[16px]  font-bold font-dm-sans text-white  py-2 px-6 rounded-full transition-colors duration-200 flex items-center justify-center gap-2">
-                  <CalendarDays size={18} />
-                  {t('Reserve')}
-                </button>
-              </div>
-
-              {/* Price Breakdown */}
-              <div className="space-y-4 pt-4 ">
-                <div className="flex justify-between text-[#777E90] text-sm">
-                  <span>3,200 SAR × 3 {t('nights')}</span>
-                  <span className='font-medium text-[#23262F] '>9,600 SAR</span>
-                </div>
-
-                <div className="flex justify-between text-[#777E90] text-sm">
-                  <span>{t('Cleaning Fee')}</span>
-                  <span className='font-medium text-[#23262F] '>150 SAR</span>
-                </div>
-
-                <div className="flex justify-between text-[#777E90] text-sm">
-                  <span>{t('Service fee')}</span>
-                  <span className='font-medium text-[#23262F] '>325</span>
-                </div>
-
-                <div className="flex justify-between font-semibold text-sm text-[#23262F] pt-3 bg-[#F4F5F6] px-3 py-2 rounded-lg">
-                  <span>{t('Total')}</span>
-                  <span>9,985 SAR</span>
-                </div>
-              </div>
-
-              {/* Report Link */}
-              <div className="pt-4 w-full mx-auto">
-                <button className="flex items-center justify-center gap-2 mx-auto text-[#777E90] text-[12px] hover:text-gray-900 text-sm transition-colors duration-200">
-                  <Flag size={14} />
-                  <span className="underline">{t('Report this property')}</span>
-                </button>
-              </div>
-            </div>
-          </div>  
                 </div>
               </div>
             </div>
@@ -505,13 +598,11 @@ const PropertyDetailsSection = ({ listingData }) => {
               {/* Price and Rating */}
               <div className="space-y-3">
                 <div className="flex items-baseline gap-2">
-                  {listingData?.data?.discounted_price && listingData.data.discounted_price !== '0' && (
-                    <span className="text-[#B1B5C3] text-[32px] font-bold font-dm-sans line-through">{listingData.data.actual_price}</span>
+                  {pricing.hasDiscount && (
+                    <span className="text-[#B1B5C3] text-[32px] font-bold font-dm-sans line-through">{pricing.actualPrice.toLocaleString()}</span>
                   )}
-                  <span className="text-2xl md:text-3xl font-bold font-dm-sans text-[#23262F]">
-                    {listingData?.data?.discounted_price && listingData.data.discounted_price !== '0' 
-                      ? listingData.data.discounted_price 
-                      : listingData?.data?.actual_price || '0'} SAR
+                  <span className={`text-2xl md:text-3xl font-bold font-dm-sans ${pricing.hasDiscount ? 'text-[#58C27D]' : 'text-[#23262F]'}`}>
+                    {pricing.basePrice.toLocaleString()} SAR
                   </span>
                   <span className="text-[#777E90] text-[16px]">/ {t('night')}</span>
                 </div>
@@ -540,9 +631,10 @@ const PropertyDetailsSection = ({ listingData }) => {
                         label={t('checkIn')}
                         icon={Calendar}
                         value={checkIn}
-                        onChange={setCheckIn}
+                        onChange={handleCheckInChange}
                         dropdownPosition="top-full  lg:top-20"
                         dropdownAlign={i18n.language === "ar" ? "lg:-left-48" : "lg:left-0"}
+                        minDate={today.toISOString().split('T')[0]}
                       />
                     </div>
                   </div>
@@ -560,9 +652,10 @@ const PropertyDetailsSection = ({ listingData }) => {
                         label={t('checkOut')}
                         icon={Calendar}
                         value={checkOut}
-                        onChange={setCheckOut}
+                        onChange={handleCheckOutChange}
                         dropdownPosition="top-full  lg:top-20"
                         dropdownAlign={i18n.language === "ar" ? "lg:left-2" : "lg:right-2"}
+                        minDate={checkIn}
                       />
                     </div>
                   </div>
@@ -723,23 +816,34 @@ const PropertyDetailsSection = ({ listingData }) => {
               {/* Price Breakdown */}
               <div className="space-y-4 pt-4 ">
                 <div className="flex justify-between text-[#777E90] text-sm">
-                  <span>3,200 SAR × 3 {t('nights')}</span>
-                  <span className='font-medium text-[#23262F] '>9,600 SAR</span>
+                  <div className="flex items-baseline gap-2">
+                    {pricing.hasDiscount && (
+                      <span className="text-[#B1B5C3] line-through">
+                        {pricing.actualPrice.toLocaleString()} SAR × {pricing.nightsCount} {t('nights')}
+                      </span>
+                    )}
+                    <span className={pricing.hasDiscount ? 'text-[#58C27D]' : ''}>
+                      {pricing.basePrice.toLocaleString()} SAR × {pricing.nightsCount} {t('nights')}
+                    </span>
+                  </div>
+                  <span className={`font-medium ${pricing.hasDiscount ? 'text-[#58C27D]' : 'text-[#23262F]'}`}>
+                    {pricing.baseTotal.toLocaleString()} SAR
+                  </span>
                 </div>
 
                 <div className="flex justify-between text-[#777E90] text-sm">
                   <span>{t('Cleaning Fee')}</span>
-                  <span className='font-medium text-[#23262F] '>150 SAR</span>
+                  <span className='font-medium text-[#23262F] '>{pricing.cleaningFee} SAR</span>
                 </div>
 
                 <div className="flex justify-between text-[#777E90] text-sm">
                   <span>{t('Service fee')}</span>
-                  <span className='font-medium text-[#23262F] '>325</span>
+                  <span className='font-medium text-[#23262F] '>{pricing.serviceFee} SAR</span>
                 </div>
 
                 <div className="flex justify-between font-semibold text-sm text-[#23262F] pt-3 bg-[#F4F5F6] px-3 py-2 rounded-lg">
                   <span>{t('Total')}</span>
-                  <span>9,985 SAR</span>
+                  <span>{pricing.total.toLocaleString()} SAR</span>
                 </div>
               </div>
 
@@ -751,8 +855,8 @@ const PropertyDetailsSection = ({ listingData }) => {
                 </button>
               </div>
             </div>
-          </div>  
-                </div>
+          </div>
+        </div>
       </div>
     </div>
   );

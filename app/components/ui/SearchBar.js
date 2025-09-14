@@ -32,6 +32,7 @@ const SearchBar = ({ onSearch }) => {
 
   const travelersRef = useRef(null);
   const locationRef = useRef(null);
+  const hasFetchedLocationsRef = useRef(false);
 
   // Load recent searches from localStorage
   useEffect(() => {
@@ -53,6 +54,17 @@ const SearchBar = ({ onSearch }) => {
   };
 
   const fetchLocations = async () => {
+    const cacheKey = 'locations_data';
+    const cachedData = localStorage.getItem(cacheKey);
+    const cacheTime = localStorage.getItem(`${cacheKey}_time`);
+    const now = Date.now();
+    
+    // Check if cached data exists and is less than 10 minutes old
+    if (cachedData && cacheTime && (now - parseInt(cacheTime)) < 600000) {
+      setLocationsData(JSON.parse(cachedData));
+      return;
+    }
+    
     try {
       const { data: json } = await axios.get('/get-all-locations');
       if (json?.success && Array.isArray(json.data)) {
@@ -70,6 +82,10 @@ const SearchBar = ({ onSearch }) => {
           }
         });
         setLocationsData(list);
+        
+        // Cache the data
+        localStorage.setItem(cacheKey, JSON.stringify(list));
+        localStorage.setItem(`${cacheKey}_time`, now.toString());
       } else {
         setLocationsData([]);
       }
@@ -79,14 +95,16 @@ const SearchBar = ({ onSearch }) => {
   };
 
   useEffect(() => {
+    // Prevent duplicate API calls
+    if (hasFetchedLocationsRef.current) {
+      return;
+    }
+
     let isMounted = true;
+    hasFetchedLocationsRef.current = true;
     fetchLocations();
     return () => { isMounted = false; };
   }, []);
-
-  useEffect(() => {
-    fetchLocations();
-  }, [i18n.language]);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 1024);
@@ -220,7 +238,7 @@ const SearchBar = ({ onSearch }) => {
             >
               <Navigation color="#B1B5C3" size={24} className="lg:mt-4 pr-1" />
               <div className="flex flex-col w-full">
-                <label className={`text-lg lg:text-[24px] text-[#23262F] font-semibold pl-2 pt-2 mb-1 hidden lg:block
+                <label className={`text-lg lg:text-[24px] cursor-pointer text-[#23262F] font-semibold pl-2 pt-2 mb-1 hidden lg:block
                 
                   `}>
                   {t("locationLabel")}
@@ -322,9 +340,9 @@ const SearchBar = ({ onSearch }) => {
         </div>
 
         {/* Check In */}
-        <div className="">
+        <div className=" ">
           <div
-            className={`rounded-xl p-3 lg:p-0 cursor-pointer transition-all duration-300 ease-in-out
+            className={`rounded-xl p-3 lg:p-0  cursor-pointer transition-all duration-300 ease-in-out
               ${activeDropdown === "checkIn" ? " lg:bg-transparent" : "lg:bg-transparent "} 
               bg-white/60`}
             onClick={() =>
@@ -376,7 +394,7 @@ const SearchBar = ({ onSearch }) => {
             <div className="flex items-start space-x-2">
               <UserRound color='#B1B5C3' size={24} className='mt-0 lg:mt-2.5' />
               <div className="flex flex-col w-full">
-                <label className={`text-lg lg:text-[24px]  font-semibold pl-2 pt-2 lg:pt-1 mb-1 hidden lg:block
+                <label className={`text-lg lg:text-[24px]  cursor-pointer font-semibold pl-2 pt-2 lg:pt-1 mb-1 hidden lg:block
                     ${i18n.language === "ar" ? "lg:mr-2  " : " "}
                   `}>
                   {t('travelers')}
