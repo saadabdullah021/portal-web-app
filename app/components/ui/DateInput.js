@@ -117,9 +117,9 @@ const DateInput = ({ label, value, onChange, isCheckout = false, checkInDate = n
 
   const getSelectedDate = () => {
     if (isCheckout) {
-      return checkOutSelection;
+      return value ? new Date(value) : null;
     }
-    return checkInSelection;
+    return value ? new Date(value) : null;
   };
 
   const renderCalendar = (monthOffset = 0) => {

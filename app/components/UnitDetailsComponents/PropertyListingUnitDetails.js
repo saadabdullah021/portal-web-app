@@ -36,8 +36,11 @@ const PropertyListingUnitDetails = ({ listingData }) => {
   const fallbackImages = [heroImage, heroImage2, heroImage3, heroImage4];
   const images = apiImages.length > 0 ? apiImages : fallbackImages;
   
+<<<<<<< HEAD
   console.log('API Images:', apiImages);
   console.log('Final Images Array:', images);
+=======
+>>>>>>> b5e169a46c76775f5bdceff40c03355935418b94
 
   const isExternalImage = (src) => {
     return src && (src.startsWith('http://') || src.startsWith('https://'));
@@ -201,7 +204,11 @@ const PropertyListingUnitDetails = ({ listingData }) => {
             </button>
 
             {/* ✅ Share Modal */}
-            <ShareModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+            <ShareModal 
+              isOpen={isModalOpen} 
+              onClose={() => setIsModalOpen(false)} 
+              host_share_code={listingData?.data?.host_details?.host_share_code}
+            />
 
             <button
               onClick={() => setIsLiked(!isLiked)}
@@ -312,87 +319,61 @@ const PropertyListingUnitDetails = ({ listingData }) => {
             </div>
 
 <<<<<<< HEAD
+<<<<<<< HEAD
             {/* Right Side - 3 Small Images Stacked */}
+=======
+>>>>>>> b5e169a46c76775f5bdceff40c03355935418b94
             <div className=" flex h-[780px] flex-col gap-2">
-              <div className="flex-1 w-64  relative overflow-hidden rounded-xl group cursor-pointer">
-                {isExternalImage(images[1]) ? (
-                  <img
-                    src={images[1]}
-                    alt={`${listingData?.data?.title || "Property"} - Image 2`}
-                    className="w-full h-full object-cover transition-transform duration-300"
-                    onClick={() => openGallery(1)}
-                    loading='lazy'
-                  />
-                ) : (
-                  <Image
-                    src={images[1]}
-                    alt={`${listingData?.data?.title || "Property"} - Image 2`}
-                    width={256}
-                    height={390}
-                    className="w-full h-full object-cover transition-transform duration-300"
-                    onClick={() => openGallery(1)}
-                    loading='lazy'
-                  />
-                )}
-                <button
-                  onClick={() => openGallery()}
-                  className="absolute top-[40%] left-[40%] bg-[#FCFCFD] shadow-lg  w-12 h-12 justify-center rounded-full items-center gap-2 hover:bg-gray-50 transition-colors shadow-sm hidden lg:flex"
-                >
-
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path fillRule="evenodd" clipRrule="evenodd" d="M9.93677 10.8799C9.03365 11.582 7.89882 12 6.66634 12C3.72082 12 1.33301 9.61223 1.33301 6.66671C1.33301 3.72119 3.72082 1.33337 6.66634 1.33337C9.61186 1.33337 11.9997 3.72119 11.9997 6.66671C11.9997 7.89918 11.5816 9.03401 10.8796 9.93714L14.4711 13.5286C14.7314 13.789 14.7314 14.2111 14.4711 14.4714C14.2107 14.7318 13.7886 14.7318 13.5283 14.4714L9.93677 10.8799ZM10.6663 6.66671C10.6663 8.87585 8.87548 10.6667 6.66634 10.6667C4.4572 10.6667 2.66634 8.87585 2.66634 6.66671C2.66634 4.45757 4.4572 2.66671 6.66634 2.66671C8.87548 2.66671 10.6663 4.45757 10.6663 6.66671Z" fill="#777E91" />
-                    <path d="M6.66667 4C6.29848 4 6 4.29848 6 4.66667V6H4.66667C4.29848 6 4 6.29848 4 6.66667C4 7.03486 4.29848 7.33333 4.66667 7.33333H6V8.66667C6 9.03486 6.29848 9.33333 6.66667 9.33333C7.03486 9.33333 7.33333 9.03486 7.33333 8.66667V7.33333H8.66667C9.03486 7.33333 9.33333 7.03486 9.33333 6.66667C9.33333 6.29848 9.03486 6 8.66667 6H7.33333V4.66667C7.33333 4.29848 7.03486 4 6.66667 4Z" fill="#777E91" />
-                  </svg>
-
-                </button>
-
-              </div>
-
-              <div className="flex-1 w-64  relative overflow-hidden rounded-xl group cursor-pointer">
-                {isExternalImage(images[2]) ? (
-                  <img
-                    src={images[2]}
-                    alt={`${listingData?.data?.title || "Property"} - Image 3`}
-                    className="w-full h-full object-cover transition-transform duration-300"
-                    onClick={() => openGallery(2)}
-                    loading='lazy'
-                  />
-
-                ) : (
-                  <Image
-                    src={images[2]}
-                    alt={`${listingData?.data?.title || "Property"} - Image 3`}
-                    width={256}
-                    height={390}
-                    className="w-full h-full object-cover transition-transform duration-300"
-                    onClick={() => openGallery(2)}
-                    loading='lazy'
-                  />
-                )}
-              </div>
-
-              <div className="flex-1 w-64  relative overflow-hidden rounded-xl group cursor-pointer">
-                {isExternalImage(images[3]) ? (
-                  <img
-                    src={images[3]}
-                    alt={`${listingData?.data?.title || "Property"} - Image 4`}
-                    className="w-full h-full object-cover transition-transform duration-300"
-                    onClick={() => openGallery(3)}
-                    loading='lazy'
-                  />
-                ) : (
-                  <Image
-                    src={images[3]}
-                    alt={`${listingData?.data?.title || "Property"} - Image 4`}
-                    width={256}
-                    height={390}
-                    className="w-full h-full object-cover transition-transform duration-300"
-                    onClick={() => openGallery(3)}
-                    loading='lazy'
-                  />
-                )}
-              </div>
+              {Array.from({ length: 3 }, (_, index) => {
+                const imageIndex = index + 1;
+                const image = images[imageIndex];
+                return (
+                  <div key={imageIndex} className="flex-1 w-64 relative overflow-hidden rounded-xl group cursor-pointer">
+                    {image ? (
+                      <>
+                        {imageLoadingStates[imageIndex] && <Shimmer type="imageCard" />}
+                        {isExternalImage(image) ? (
+                          <img
+                            src={image}
+                            alt={`${listingData?.data?.title || "Property"} - Image ${imageIndex + 1}`}
+                            className={`w-full h-full object-cover transition-transform duration-300 ${imageLoadingStates[imageIndex] ? 'hidden' : ''}`}
+                            onClick={() => openGallery(imageIndex)}
+                            loading='lazy'
+                            onLoad={() => handleImageLoad(imageIndex)}
+                            onLoadStart={() => handleImageStart(imageIndex)}
+                            onError={(e) => {
+                              console.error('Image failed to load:', image);
+                              e.target.style.display = 'none';
+                              handleImageLoad(imageIndex);
+                            }}
+                          />
+                        ) : (
+                          <Image
+                            src={image}
+                            alt={`${listingData?.data?.title || "Property"} - Image ${imageIndex + 1}`}
+                            width={256}
+                            height={390}
+                            className={`w-full h-full object-cover transition-transform duration-300 ${imageLoadingStates[imageIndex] ? 'hidden' : ''}`}
+                            onClick={() => openGallery(imageIndex)}
+                            loading='lazy'
+                            onLoad={() => handleImageLoad(imageIndex)}
+                            onLoadStart={() => handleImageStart(imageIndex)}
+                            onError={(e) => {
+                              console.error('Image failed to load:', image);
+                              e.target.style.display = 'none';
+                              handleImageLoad(imageIndex);
+                            }}
+                          />
+                        )}
+                      </>
+                    ) : (
+                      <></>
+                    )}
+                  </div>
+                );
+              })}
             </div>
+<<<<<<< HEAD
 =======
                 <div className=" flex h-[780px] flex-col gap-2">
                   {Array.from({ length: 3 }, (_, index) => {
@@ -447,12 +428,17 @@ const PropertyListingUnitDetails = ({ listingData }) => {
               </>
             )}
 >>>>>>> 3640e3bf3c2a6e8387cdadd3b9528593f35cb117
+=======
+            </>
+            )}
+>>>>>>> b5e169a46c76775f5bdceff40c03355935418b94
           </div>
 
           {/* Mobile Slider - No arrows, only swipe */}
           <div className="lg:hidden relative" ref={sliderRef}>
 <<<<<<< HEAD
             <div className="relative h-[476px] sm:h-[490px] overflow-hidden rounded-2xl">
+<<<<<<< HEAD
               {isExternalImage(images[currentImageIndex]) ? (
                 <img
                   src={images[currentImageIndex]}
@@ -471,6 +457,8 @@ const PropertyListingUnitDetails = ({ listingData }) => {
                 />
 =======
             <div className="relative h-[476px] sm:h-[490px] overflow-hidden rounded-lg">
+=======
+>>>>>>> b5e169a46c76775f5bdceff40c03355935418b94
               {images[currentImageIndex] && (
                 <>
                   {imageLoadingStates[currentImageIndex] && <Shimmer type="imageCard" />}
@@ -506,7 +494,10 @@ const PropertyListingUnitDetails = ({ listingData }) => {
                     />
                   )}
                 </>
+<<<<<<< HEAD
 >>>>>>> 3640e3bf3c2a6e8387cdadd3b9528593f35cb117
+=======
+>>>>>>> b5e169a46c76775f5bdceff40c03355935418b94
               )}
 
               {/* Image Counter */}

@@ -3,7 +3,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import {
   Star,
   CalendarDays,
-  User,
   Plus,
   Calendar,
   Flag,
@@ -22,8 +21,7 @@ import {
 import { HiOutlineFlag } from "react-icons/hi2";
 import DateInput from '../ui/DateInput';
 import { useTranslation } from 'react-i18next';
-import hostImage from "../../../public/images/hostImage.png"
-import Image from 'next/image';
+import Shimmer from '../ui/Shimmer';
 
 const PropertyDetailsSection = ({ listingData }) => {
   const { t, i18n } = useTranslation('hero');
@@ -34,6 +32,81 @@ const PropertyDetailsSection = ({ listingData }) => {
   const [children, setChildren] = useState(0);
   const [infants, setInfants] = useState(0);
   const [showMobileBooking, setShowMobileBooking] = useState(false);
+  
+  // Default dates: today for check-in, tomorrow for check-out
+  const today = new Date();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  
+  const [checkIn, setCheckIn] = useState(today.toISOString().split('T')[0]);
+  const [checkOut, setCheckOut] = useState(tomorrow.toISOString().split('T')[0]);
+  const [nights, setNights] = useState(1);
+
+  const formatHostName = (fullName) => {
+    if (!fullName) return 'Host';
+    const nameParts = fullName.trim().split(' ');
+    if (nameParts.length === 1) return nameParts[0];
+    const firstName = nameParts[0];
+    const lastName = nameParts[nameParts.length - 1];
+    return `${firstName} ${lastName.charAt(0)}.`;
+  };
+
+  const calculateNights = (checkInDate, checkOutDate) => {
+    const start = new Date(checkInDate);
+    const end = new Date(checkOutDate);
+    const diffTime = end - start;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays > 0 ? diffDays : 1;
+  };
+
+  const handleCheckInChange = (date) => {
+    setCheckIn(date);
+    const newNights = calculateNights(date, checkOut);
+    setNights(newNights);
+  };
+
+  const handleCheckOutChange = (date) => {
+    if (date <= checkIn) {
+      const nextDay = new Date(checkIn);
+      nextDay.setDate(nextDay.getDate() + 1);
+      const nextDayStr = nextDay.toISOString().split('T')[0];
+      setCheckOut(nextDayStr);
+      setNights(1);
+    } else {
+      setCheckOut(date);
+      const newNights = calculateNights(checkIn, date);
+      setNights(newNights);
+    }
+  };
+
+  const calculatePricing = () => {
+    const actualPrice = parseFloat((listingData?.data?.actual_price || '').replace(/,/g, '')) || 0;
+    const discountedPrice = parseFloat((listingData?.data?.discounted_price || '').replace(/,/g, '')) || 0;
+    
+    const basePrice = discountedPrice > 0 ? discountedPrice : actualPrice;
+    const hasDiscount = discountedPrice > 0;
+    
+    const cleaningFee = parseFloat(listingData?.data?.listing_fee?.['Cleaning Fee']) || 19;
+    const serviceFee = parseFloat(listingData?.data?.listing_fee?.['Serive Fee']) || 99;
+    const nightsCount = nights; 
+    
+    const baseTotal = basePrice * nightsCount;
+    const total = baseTotal + cleaningFee + serviceFee;
+    
+    return {
+      actualPrice,
+      discountedPrice,
+      hasDiscount,
+      basePrice,
+      cleaningFee,
+      serviceFee,
+      nightsCount,
+      baseTotal,
+      total
+    };
+  };
+
+  const pricing = calculatePricing();
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -62,11 +135,7 @@ const PropertyDetailsSection = ({ listingData }) => {
   //   );
   // };
   const [activeDropdown, setActiveDropdown] = useState(null);
-  const [checkIn, setCheckIn] = useState('');
-  const [checkOut, setCheckOut] = useState('');
-  // const isSaved = savedProperties.includes(propertyId);
 
-  // Use API amenities if available, otherwise fallback to default amenities
   const apiAmenities = listingData?.data?.amenities?.map(amenity => ({
     icon: Wifi, // Default icon, you can map based on amenity_name if needed
     label: amenity.amenity_name,
@@ -101,17 +170,24 @@ const PropertyDetailsSection = ({ listingData }) => {
 
             <div className="flex items-center gap-3">
               <span className="text-[#777E90] text-sm">{t('hosted_by')}</span>
-              <div className="flex items-center gap-2 w-6 h-6 rounded-full">
-              <Image
-                    src={hostImage}
-                    alt='host Image'
-                    className="fill w-full h-full object-center rounded-full transition-transform duration-500"
-        
-                    loading="lazy"
-              
+              <div className="flex items-center gap-2">
+                {listingData?.data?.host_details?.host_profile_picture ? (
+                  <img
+                    src={listingData.data.host_details.host_profile_picture}
+                    alt={listingData.data.host_details.host_name}
+                    className="w-6 h-6 rounded-full object-cover"
                   />
+                ) : (
+                  <div className="w-6 h-6 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                    <span className="text-white text-sm font-semibold">
+                      {listingData?.data?.host_details?.host_name?.charAt(0) || 'H'}
+                    </span>
+                  </div>
+                )}
+                <span className="font-medium text-[16px] text-[#23262F]">
+                  {formatHostName(listingData?.data?.host_details?.host_name)}
+                </span>
               </div>
-                <span className='text-[16px] text-[#23262F] font-medium'>Faisal A.</span>
             </div>
 
             {/* Property Stats */}
@@ -171,7 +247,7 @@ const PropertyDetailsSection = ({ listingData }) => {
                 {loadingAmenities ? ( // new line
                   <>
                     <span>{t('More detail')}</span>
-                    <Loader size={16} className="animate-spin ml-1" />
+                    <Shimmer type="card" count={1} />
                   </>
                 ) : (
                   <>
@@ -248,13 +324,11 @@ const PropertyDetailsSection = ({ listingData }) => {
                       {/* Price and Rating */}
                       <div className="space-y-3">
                         <div className="flex items-baseline gap-2">
-                          {listingData?.data?.discounted_price && listingData.data.discounted_price !== '0' && (
-                            <span className="text-[#B1B5C3] text-[32px] font-bold font-dm-sans line-through">{listingData.data.actual_price}</span>
+                          {pricing.hasDiscount && (
+                            <span className="text-[#B1B5C3] text-[32px] font-bold font-dm-sans line-through">{pricing.actualPrice.toLocaleString()}</span>
                           )}
-                          <span className="text-2xl md:text-3xl font-bold font-dm-sans text-[#23262F]">
-                            {listingData?.data?.discounted_price && listingData.data.discounted_price !== '0'
-                              ? listingData.data.discounted_price
-                              : listingData?.data?.actual_price || '0'} SAR
+                          <span className={`text-2xl md:text-3xl font-bold font-dm-sans ${pricing.hasDiscount ? 'text-[#58C27D]' : 'text-[#23262F]'}`}>
+                            {pricing.basePrice.toLocaleString()} SAR
                           </span>
                           <span className="text-[#777E90] text-[16px]">/ {t('night')}</span>
                         </div>
@@ -283,9 +357,10 @@ const PropertyDetailsSection = ({ listingData }) => {
                                 label={t('checkIn')}
                                 icon={Calendar}
                                 value={checkIn}
-                                onChange={setCheckIn}
+                                onChange={handleCheckInChange}
                                 dropdownPosition="top-full  lg:top-20"
                                 dropdownAlign={i18n.language === "ar" ? "lg:-left-48" : "lg:left-0"}
+                                minDate={today.toISOString().split('T')[0]}
                               />
                             </div>
                           </div>
@@ -303,8 +378,9 @@ const PropertyDetailsSection = ({ listingData }) => {
                                 label={t('checkOut')}
                                 icon={Calendar}
                                 value={checkOut}
-                                onChange={setCheckOut}
+                                onChange={handleCheckOutChange}
                                 dropdownPosition="top-full  lg:top-20"
+                                minDate={checkIn}
                                 dropdownAlign={i18n.language === "ar" ? "lg:left-2" : "lg:right-2"}
                               />
                             </div>
@@ -466,23 +542,34 @@ const PropertyDetailsSection = ({ listingData }) => {
                       {/* Price Breakdown */}
                       <div className="space-y-4 pt-4 ">
                         <div className="flex justify-between text-[#777E90] text-sm">
-                          <span>3,200 SAR × 3 {t('nights')}</span>
-                          <span className='font-medium text-[#23262F] '>9,600 SAR</span>
+                          <div className="flex items-baseline gap-2">
+                            {pricing.hasDiscount && (
+                              <span className="text-[#B1B5C3] line-through">
+                                {pricing.actualPrice.toLocaleString()} SAR × {pricing.nightsCount} {t('nights')}
+                              </span>
+                            )}
+                            <span className={pricing.hasDiscount ? 'text-[#58C27D]' : ''}>
+                              {pricing.basePrice.toLocaleString()} SAR × {pricing.nightsCount} {t('nights')}
+                            </span>
+                          </div>
+                          <span className={`font-medium ${pricing.hasDiscount ? 'text-[#58C27D]' : 'text-[#23262F]'}`}>
+                            {pricing.baseTotal.toLocaleString()} SAR
+                          </span>
                         </div>
 
                         <div className="flex justify-between text-[#777E90] text-sm">
                           <span>{t('Cleaning Fee')}</span>
-                          <span className='font-medium text-[#23262F] '>150 SAR</span>
+                          <span className='font-medium text-[#23262F] '>{pricing.cleaningFee} SAR</span>
                         </div>
 
                         <div className="flex justify-between text-[#777E90] text-sm">
                           <span>{t('Service fee')}</span>
-                          <span className='font-medium text-[#23262F] '>325</span>
+                          <span className='font-medium text-[#23262F] '>{pricing.serviceFee} SAR</span>
                         </div>
 
                         <div className="flex justify-between font-semibold text-sm text-[#23262F] pt-3 bg-[#F4F5F6] px-3 py-2 rounded-lg">
                           <span>{t('Total')}</span>
-                          <span>9,985 SAR</span>
+                          <span>{pricing.total.toLocaleString()} SAR</span>
                         </div>
                       </div>
 
@@ -511,13 +598,11 @@ const PropertyDetailsSection = ({ listingData }) => {
               {/* Price and Rating */}
               <div className="space-y-3">
                 <div className="flex items-baseline gap-2">
-                  {listingData?.data?.discounted_price && listingData.data.discounted_price !== '0' && (
-                    <span className="text-[#B1B5C3] text-[32px] font-bold font-dm-sans line-through">{listingData.data.actual_price}</span>
+                  {pricing.hasDiscount && (
+                    <span className="text-[#B1B5C3] text-[32px] font-bold font-dm-sans line-through">{pricing.actualPrice.toLocaleString()}</span>
                   )}
-                  <span className="text-2xl md:text-3xl font-bold font-dm-sans text-[#23262F]">
-                    {listingData?.data?.discounted_price && listingData.data.discounted_price !== '0'
-                      ? listingData.data.discounted_price
-                      : listingData?.data?.actual_price || '0'} SAR
+                  <span className={`text-2xl md:text-3xl font-bold font-dm-sans ${pricing.hasDiscount ? 'text-[#58C27D]' : 'text-[#23262F]'}`}>
+                    {pricing.basePrice.toLocaleString()} SAR
                   </span>
                   <span className="text-[#777E90] text-[16px]">/ {t('night')}</span>
                 </div>
@@ -546,9 +631,10 @@ const PropertyDetailsSection = ({ listingData }) => {
                         label={t('checkIn')}
                         icon={Calendar}
                         value={checkIn}
-                        onChange={setCheckIn}
+                        onChange={handleCheckInChange}
                         dropdownPosition="top-full  lg:top-20"
                         dropdownAlign={i18n.language === "ar" ? "lg:-left-48" : "lg:left-0"}
+                        minDate={today.toISOString().split('T')[0]}
                       />
                     </div>
                   </div>
@@ -566,9 +652,10 @@ const PropertyDetailsSection = ({ listingData }) => {
                         label={t('checkOut')}
                         icon={Calendar}
                         value={checkOut}
-                        onChange={setCheckOut}
+                        onChange={handleCheckOutChange}
                         dropdownPosition="top-full  lg:top-20"
                         dropdownAlign={i18n.language === "ar" ? "lg:left-2" : "lg:right-2"}
+                        minDate={checkIn}
                       />
                     </div>
                   </div>
@@ -729,23 +816,34 @@ const PropertyDetailsSection = ({ listingData }) => {
               {/* Price Breakdown */}
               <div className="space-y-4 pt-4 ">
                 <div className="flex justify-between text-[#777E90] text-sm">
-                  <span>3,200 SAR × 3 {t('nights')}</span>
-                  <span className='font-medium text-[#23262F] '>9,600 SAR</span>
+                  <div className="flex items-baseline gap-2">
+                    {pricing.hasDiscount && (
+                      <span className="text-[#B1B5C3] line-through">
+                        {pricing.actualPrice.toLocaleString()} SAR × {pricing.nightsCount} {t('nights')}
+                      </span>
+                    )}
+                    <span className={pricing.hasDiscount ? 'text-[#58C27D]' : ''}>
+                      {pricing.basePrice.toLocaleString()} SAR × {pricing.nightsCount} {t('nights')}
+                    </span>
+                  </div>
+                  <span className={`font-medium ${pricing.hasDiscount ? 'text-[#58C27D]' : 'text-[#23262F]'}`}>
+                    {pricing.baseTotal.toLocaleString()} SAR
+                  </span>
                 </div>
 
                 <div className="flex justify-between text-[#777E90] text-sm">
                   <span>{t('Cleaning Fee')}</span>
-                  <span className='font-medium text-[#23262F] '>150 SAR</span>
+                  <span className='font-medium text-[#23262F] '>{pricing.cleaningFee} SAR</span>
                 </div>
 
                 <div className="flex justify-between text-[#777E90] text-sm">
                   <span>{t('Service fee')}</span>
-                  <span className='font-medium text-[#23262F] '>325</span>
+                  <span className='font-medium text-[#23262F] '>{pricing.serviceFee} SAR</span>
                 </div>
 
                 <div className="flex justify-between font-semibold text-sm text-[#23262F] pt-3 bg-[#F4F5F6] px-3 py-2 rounded-lg">
                   <span>{t('Total')}</span>
-                  <span>9,985 SAR</span>
+                  <span>{pricing.total.toLocaleString()} SAR</span>
                 </div>
               </div>
 

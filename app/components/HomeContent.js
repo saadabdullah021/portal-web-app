@@ -13,20 +13,24 @@ import JustForYouSection from "./HomeComponents/JustForYouSection";
 import LastMinuteDealsSection from "./HomeComponents/LastMinuteDealsSection";
 
 import PromotionalVideoSection from "./HomeComponents/PromotionalVideoSection";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { usePopup } from "../contexts/PopupContext";
 
 import WhyPortalSection from "./HomeComponents/WhyPortalSection";
 import axios from '@/lib/axios';
 import Shimmer from './ui/Shimmer';
 import { useTranslation } from 'react-i18next';
+import { usePathname } from 'next/navigation';
 
 export default function HomeContent() {
   const [homeComponents, setHomeComponents] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [hasFetchedData, setHasFetchedData] = useState(false);
   const { i18n } = useTranslation();
   const { popups } = usePopup();
+  const pathname = usePathname();
+  const hasFetchedHomeRef = useRef(false);
+  const lastLanguageRef = useRef(i18n.language);
 
 
   const isAnyPopupOpen = useMemo(() => {
@@ -34,37 +38,49 @@ export default function HomeContent() {
   }, [popups.login, popups.signup, popups.verification, popups.confirmIdentity]);
 
   useEffect(() => {
-    if (isAnyPopupOpen) {
-      setIsLoading(false);
+    // Only make API calls on the home page
+    if (pathname !== '/') {
       return;
     }
-    let mounted = true;
+
+    if (isAnyPopupOpen) {
+      return;
+    }
+
+    // Check if language actually changed
+    if (lastLanguageRef.current === i18n.language && homeComponents.length > 0) {
+      return;
+    }
+
+    // Update the last language
+    lastLanguageRef.current = i18n.language;
+    
     const fetchHome = async () => {
       try {
         setIsLoading(true);
-        const { data } = await axios.get('/get-home-components', {
+        const { data } = await axios.get('/get-home-components?offset=0&perPage=8', {
           params: {
             language: i18n.language
           }
         });
-        if (!mounted) return;
-        setHomeComponents(Array.isArray(data?.data?.records) ? data.data?.records : []);
-        setHasFetchedData(true);
+        
+        const components = Array.isArray(data?.data?.records) ? data.data?.records : [];
+        setHomeComponents(components);
+        setIsLoading(false);
       } catch (error) {
         console.error('HomeContent - API error:', error);
         setHomeComponents([]);
-      } finally {
-        if (mounted) {
-          setIsLoading(false);
-        }
+        setIsLoading(false);
       }
     };
+    
     fetchHome();
-    return () => { mounted = false; };
-  }, [i18n.language, isAnyPopupOpen]);
+  }, [i18n.language, isAnyPopupOpen, pathname]);
 
 const renderedSections = useMemo(() => {
+  console.log('renderedSections - homeComponents:', homeComponents);
   if (homeComponents.length === 0) {
+    console.log('No home components, returning null');
     return null;
   }
   
@@ -149,7 +165,12 @@ const renderedSections = useMemo(() => {
           </div>
         </div>
       ) : (
-        renderedSections
+        renderedSections || (
+          <div className="text-center py-16">
+            <h3 className="text-xl font-semibold text-gray-600 mb-2">No content available</h3>
+            <p className="text-gray-500">Please try refreshing the page</p>
+          </div>
+        )
       )}
 
       <HowItWorks/>

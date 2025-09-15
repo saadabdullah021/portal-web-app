@@ -36,7 +36,7 @@ const JustForYouSection = ({ items, sectionData  }) => {
     }
   }));
 
-  const data = Array.isArray(allItems) && allItems.length > 0 ? allItems : originalProperties;
+  const data = Array.isArray(allItems) && allItems.length > 0 ? allItems : [];
 
   useEffect(() => {
     if (Array.isArray(items) && items.length > 0) {
@@ -106,13 +106,13 @@ const JustForYouSection = ({ items, sectionData  }) => {
       const response = await getComponentData(
         sectionData.component_id,
         currentOffset,
-        10,
+        8,
         i18n.language
       );
       
       if (response?.data?.items?.records && response.data.items.records.length > 0) {
         setAllItems(prev => [...prev, ...response.data.items.records]);
-        setCurrentOffset(prev => prev + 3);
+        setCurrentOffset(prev => prev + 1);
         
         if (response.data.items.records.length < 3) {
           setHasMore(false);

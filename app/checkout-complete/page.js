@@ -11,7 +11,7 @@ import hostImage from "../../public/images/hostImage.png"
 import { useEffect, useState, useRef } from 'react'; // ✅ Added for slider
 
 export default function CheckoutComplete() {
-  const { t, i18n } = useTranslation('hero');
+  const { t, i18n } = useTranslation('checkout');
   const isRTL = i18n.language === 'ar';
 
   // ✅ Slider states
@@ -69,7 +69,7 @@ export default function CheckoutComplete() {
             <button className="text-gray-700 hover:text-gray-900 transition-colors">
               <RiArrowDropLeftLine size={24} />
             </button>
-            <span className="font-bold text-sm text-[#23262F] font-dm-sans">Go home</span>
+            <span className="font-bold text-sm text-[#23262F] font-dm-sans">{t('go_Home')}</span>
           </div>
         </Link>
 
@@ -86,7 +86,7 @@ export default function CheckoutComplete() {
             <button className="text-gray-700 hover:text-gray-900 transition-colors">
               <RiArrowDropLeftLine size={24} />
             </button>
-            <span className="font-bold text-sm text-[#23262F] font-dm-sans">Go home</span>
+            <span className="font-bold text-sm text-[#23262F] font-dm-sans">{t('go_Home')}</span>
           </div>
         </Link>
         <div className="flex items-center gap-1 text-sm text-[#777E90] font-dm-sans font-bold">
@@ -152,9 +152,9 @@ export default function CheckoutComplete() {
         {/* Right Side - Content */}
         <div className="lg:w-1/2 flex flex-col">
           <div className="mb-6">
-            <h1 className="text-[35px] md:text-5xl font-bold text-[#23262F] font-dm-sans mb-2">Congratulations!</h1>
+            <h1 className="text-[35px] md:text-5xl font-bold text-[#23262F] font-dm-sans mb-2">{t('title')}</h1>
             <p className="text-[16px] text-[#777E90] flex items-center">
-              Your trip has been booked! 🎉
+              {t('subtitle')}🎉
             </p>
           </div>
 
@@ -177,28 +177,28 @@ export default function CheckoutComplete() {
               <div className="flex items-center">
                 <Star size={20} fill="#FFD700" stroke="#FFD700" />
                 <span className="ml-2 text-sm font-medium text-[#23262F]">4.8</span>
-                <span className="text-[#777E90] text-sm ml-2">(256 reviews)</span>
+                <span className="text-[#777E90] text-sm ml-2">(256  {t('reviews')})</span>
               </div>
               <div className="text-[#777E90] text-xs">
-                <span>2 bed •</span>
-                <span> 3 bath</span>
+                <span>2 {t('bed')}•</span>
+                <span> 3 {t('bath')}</span>
               </div>
             </div>
 
             <div className="grid grid-cols-2 items-center mb-1">
               <div>
-                <p className="text-xs text-[#777E90] pb-1">Dates</p>
+                <p className="text-xs text-[#777E90] pb-1">{t('Dates')}</p>
                 <p className="text-[16px] text-[#23262F] font-medium ">May 15 – 22, 2026</p>
               </div>
               <div>
-                <p className="text-xs text-[#777E90] pb-1 text-right lg:text-left pr-6 lg:pr-0">Guests</p>
-                <p className="text-[16px] text-[#23262F] font-medium text-right lg:text-left ">2 guests</p>
+                <p className="text-xs text-[#777E90] pb-1 text-right lg:text-left pr-6 lg:pr-0">{t('Guests')}</p>
+                <p className="text-[16px] text-[#23262F] font-medium text-right lg:text-left ">2 {t('Guests')}</p>
               </div>
             </div>
           </div>
 
           <div className="mb-10">
-            <h3 className="text-2xl font-semibold text-[#23262F] mb-6">Booking details</h3>
+            <h3 className="text-2xl font-semibold text-[#23262F] mb-6">{t('Booking details')}</h3>
 
             <div className="space-y-6">
               <div className="grid grid-cols-2 items-center ">
@@ -210,7 +210,7 @@ export default function CheckoutComplete() {
                     <path fillRule="evenodd" clipRule="evenodd" d="M6.66602 16.6667C7.12625 16.6667 7.49935 16.2936 7.49935 15.8334C7.49935 15.3731 7.12625 15 6.66602 15C6.20578 15 5.83268 15.3731 5.83268 15.8334C5.83268 16.2936 6.20578 16.6667 6.66602 16.6667ZM6.66602 18.3334C8.04673 18.3334 9.16602 17.2141 9.16602 15.8334C9.16602 14.4527 8.04673 13.3334 6.66602 13.3334C5.2853 13.3334 4.16602 14.4527 4.16602 15.8334C4.16602 17.2141 5.2853 18.3334 6.66602 18.3334Z" fill="#777E91" />
                   </svg>
 
-                  <span>Booking code:</span>
+                  <span>{t('Booking code')}:</span>
                 </div>
                 <span className="font-medium text-sm text-[#23262F] text-right lg:text-left">P00Z89343</span>
               </div>
@@ -223,7 +223,7 @@ export default function CheckoutComplete() {
                     <path fillRule="evenodd" clipRule="evenodd" d="M5.83333 1.66663C5.3731 1.66663 5 2.03972 5 2.49996V5.83329C5 6.29353 5.3731 6.66663 5.83333 6.66663C6.29357 6.66663 6.66667 6.29353 6.66667 5.83329V2.49996C6.66667 2.03972 6.29357 1.66663 5.83333 1.66663ZM14.1667 1.66663C13.7064 1.66663 13.3333 2.03972 13.3333 2.49996V5.83329C13.3333 6.29353 13.7064 6.66663 14.1667 6.66663C14.6269 6.66663 15 6.29353 15 5.83329V2.49996C15 2.03972 14.6269 1.66663 14.1667 1.66663Z" fill="#777E91" />
                   </svg>
 
-                  <span>Date:</span>
+                  <span>{t('Date')}:</span>
                 </div>
                 <span className="font-medium text-sm text-[#23262F] text-right lg:text-left">30 Apr, 2026</span>
               </div>
@@ -241,7 +241,7 @@ export default function CheckoutComplete() {
                     <path d="M1.66602 2.49996C1.66602 2.03972 2.03911 1.66663 2.49935 1.66663H17.4993C17.9596 1.66663 18.3327 2.03972 18.3327 2.49996C18.3327 2.9602 17.9596 3.33329 17.4993 3.33329H2.49935C2.03911 3.33329 1.66602 2.9602 1.66602 2.49996Z" fill="#777E91" />
                   </svg>
 
-                  <span>Total:</span>
+                  <span>{t('Total')}:</span>
                 </div>
                 <span className="font-medium text-sm text-[#23262F] text-right lg:text-left">9,985 SAR</span>
               </div>
@@ -254,7 +254,7 @@ export default function CheckoutComplete() {
                     <path d="M15.8327 9.99996C15.8327 10.4602 15.4596 10.8333 14.9993 10.8333C14.5391 10.8333 14.166 10.4602 14.166 9.99996C14.166 9.53972 14.5391 9.16663 14.9993 9.16663C15.4596 9.16663 15.8327 9.53972 15.8327 9.99996Z" fill="#777E91" />
                   </svg>
 
-                  <span>Payment method:</span>
+                  <span>{t('Payment method')}:</span>
                 </div>
                 <span className="font-medium text-sm text-[#23262F] text-right lg:text-left">Credit card</span>
               </div>
@@ -262,7 +262,7 @@ export default function CheckoutComplete() {
           </div>
 
           <button className="lg:w-40 w-full justify-center whitespace-nowrap flex items-center mx-auto lg:mx-0 py-3 px-6 bg-[#3B71FE] text-white font-bold text-lg font-dm-sans rounded-full hover:bg-blue-700 focus:outline-none transition-colors shadow-md">
-            Contact Host
+            {t('Contact Host')}
           </button>
         </div>
       </main>

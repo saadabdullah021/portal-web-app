@@ -32,6 +32,7 @@ const SearchBar = ({ onSearch }) => {
 
   const travelersRef = useRef(null);
   const locationRef = useRef(null);
+  const hasFetchedLocationsRef = useRef(false);
 
   // Load recent searches from localStorage
   useEffect(() => {
@@ -53,6 +54,17 @@ const SearchBar = ({ onSearch }) => {
   };
 
   const fetchLocations = async () => {
+    const cacheKey = 'locations_data';
+    const cachedData = localStorage.getItem(cacheKey);
+    const cacheTime = localStorage.getItem(`${cacheKey}_time`);
+    const now = Date.now();
+    
+    // Check if cached data exists and is less than 10 minutes old
+    if (cachedData && cacheTime && (now - parseInt(cacheTime)) < 600000) {
+      setLocationsData(JSON.parse(cachedData));
+      return;
+    }
+    
     try {
       const { data: json } = await axios.get('/get-all-locations');
       if (json?.success && Array.isArray(json.data)) {
@@ -70,6 +82,10 @@ const SearchBar = ({ onSearch }) => {
           }
         });
         setLocationsData(list);
+        
+        // Cache the data
+        localStorage.setItem(cacheKey, JSON.stringify(list));
+        localStorage.setItem(`${cacheKey}_time`, now.toString());
       } else {
         setLocationsData([]);
       }
@@ -79,14 +95,16 @@ const SearchBar = ({ onSearch }) => {
   };
 
   useEffect(() => {
+    // Prevent duplicate API calls
+    if (hasFetchedLocationsRef.current) {
+      return;
+    }
+
     let isMounted = true;
+    hasFetchedLocationsRef.current = true;
     fetchLocations();
     return () => { isMounted = false; };
   }, []);
-
-  useEffect(() => {
-    fetchLocations();
-  }, [i18n.language]);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 1024);

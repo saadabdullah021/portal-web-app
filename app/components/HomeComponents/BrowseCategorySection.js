@@ -15,10 +15,29 @@ const BrowseCategorySection = () => {
   const sliderRef = useRef(null);
 
   const [categories, setCategories] = useState([]);
+  const hasFetchedCategoriesRef = useRef(false);
 
   useEffect(() => {
+    // Prevent duplicate API calls
+    if (hasFetchedCategoriesRef.current) {
+      return;
+    }
+
     let mounted = true;
+    hasFetchedCategoriesRef.current = true;
     const fetchCategories = async () => {
+      const cacheKey = 'categories_data';
+      const cachedData = localStorage.getItem(cacheKey);
+      const cacheTime = localStorage.getItem(`${cacheKey}_time`);
+      const now = Date.now();
+      
+      // Check if cached data exists and is less than 10 minutes old
+      if (cachedData && cacheTime && (now - parseInt(cacheTime)) < 600000) {
+        if (!mounted) return;
+        setCategories(JSON.parse(cachedData));
+        return;
+      }
+      
       try {
         const { data } = await axios.get('/get-categories');
         if (!mounted) return;
@@ -50,6 +69,10 @@ const BrowseCategorySection = () => {
           };
         });
         setCategories(normalized);
+        
+        // Cache the data
+        localStorage.setItem(cacheKey, JSON.stringify(normalized));
+        localStorage.setItem(`${cacheKey}_time`, now.toString());
       } catch {
         setCategories([]);
       }
