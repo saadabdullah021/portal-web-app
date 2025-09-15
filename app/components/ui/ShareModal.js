@@ -3,18 +3,24 @@ import React, { useState, useEffect } from "react";
 import { Facebook, Instagram, Share2, Copy, Check, X, Linkedin,} from "lucide-react";
 import { FaWhatsapp, FaTelegram, FaXTwitter } from "react-icons/fa6";
 
-const ShareModal = ({ isOpen, onClose, host_share_code = null }) => {
+const ShareModal = ({ isOpen, onClose, host_share_code = null, slug }) => {
     const [pageUrl, setPageUrl] = useState("");
     const [copied, setCopied] = useState(false);
 
     useEffect(() => {
         if (typeof window !== "undefined") {
-            const baseUrl = window.location.href;
-            // If host_share_code is provided, append it as a query parameter
-            const url = host_share_code ? `${host_share_code}` : '';
-            setPageUrl(url);
+            if (host_share_code) {
+                const domain = window.location.origin;
+                const url = `${domain}/host/${host_share_code}`;
+                setPageUrl(url);
+            } 
+            if(slug){
+                 const domain = window.location.origin;
+                const url = `${domain}/s/${host_share_code}`;
+                setPageUrl(url);
+            }
         }
-    }, [host_share_code]);
+    }, [host_share_code,slug]);
 
     const copyToClipboard = () => {
         navigator.clipboard.writeText(pageUrl);

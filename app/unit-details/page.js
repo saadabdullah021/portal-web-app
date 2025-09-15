@@ -121,7 +121,7 @@ const PropertyListing = () => {
 
   return (
     <div className="">
-      <PropertyListingUnitDetails listingData={listingData} />
+      <PropertyListingUnitDetails listingData={listingData } slug={slug} />
       <PropertyDetailsSection listingData={listingData} />
       { <ReviewsSection isAuthenticated={isAuthenticated} listingData={listingData} />}
       {similarProperties && similarProperties.items?.records.length > 0 && (

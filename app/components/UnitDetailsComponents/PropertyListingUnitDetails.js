@@ -23,7 +23,7 @@ import ShareModal from '../ui/ShareModal';
 import Shimmer from '../ui/Shimmer';
 import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
-const PropertyListingUnitDetails = ({ listingData }) => {
+const PropertyListingUnitDetails = ({ listingData, slug }) => {
   const { t } = useTranslation("home");
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
@@ -202,7 +202,8 @@ const PropertyListingUnitDetails = ({ listingData }) => {
             <ShareModal 
               isOpen={isModalOpen} 
               onClose={() => setIsModalOpen(false)} 
-              host_share_code={listingData?.data?.host_details?.host_share_code}
+              slug={true}
+              host_share_code={slug}
             />
 
             <button
