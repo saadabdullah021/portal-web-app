@@ -222,7 +222,7 @@ const SearchBar = ({ onSearch }) => {
   };
 
   return (
-    <div className="relative rounded-3xl bg-white/80 backdrop-blur-sm p-4 lg:p-6 shadow-lg lg:absolute lg:left-1/2 lg:top-[98%] lg:transform lg:-translate-x-1/2 lg:-translate-y-1/2 lg:w-full">
+    <div className="relative rounded-3xl bg-white/80 backdrop-blur-sm p-4 lg:p-6 shadow-lg lg:absolute lg:left-1/2 lg:top-[98%] lg:transform lg:-translate-x-1/2 lg:-translate-y-1/2 lg:w-full" style={{ zIndex: 999999 }}>
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr_1fr_1fr_auto] gap-4">
 
         {/* Location */}
@@ -277,21 +277,24 @@ const SearchBar = ({ onSearch }) => {
             </div>
           </div>
 
-          <div className={`
-            absolute z-[9999] bg-[#fff] shadow-xl rounded-3xl lg:top-30 max-h-[300px] w-full lg:w-[400px] overflow-y-auto
-            transition-all duration-300 ease-in-out origin-top 
-            ${i18n.language === "ar" ? "lg:right-0" : "lg:-left-4"}
-            ${activeDropdown === "location" && (filteredLocations.length > 0 || recentSearches.length > 0)
-              ? "opacity-100 scale-100 translate-y-0 "
-              : "opacity-0 scale-95 -translate-y-2 pointer-events-none "
-            }
-            [&::-webkit-scrollbar]:w-1
-            [&::-webkit-scrollbar-track]:bg-transparent
-            [&::-webkit-scrollbar-thumb]:bg-gray-300
-            [&::-webkit-scrollbar-thumb]:rounded-full
-            [&::-webkit-scrollbar-thumb:hover]:bg-gray-400
-            pr-2
-          `}>
+          <div 
+            className={`
+              absolute z-[999999] bg-[#fff] shadow-xl rounded-3xl lg:top-30 max-h-[300px] w-full lg:w-[400px] overflow-y-auto
+              transition-all duration-300 ease-in-out origin-top 
+              ${i18n.language === "ar" ? "lg:right-0" : "lg:-left-4"}
+              ${activeDropdown === "location" && (filteredLocations.length > 0 || recentSearches.length > 0)
+                ? "opacity-100 scale-100 translate-y-0 "
+                : "opacity-0 scale-95 -translate-y-2 pointer-events-none "
+              }
+              [&::-webkit-scrollbar]:w-1
+              [&::-webkit-scrollbar-track]:bg-transparent
+              [&::-webkit-scrollbar-thumb]:bg-gray-300
+              [&::-webkit-scrollbar-thumb]:rounded-full
+              [&::-webkit-scrollbar-thumb:hover]:bg-gray-400
+              pr-2
+            `}
+            style={{ zIndex: 9999999 }}
+          >
             <div className="p-4 pb-6">
               {filteredLocations.length > 0 && (
                 <div>

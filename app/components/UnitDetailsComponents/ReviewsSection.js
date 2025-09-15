@@ -357,7 +357,7 @@ const ReviewsSection = ({ listingData, isAuthenticated }) => {
 
             {/* Reviews List */}
             {
-               isAuthenticated && (
+               true && (
  <div className="space-y-6">
               {/* Reviews List */}
               <div className="pb-6 px-6 ">
