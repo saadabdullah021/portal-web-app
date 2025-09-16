@@ -87,11 +87,12 @@ const renderedSections = useMemo(() => {
   return homeComponents
     .map((section, idx) => {
       let Comp = null;
+      const uniqueKey = `section-${section.component_id || `fallback-${idx}`}`;
 
       if (section.component_design_type === 'grid') {
         Comp = (
           <JustForYouSection
-            key={`grid-${section.component_id || idx}`}
+            key={`grid-${uniqueKey}`}
             items={section.items?.records || []}
             sectionData={section}
           />
@@ -103,7 +104,7 @@ const renderedSections = useMemo(() => {
         Comp = (
           <LastMinuteDealsSection
             data={section}
-            key={`slider-${section.component_id || idx}`}
+            key={`slider-${uniqueKey}`}
             items={section.items?.records || []}
           />
         );
@@ -117,7 +118,7 @@ const renderedSections = useMemo(() => {
 
       return (
         <div
-          key={section.component_id || idx}
+          key={`wrapper-${uniqueKey}`}
           className={`
             ${isFirst ? "pt-8  lg:pt-16 pb-0" : ""}
             ${isLast ? "lg:pt-16 pt-8 pb-8 lg:pb-16" : ""}
