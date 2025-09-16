@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 const DateInput = ({ label, value, onChange, isCheckout = false, checkInDate = null, onCheckInChange = null,
   dropdownPosition = "",
   dropdownAlign = "",
+  minDate = null,
 }) => {
   const { t, i18n } = useTranslation("home");
   const [isOpen, setIsOpen] = useState(false);
@@ -87,7 +88,10 @@ const DateInput = ({ label, value, onChange, isCheckout = false, checkInDate = n
     });
   };
 
-  const handleDateClick = (date) => {
+  const handleDateClick = (date, event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    
     if (!date || isDateDisabled(date)) return;
 
     if (isCheckout) {
@@ -96,15 +100,24 @@ const DateInput = ({ label, value, onChange, isCheckout = false, checkInDate = n
       setCheckInSelection(date);
     }
 
-    onChange(date.toISOString().split('T')[0]);
+    // Format date as YYYY-MM-DD without timezone conversion
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const dateString = `${year}-${month}-${day}`;
+    
+    onChange(dateString);
     setIsOpen(false);
   };
 
   const isDateDisabled = (date) => {
     if (!date) return true;
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    return date < today;
+    
+    // Use minDate if provided, otherwise use today
+    const minDateToUse = minDate ? new Date(minDate) : new Date();
+    minDateToUse.setHours(0, 0, 0, 0);
+    
+    return date < minDateToUse;
   };
 
   const formatDisplayDate = (date) => {
@@ -152,7 +165,7 @@ const DateInput = ({ label, value, onChange, isCheckout = false, checkInDate = n
             return (
               <button
                 key={index}
-                onClick={() => handleDateClick(date)}
+                onClick={(e) => handleDateClick(date, e)}
                 onMouseEnter={() => !isDisabled && setHoveredDate(date)}
                 onMouseLeave={() => setHoveredDate(null)}
                 disabled={isDisabled}
@@ -162,13 +175,12 @@ const DateInput = ({ label, value, onChange, isCheckout = false, checkInDate = n
                     ? 'text-[#B1B5C3] cursor-not-allowed'
                     : 'cursor-pointer hover:bg-gray-100'
                   }
-        ${isSelected
-                    ? 'bg-[#222222] text-white hover:bg-[#222222] hover:text-[#222222]'
+                  ${isSelected
+                    ? 'bg-[#222222] text-white hover:bg-[#333333] hover:text-white'
                     : isToday && !getSelectedDate()
-                      ? 'border border-[#222222] bg-[#222222] text-white hover:text-black hover:bg-[#222222]'
-                      : 'text-[#23262F]'
+                      ? 'border border-[#222222] bg-[#222222] text-white hover:bg-[#333333] hover:text-white'
+                      : 'text-[#23262F] hover:bg-gray-100'
                   }
-
                 `}
               >
                 {date.getDate()}
@@ -181,11 +193,11 @@ const DateInput = ({ label, value, onChange, isCheckout = false, checkInDate = n
   };
 
   return (
-    <div className="flex items-start space-x-2 mt-1    relative " ref={calendarRef}
-      onClick={() => setIsOpen(!isOpen)}
-    >
+    <div className="flex items-start space-x-2 mt-1    relative " ref={calendarRef}>
       {/* Calendar Icon */}
-      <svg width="24" height="24" className="mt-2 lg:mt-3 " viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg width="24" height="24" className="mt-2 lg:mt-3 cursor-pointer" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+        onClick={() => setIsOpen(!isOpen)}
+      >
         <path fillRule="evenodd" clipRule="evenodd" d="M19 6H5C4.44772 6 4 6.44772 4 7V19C4 19.5523 4.44772 20 5 20H19C19.5523 20 20 19.5523 20 19V7C20 6.44771 19.5523 6 19 6ZM5 4C3.34315 4 2 5.34315 2 7V19C2 20.6569 3.34315 22 5 22H19C20.6569 22 22 20.6569 22 19V7C22 5.34315 20.6569 4 19 4H5Z" fill="#B1B5C4" />
         <path fillRule="evenodd" clipRule="evenodd" d="M10 12C9.44772 12 9 12.4477 9 13C9 13.5523 9.44772 14 10 14H17C17.5523 14 18 13.5523 18 13C18 12.4477 17.5523 12 17 12H10ZM7 16C6.44772 16 6 16.4477 6 17C6 17.5523 6.44772 18 7 18H13C13.5523 18 14 17.5523 14 17C14 16.4477 13.5523 16 13 16H7Z" fill="#B1B5C4" />
         <path fillRule="evenodd" clipRule="evenodd" d="M7 2C6.44772 2 6 2.44772 6 3V7C6 7.55228 6.44772 8 7 8C7.55228 8 8 7.55228 8 7V3C8 2.44772 7.55228 2 7 2ZM17 2C16.4477 2 16 2.44772 16 3V7C16 7.55228 16.4477 8 17 8C17.5523 8 18 7.55228 18 7V3C18 2.44772 17.5523 2 17 2Z" fill="#B1B5C4" />
@@ -200,7 +212,7 @@ const DateInput = ({ label, value, onChange, isCheckout = false, checkInDate = n
         </label>
 
         <div
-
+          onClick={() => setIsOpen(!isOpen)}
           className="w-full bg-transparent lg:pb-1 px-3 py-0 text-[#777E90] placeholder-[#777E90] text-[16px] font-medium outline-none cursor-pointer"
         >
           {formatDisplayDate(getSelectedDate())}

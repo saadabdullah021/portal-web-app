@@ -38,8 +38,16 @@ const PropertyDetailsSection = ({ listingData }) => {
   const tomorrow = new Date(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
   
-  const [checkIn, setCheckIn] = useState(today.toISOString().split('T')[0]);
-  const [checkOut, setCheckOut] = useState(tomorrow.toISOString().split('T')[0]);
+  // Format dates without timezone conversion
+  const formatDate = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+  
+  const [checkIn, setCheckIn] = useState(formatDate(today));
+  const [checkOut, setCheckOut] = useState(formatDate(tomorrow));
   const [nights, setNights] = useState(1);
 
   const formatHostName = (fullName) => {
@@ -61,22 +69,24 @@ const PropertyDetailsSection = ({ listingData }) => {
 
   const handleCheckInChange = (date) => {
     setCheckIn(date);
-    const newNights = calculateNights(date, checkOut);
-    setNights(newNights);
-  };
-
-  const handleCheckOutChange = (date) => {
-    if (date <= checkIn) {
-      const nextDay = new Date(checkIn);
+    
+    // If check-out is before or same as new check-in, set check-out to next day
+    if (checkOut <= date) {
+      const nextDay = new Date(date);
       nextDay.setDate(nextDay.getDate() + 1);
-      const nextDayStr = nextDay.toISOString().split('T')[0];
+      const nextDayStr = formatDate(nextDay);
       setCheckOut(nextDayStr);
       setNights(1);
     } else {
-      setCheckOut(date);
-      const newNights = calculateNights(checkIn, date);
+      const newNights = calculateNights(date, checkOut);
       setNights(newNights);
     }
+  };
+
+  const handleCheckOutChange = (date) => {
+    setCheckOut(date);
+    const newNights = calculateNights(checkIn, date);
+    setNights(newNights);
   };
 
   const calculatePricing = () => {
@@ -346,12 +356,9 @@ const PropertyDetailsSection = ({ listingData }) => {
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                           <div className=" rounded-lg p-3">
                             <div
-                              className={`rounded-xl p-3 lg:p-0 cursor-pointer transition-all duration-300 ease-in-out
+                              className={`rounded-xl p-3 lg:p-0 transition-all duration-300 ease-in-out
               ${activeDropdown === "checkIn" ? " lg:bg-transparent" : "lg:bg-transparent "} 
               bg-white/60`}
-                              onClick={() =>
-                                setActiveDropdown(activeDropdown === "checkIn" ? null : "checkIn")
-                              }
                             >
                               <DateInput
                                 label={t('checkIn')}
@@ -360,19 +367,16 @@ const PropertyDetailsSection = ({ listingData }) => {
                                 onChange={handleCheckInChange}
                                 dropdownPosition="top-full  lg:top-20"
                                 dropdownAlign={i18n.language === "ar" ? "lg:-left-48" : "lg:left-0"}
-                                minDate={today.toISOString().split('T')[0]}
+                                minDate={formatDate(today)}
                               />
                             </div>
                           </div>
 
                           <div className=" rounded-lg p-3">
                             <div
-                              className={`rounded-xl p-3 lg:p-0 cursor-pointer transition-all duration-300 ease-in-out
+                              className={`rounded-xl p-3 lg:p-0 transition-all duration-300 ease-in-out
               ${activeDropdown === "checkIn" ? " lg:bg-transparent" : "lg:bg-transparent  "} 
               bg-white/60`}
-                              onClick={() =>
-                                setActiveDropdown(activeDropdown === "checkIn" ? null : "checkIn")
-                              }
                             >
                               <DateInput
                                 label={t('checkOut')}
@@ -380,7 +384,7 @@ const PropertyDetailsSection = ({ listingData }) => {
                                 value={checkOut}
                                 onChange={handleCheckOutChange}
                                 dropdownPosition="top-full  lg:top-20"
-                                minDate={checkIn}
+                                minDate={checkIn || formatDate(today)}
                                 dropdownAlign={i18n.language === "ar" ? "lg:left-2" : "lg:right-2"}
                               />
                             </div>
@@ -620,12 +624,9 @@ const PropertyDetailsSection = ({ listingData }) => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className=" rounded-lg p-3">
                     <div
-                      className={`rounded-xl p-3 lg:p-0 cursor-pointer transition-all duration-300 ease-in-out
+                      className={`rounded-xl p-3 lg:p-0 transition-all duration-300 ease-in-out
               ${activeDropdown === "checkIn" ? " lg:bg-transparent" : "lg:bg-transparent "} 
               bg-white/60`}
-                      onClick={() =>
-                        setActiveDropdown(activeDropdown === "checkIn" ? null : "checkIn")
-                      }
                     >
                       <DateInput
                         label={t('checkIn')}
@@ -634,19 +635,16 @@ const PropertyDetailsSection = ({ listingData }) => {
                         onChange={handleCheckInChange}
                         dropdownPosition="top-full  lg:top-20"
                         dropdownAlign={i18n.language === "ar" ? "lg:-left-48" : "lg:left-0"}
-                        minDate={today.toISOString().split('T')[0]}
+                        minDate={formatDate(today)}
                       />
                     </div>
                   </div>
 
                   <div className=" rounded-lg p-3">
                     <div
-                      className={`rounded-xl p-3 lg:p-0 cursor-pointer transition-all duration-300 ease-in-out
+                      className={`rounded-xl p-3 lg:p-0 transition-all duration-300 ease-in-out
               ${activeDropdown === "checkIn" ? " lg:bg-transparent" : "lg:bg-transparent  "} 
               bg-white/60`}
-                      onClick={() =>
-                        setActiveDropdown(activeDropdown === "checkIn" ? null : "checkIn")
-                      }
                     >
                       <DateInput
                         label={t('checkOut')}
@@ -655,7 +653,7 @@ const PropertyDetailsSection = ({ listingData }) => {
                         onChange={handleCheckOutChange}
                         dropdownPosition="top-full  lg:top-20"
                         dropdownAlign={i18n.language === "ar" ? "lg:left-2" : "lg:right-2"}
-                        minDate={checkIn}
+                        minDate={checkIn || formatDate(today)}
                       />
                     </div>
                   </div>
