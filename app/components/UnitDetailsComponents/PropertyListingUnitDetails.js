@@ -36,6 +36,11 @@ const PropertyListingUnitDetails = ({ listingData, slug }) => {
   const fallbackImages = [heroImage, heroImage2, heroImage3, heroImage4];
   const images = apiImages.length > 0 ? apiImages : fallbackImages;
   
+<<<<<<< HEAD
+  console.log('API Images:', apiImages);
+  console.log('Final Images Array:', images);
+=======
+>>>>>>> b5e169a46c76775f5bdceff40c03355935418b94
 
   const isExternalImage = (src) => {
     return src && (src.startsWith('http://') || src.startsWith('https://'));
@@ -314,6 +319,11 @@ const PropertyListingUnitDetails = ({ listingData, slug }) => {
               )}
             </div>
 
+<<<<<<< HEAD
+<<<<<<< HEAD
+            {/* Right Side - 3 Small Images Stacked */}
+=======
+>>>>>>> b5e169a46c76775f5bdceff40c03355935418b94
             <div className=" flex h-[780px] flex-col gap-2">
               {Array.from({ length: 3 }, (_, index) => {
                 const imageIndex = index + 1;
@@ -364,13 +374,92 @@ const PropertyListingUnitDetails = ({ listingData, slug }) => {
                 );
               })}
             </div>
+<<<<<<< HEAD
+=======
+                <div className=" flex h-[780px] flex-col gap-2">
+                  {Array.from({ length: 3 }, (_, index) => {
+                    const imageIndex = index + 1;
+                    const image = images[imageIndex];
+                    return (
+                      <div key={imageIndex} className="flex-1 w-64 relative overflow-hidden rounded-xl group cursor-pointer">
+                        {image ? (
+                          <>
+                            {imageLoadingStates[imageIndex] && <Shimmer type="imageCard" />}
+                            {isExternalImage(image) ? (
+                              <img
+                                src={image}
+                                alt={`${listingData?.data?.title || "Property"} - Image ${imageIndex + 1}`}
+                                className={`w-full h-full object-cover transition-transform duration-300 ${imageLoadingStates[imageIndex] ? 'hidden' : ''}`}
+                                onClick={() => openGallery(imageIndex)}
+                                loading='lazy'
+                                onLoad={() => handleImageLoad(imageIndex)}
+                                onLoadStart={() => handleImageStart(imageIndex)}
+                                onError={(e) => {
+                                  console.error('Image failed to load:', image);
+                                  e.target.style.display = 'none';
+                                  handleImageLoad(imageIndex);
+                                }}
+                              />
+                            ) : (
+                              <Image
+                                src={image}
+                                alt={`${listingData?.data?.title || "Property"} - Image ${imageIndex + 1}`}
+                                width={256}
+                                height={390}
+                                className={`w-full h-full object-cover transition-transform duration-300 ${imageLoadingStates[imageIndex] ? 'hidden' : ''}`}
+                                onClick={() => openGallery(imageIndex)}
+                                loading='lazy'
+                                onLoad={() => handleImageLoad(imageIndex)}
+                                onLoadStart={() => handleImageStart(imageIndex)}
+                                onError={(e) => {
+                                  console.error('Image failed to load:', image);
+                                  e.target.style.display = 'none';
+                                  handleImageLoad(imageIndex);
+                                }}
+                              />
+                            )}
+                          </>
+                        ) : (
+                          <></>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </>
+            )}
+>>>>>>> 3640e3bf3c2a6e8387cdadd3b9528593f35cb117
+=======
             </>
             )}
+>>>>>>> b5e169a46c76775f5bdceff40c03355935418b94
           </div>
 
           {/* Mobile Slider - No arrows, only swipe */}
           <div className="lg:hidden relative" ref={sliderRef}>
+<<<<<<< HEAD
             <div className="relative h-[476px] sm:h-[490px] overflow-hidden rounded-2xl">
+<<<<<<< HEAD
+              {isExternalImage(images[currentImageIndex]) ? (
+                <img
+                  src={images[currentImageIndex]}
+                  alt={`${listingData?.data?.title || "Property"} - Image ${currentImageIndex + 1}`}
+                  className="w-full h-full object-cover"
+                  loading='lazy'
+                />
+              ) : (
+                <Image
+                  src={images[currentImageIndex]}
+                  alt={`${listingData?.data?.title || "Property"} - Image ${currentImageIndex + 1}`}
+                  width={400}
+                  height={490}
+                  className="w-full h-full object-cover"
+                  loading='lazy'
+                />
+=======
+            <div className="relative h-[476px] sm:h-[490px] overflow-hidden rounded-lg">
+=======
+>>>>>>> b5e169a46c76775f5bdceff40c03355935418b94
               {images[currentImageIndex] && (
                 <>
                   {imageLoadingStates[currentImageIndex] && <Shimmer type="imageCard" />}
@@ -406,6 +495,10 @@ const PropertyListingUnitDetails = ({ listingData, slug }) => {
                     />
                   )}
                 </>
+<<<<<<< HEAD
+>>>>>>> 3640e3bf3c2a6e8387cdadd3b9528593f35cb117
+=======
+>>>>>>> b5e169a46c76775f5bdceff40c03355935418b94
               )}
 
               {/* Image Counter */}

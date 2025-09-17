@@ -19,9 +19,15 @@ import {
 import { useTranslation } from 'react-i18next';
 import ShareModal from '../ui/ShareModal';
 import { FaXTwitter } from 'react-icons/fa6';
+<<<<<<< HEAD
+import EmojiPicker from 'emoji-picker-react';
+import EmojiPickerDropdown from '../ui/EmojiPickerDropdown';
+const ReviewsSection = ({ listingData }) => {
+=======
 import Shimmer from '../ui/Shimmer';
 
 const ReviewsSection = ({ listingData, isAuthenticated }) => {
+>>>>>>> b5e169a46c76775f5bdceff40c03355935418b94
   const { t, i18n } = useTranslation("hero");
   const isRTL = i18n.language === 'ar';
   const [reviewText, setReviewText] = useState('');
@@ -44,6 +50,8 @@ const ReviewsSection = ({ listingData, isAuthenticated }) => {
     return `${firstName} ${lastName.charAt(0)}.`;
   };
 
+
+  
 
   const [reviews, setReviews] = useState([
     {
@@ -327,10 +335,13 @@ const ReviewsSection = ({ listingData, isAuthenticated }) => {
                     />
 
                     <div className="flex items-center gap-3 ml-4">
-                      <button className="text-gray-400 hover:text-gray-600 transition-colors">
+                      {/* Smile button for emojies*/}
+                      {/* <button className="text-gray-400 hover:text-gray-600 transition-colors">
                         <Smile size={20} />
-                      </button>
-
+                      </button> */}
+     <EmojiPickerDropdown
+        onEmojiSelect={(emoji) => setReviewText((prev) => prev + emoji)}
+      />
                       <button
                         onClick={handleSubmitReview}
                         disabled={!reviewText.trim()}
