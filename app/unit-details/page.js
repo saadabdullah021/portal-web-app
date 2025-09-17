@@ -18,12 +18,8 @@ const PropertyListing = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [similarProperties, setSimilarProperties] = useState(null);
-<<<<<<< HEAD
-=======
   
-  const { isAuthenticated } = useAppSelector((state) => state.auth);
   const hasFetchedRef = useRef(false);
->>>>>>> b5e169a46c76775f5bdceff40c03355935418b94
 
   useEffect(() => {
     // Prevent duplicate API calls
@@ -72,24 +68,10 @@ const PropertyListing = () => {
         
         setListingData(data);
         
-<<<<<<< HEAD
-=======
-        // Cache the listing data
-        localStorage.setItem(cacheKey, JSON.stringify(data));
-        localStorage.setItem(`${cacheKey}_time`, now.toString());
-        
->>>>>>> b5e169a46c76775f5bdceff40c03355935418b94
         if (data?.data?.listing_id) {
           const similarResponse = await fetch(`https://guku.ai/api/v1/get-similar-listings?listing_id=${data.data.listing_id}`);
           const similarData = await similarResponse.json();
           setSimilarProperties(similarData);
-<<<<<<< HEAD
-=======
-          
-          // Cache the similar properties data
-          localStorage.setItem(similarCacheKey, JSON.stringify(similarData));
-          localStorage.setItem(`${similarCacheKey}_time`, now.toString());
->>>>>>> b5e169a46c76775f5bdceff40c03355935418b94
         }
       } catch (err) {
         console.error('Error fetching listing:', err);
@@ -132,13 +114,8 @@ const PropertyListing = () => {
     <div className="">
       <PropertyListingUnitDetails listingData={listingData } slug={slug} />
       <PropertyDetailsSection listingData={listingData} />
-<<<<<<< HEAD
       <ReviewsSection listingData={listingData} />
       {similarProperties && (
-=======
-      { <ReviewsSection isAuthenticated={isAuthenticated} listingData={listingData} />}
-      {similarProperties && similarProperties.items?.records.length > 0 && (
->>>>>>> b5e169a46c76775f5bdceff40c03355935418b94
         <>
           {similarProperties.component_design_type === 'grid' ? (
             <JustForYouSection 

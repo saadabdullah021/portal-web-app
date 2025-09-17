@@ -19,15 +19,9 @@ import {
 import { useTranslation } from 'react-i18next';
 import ShareModal from '../ui/ShareModal';
 import { FaXTwitter } from 'react-icons/fa6';
-<<<<<<< HEAD
-import EmojiPicker from 'emoji-picker-react';
-import EmojiPickerDropdown from '../ui/EmojiPickerDropdown';
-const ReviewsSection = ({ listingData }) => {
-=======
 import Shimmer from '../ui/Shimmer';
 
 const ReviewsSection = ({ listingData, isAuthenticated }) => {
->>>>>>> b5e169a46c76775f5bdceff40c03355935418b94
   const { t, i18n } = useTranslation("hero");
   const isRTL = i18n.language === 'ar';
   const [reviewText, setReviewText] = useState('');
