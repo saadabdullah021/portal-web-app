@@ -23,7 +23,7 @@ import ShareModal from '../ui/ShareModal';
 import Shimmer from '../ui/Shimmer';
 import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
-const PropertyListingUnitDetails = ({ listingData }) => {
+const PropertyListingUnitDetails = ({ listingData, slug }) => {
   const { t } = useTranslation("home");
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
@@ -202,7 +202,8 @@ const PropertyListingUnitDetails = ({ listingData }) => {
             <ShareModal 
               isOpen={isModalOpen} 
               onClose={() => setIsModalOpen(false)} 
-              host_share_code={listingData?.data?.host_details?.host_share_code}
+              slug={true}
+              host_share_code={slug}
             />
 
             <button
@@ -313,6 +314,7 @@ const PropertyListingUnitDetails = ({ listingData }) => {
               )}
             </div>
 
+            {/* Right Side - 3 Small Images Stacked */}
             <div className=" flex h-[780px] flex-col gap-2">
               {Array.from({ length: 3 }, (_, index) => {
                 const imageIndex = index + 1;
@@ -363,7 +365,7 @@ const PropertyListingUnitDetails = ({ listingData }) => {
                 );
               })}
             </div>
-            </>
+              </>
             )}
           </div>
 

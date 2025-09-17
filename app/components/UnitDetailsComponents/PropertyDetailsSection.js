@@ -22,6 +22,7 @@ import { HiOutlineFlag } from "react-icons/hi2";
 import DateInput from '../ui/DateInput';
 import { useTranslation } from 'react-i18next';
 import Shimmer from '../ui/Shimmer';
+import axios from 'axios';
 
 const PropertyDetailsSection = ({ listingData }) => {
   const { t, i18n } = useTranslation('hero');
@@ -38,9 +39,19 @@ const PropertyDetailsSection = ({ listingData }) => {
   const tomorrow = new Date(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
   
-  const [checkIn, setCheckIn] = useState(today.toISOString().split('T')[0]);
-  const [checkOut, setCheckOut] = useState(tomorrow.toISOString().split('T')[0]);
+  // Format dates without timezone conversion
+  const formatDate = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+  
+  const [checkIn, setCheckIn] = useState(formatDate(today));
+  const [checkOut, setCheckOut] = useState(formatDate(tomorrow));
   const [nights, setNights] = useState(1);
+  const [apiPricing, setApiPricing] = useState(null);
+  const [isLoadingPricing, setIsLoadingPricing] = useState(false);
 
   const formatHostName = (fullName) => {
     if (!fullName) return 'Host';
@@ -59,27 +70,137 @@ const PropertyDetailsSection = ({ listingData }) => {
     return diffDays > 0 ? diffDays : 1;
   };
 
+  const fetchPricingFromAPI = async (checkInDate, checkOutDate) => {
+    try {
+      setIsLoadingPricing(true);
+      const listingId = listingData?.data?.listing_id || 1;
+            
+      const response = await axios.get('https://guku.ai/api/v1/get-unit-pricing', {
+        params: {
+          listing_id: listingId,
+          check_in_date: checkInDate,
+          check_out_date: checkOutDate
+        }
+      });
+      
+      console.log('API Response:', response.data);
+      
+      if (response.data.success) {
+        setApiPricing(response.data.data);
+        console.log('API pricing set:', response.data.data);
+        console.log('Daily breakdown:', response.data.data.daily_breakdown);
+        console.log('Total price:', response.data.data.total_price);
+        console.log('Nights:', response.data.data.nights);
+      }
+    } catch (error) {
+      console.error('Error fetching pricing:', error);
+      setApiPricing(null);
+    } finally {
+      setIsLoadingPricing(false);
+    }
+  };
+
+  const shouldCallAPI = (checkInDate, checkOutDate) => {
+    const checkIn = new Date(checkInDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const nightsCount = calculateNights(checkInDate, checkOutDate);
+    
+    console.log('shouldCallAPI Debug:', {
+      checkInDate,
+      checkOutDate,
+      checkIn: checkIn.toDateString(),
+      today: today.toDateString(),
+      isFuture: checkIn > today,
+      nightsCount,
+      shouldCall: checkIn > today && nightsCount > 1
+    });
+    
+    return  nightsCount > 1;
+  };
+
   const handleCheckInChange = (date) => {
+    console.log('handleCheckInChange called with:', date);
     setCheckIn(date);
-    const newNights = calculateNights(date, checkOut);
-    setNights(newNights);
+    
+    if (checkOut <= date) {
+      const nextDay = new Date(date);
+      nextDay.setDate(nextDay.getDate() + 1);
+      const nextDayStr = formatDate(nextDay);
+      setCheckOut(nextDayStr);
+      setNights(1);
+      setApiPricing(null); // Reset API pricing for single night
+      console.log('Check-out adjusted to next day:', nextDayStr);
+    } else {
+      const newNights = calculateNights(date, checkOut);
+      setNights(newNights);
+      console.log('New nights calculated:', newNights);
+      
+      if (shouldCallAPI(date, checkOut)) {
+        console.log('Calling API from handleCheckInChange');
+        fetchPricingFromAPI(date, checkOut);
+      } else {
+        console.log('Not calling API from handleCheckInChange');
+        setApiPricing(null);
+      }
+    }
   };
 
   const handleCheckOutChange = (date) => {
-    if (date <= checkIn) {
-      const nextDay = new Date(checkIn);
-      nextDay.setDate(nextDay.getDate() + 1);
-      const nextDayStr = nextDay.toISOString().split('T')[0];
-      setCheckOut(nextDayStr);
-      setNights(1);
+    console.log('handleCheckOutChange called with:', date);
+    setCheckOut(date);
+    const newNights = calculateNights(checkIn, date);
+    setNights(newNights);
+    console.log('New nights calculated:', newNights);
+    
+    // Call API if conditions are met
+    if (shouldCallAPI(checkIn, date)) {
+      console.log('Calling API from handleCheckOutChange');
+      fetchPricingFromAPI(checkIn, date);
     } else {
-      setCheckOut(date);
-      const newNights = calculateNights(checkIn, date);
-      setNights(newNights);
+      console.log('Not calling API from handleCheckOutChange');
+      setApiPricing(null);
     }
   };
 
   const calculatePricing = () => {
+    // Use API pricing if available, otherwise use client-side calculation
+    if (apiPricing) {
+      const cleaningFee = parseFloat(listingData?.data?.listing_fee?.['Cleaning Fee']) || 19;
+      const serviceFee = parseFloat(listingData?.data?.listing_fee?.['Serive Fee']) || 99;
+      const total = apiPricing.total_price + cleaningFee + serviceFee;
+      
+      // Get the first day's price from daily breakdown for display
+      const firstDayPrice = apiPricing.daily_breakdown && apiPricing.daily_breakdown.length > 0 
+        ? parseFloat(apiPricing.daily_breakdown[0].price) 
+        : apiPricing.total_price / apiPricing.nights;
+      
+      console.log('Pricing calculation:', {
+        total_price: apiPricing.total_price,
+        nights: apiPricing.nights,
+        firstDayPrice,
+        cleaningFee,
+        serviceFee,
+        total
+      });
+      
+      return {
+        actualPrice: 0,
+        discountedPrice: 0,
+        hasDiscount: false,
+        basePrice: firstDayPrice,
+        cleaningFee,
+        serviceFee,
+        nightsCount: apiPricing.nights,
+        baseTotal: apiPricing.total_price,
+        total,
+        isApiPricing: true,
+        dailyBreakdown: apiPricing.daily_breakdown
+      };
+    }
+    
+    // Client-side calculation for today or single night
     const actualPrice = parseFloat((listingData?.data?.actual_price || '').replace(/,/g, '')) || 0;
     const discountedPrice = parseFloat((listingData?.data?.discounted_price || '').replace(/,/g, '')) || 0;
     
@@ -102,7 +223,8 @@ const PropertyDetailsSection = ({ listingData }) => {
       serviceFee,
       nightsCount,
       baseTotal,
-      total
+      total,
+      isApiPricing: false
     };
   };
 
@@ -346,12 +468,9 @@ const PropertyDetailsSection = ({ listingData }) => {
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                           <div className=" rounded-lg p-3">
                             <div
-                              className={`rounded-xl p-3 lg:p-0 cursor-pointer transition-all duration-300 ease-in-out
+                              className={`rounded-xl p-3 lg:p-0 transition-all duration-300 ease-in-out
               ${activeDropdown === "checkIn" ? " lg:bg-transparent" : "lg:bg-transparent "} 
               bg-white/60`}
-                              onClick={() =>
-                                setActiveDropdown(activeDropdown === "checkIn" ? null : "checkIn")
-                              }
                             >
                               <DateInput
                                 label={t('checkIn')}
@@ -360,19 +479,16 @@ const PropertyDetailsSection = ({ listingData }) => {
                                 onChange={handleCheckInChange}
                                 dropdownPosition="top-full  lg:top-20"
                                 dropdownAlign={i18n.language === "ar" ? "lg:-left-48" : "lg:left-0"}
-                                minDate={today.toISOString().split('T')[0]}
+                                minDate={formatDate(today)}
                               />
                             </div>
                           </div>
 
                           <div className=" rounded-lg p-3">
                             <div
-                              className={`rounded-xl p-3 lg:p-0 cursor-pointer transition-all duration-300 ease-in-out
+                              className={`rounded-xl p-3 lg:p-0 transition-all duration-300 ease-in-out
               ${activeDropdown === "checkIn" ? " lg:bg-transparent" : "lg:bg-transparent  "} 
               bg-white/60`}
-                              onClick={() =>
-                                setActiveDropdown(activeDropdown === "checkIn" ? null : "checkIn")
-                              }
                             >
                               <DateInput
                                 label={t('checkOut')}
@@ -380,7 +496,7 @@ const PropertyDetailsSection = ({ listingData }) => {
                                 value={checkOut}
                                 onChange={handleCheckOutChange}
                                 dropdownPosition="top-full  lg:top-20"
-                                minDate={checkIn}
+                                minDate={checkIn || formatDate(today)}
                                 dropdownAlign={i18n.language === "ar" ? "lg:left-2" : "lg:right-2"}
                               />
                             </div>
@@ -543,17 +659,34 @@ const PropertyDetailsSection = ({ listingData }) => {
                       <div className="space-y-4 pt-4 ">
                         <div className="flex justify-between text-[#777E90] text-sm">
                           <div className="flex items-baseline gap-2">
-                            {pricing.hasDiscount && (
-                              <span className="text-[#B1B5C3] line-through">
-                                {pricing.actualPrice.toLocaleString()} SAR × {pricing.nightsCount} {t('nights')}
+                            {isLoadingPricing ? (
+                              <span className="flex items-center gap-2">
+                                <div className="w-4 h-4 border-2 border-[#3B71FE] border-t-transparent rounded-full animate-spin"></div>
+                                Loading pricing...
                               </span>
+                            ) : (
+                              <>
+                                {pricing.hasDiscount && (
+                                  <span className="text-[#B1B5C3] line-through">
+                                    {pricing.actualPrice.toLocaleString()} SAR × {pricing.nightsCount} {t('nights')}
+                                  </span>
+                                )}
+                                <span className={pricing.hasDiscount ? 'text-[#58C27D]' : ''}>
+                                  {pricing.isApiPricing ? (
+                                    `${pricing.nightsCount} ${pricing.nightsCount === 1 ? t('night') : t('nights')} `
+                                  ) : (
+                                    `${pricing.basePrice.toLocaleString()} SAR × ${pricing.nightsCount} ${t('nights')}`
+                                  )}
+                                </span>
+                              </>
                             )}
-                            <span className={pricing.hasDiscount ? 'text-[#58C27D]' : ''}>
-                              {pricing.basePrice.toLocaleString()} SAR × {pricing.nightsCount} {t('nights')}
-                            </span>
                           </div>
                           <span className={`font-medium ${pricing.hasDiscount ? 'text-[#58C27D]' : 'text-[#23262F]'}`}>
-                            {pricing.baseTotal.toLocaleString()} SAR
+                            {isLoadingPricing ? (
+                              <div className="w-16 h-4 bg-gray-200 rounded animate-pulse"></div>
+                            ) : (
+                              `${pricing.baseTotal.toLocaleString()} SAR`
+                            )}
                           </span>
                         </div>
 
@@ -569,7 +702,13 @@ const PropertyDetailsSection = ({ listingData }) => {
 
                         <div className="flex justify-between font-semibold text-sm text-[#23262F] pt-3 bg-[#F4F5F6] px-3 py-2 rounded-lg">
                           <span>{t('Total')}</span>
-                          <span>{pricing.total.toLocaleString()} SAR</span>
+                          <span>
+                            {isLoadingPricing ? (
+                              <div className="w-20 h-4 bg-gray-200 rounded animate-pulse"></div>
+                            ) : (
+                              `${pricing.total.toLocaleString()} SAR`
+                            )}
+                          </span>
                         </div>
                       </div>
 
@@ -620,12 +759,9 @@ const PropertyDetailsSection = ({ listingData }) => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className=" rounded-lg p-3">
                     <div
-                      className={`rounded-xl p-3 lg:p-0 cursor-pointer transition-all duration-300 ease-in-out
+                      className={`rounded-xl p-3 lg:p-0 transition-all duration-300 ease-in-out
               ${activeDropdown === "checkIn" ? " lg:bg-transparent" : "lg:bg-transparent "} 
               bg-white/60`}
-                      onClick={() =>
-                        setActiveDropdown(activeDropdown === "checkIn" ? null : "checkIn")
-                      }
                     >
                       <DateInput
                         label={t('checkIn')}
@@ -634,19 +770,16 @@ const PropertyDetailsSection = ({ listingData }) => {
                         onChange={handleCheckInChange}
                         dropdownPosition="top-full  lg:top-20"
                         dropdownAlign={i18n.language === "ar" ? "lg:-left-48" : "lg:left-0"}
-                        minDate={today.toISOString().split('T')[0]}
+                        minDate={formatDate(today)}
                       />
                     </div>
                   </div>
 
                   <div className=" rounded-lg p-3">
                     <div
-                      className={`rounded-xl p-3 lg:p-0 cursor-pointer transition-all duration-300 ease-in-out
+                      className={`rounded-xl p-3 lg:p-0 transition-all duration-300 ease-in-out
               ${activeDropdown === "checkIn" ? " lg:bg-transparent" : "lg:bg-transparent  "} 
               bg-white/60`}
-                      onClick={() =>
-                        setActiveDropdown(activeDropdown === "checkIn" ? null : "checkIn")
-                      }
                     >
                       <DateInput
                         label={t('checkOut')}
@@ -655,7 +788,7 @@ const PropertyDetailsSection = ({ listingData }) => {
                         onChange={handleCheckOutChange}
                         dropdownPosition="top-full  lg:top-20"
                         dropdownAlign={i18n.language === "ar" ? "lg:left-2" : "lg:right-2"}
-                        minDate={checkIn}
+                        minDate={checkIn || formatDate(today)}
                       />
                     </div>
                   </div>
@@ -817,17 +950,34 @@ const PropertyDetailsSection = ({ listingData }) => {
               <div className="space-y-4 pt-4 ">
                 <div className="flex justify-between text-[#777E90] text-sm">
                   <div className="flex items-baseline gap-2">
-                    {pricing.hasDiscount && (
-                      <span className="text-[#B1B5C3] line-through">
-                        {pricing.actualPrice.toLocaleString()} SAR × {pricing.nightsCount} {t('nights')}
+                    {isLoadingPricing ? (
+                      <span className="flex items-center gap-2">
+                        <div className="w-4 h-4 border-2 border-[#3B71FE] border-t-transparent rounded-full animate-spin"></div>
+                        Loading pricing...
                       </span>
+                    ) : (
+                      <>
+                        {pricing.hasDiscount && (
+                          <span className="text-[#B1B5C3] line-through">
+                            {pricing.actualPrice.toLocaleString()} SAR × {pricing.nightsCount} {t('nights')}
+                          </span>
+                        )}
+                        <span className={pricing.hasDiscount ? 'text-[#58C27D]' : ''}>
+                          {pricing.isApiPricing ? (
+                            `${pricing.nightsCount} ${pricing.nightsCount === 1 ? t('night') : t('nights')} `
+                          ) : (
+                            `${pricing.basePrice.toLocaleString()} SAR × ${pricing.nightsCount} ${t('nights')}`
+                          )}
+                        </span>
+                      </>
                     )}
-                    <span className={pricing.hasDiscount ? 'text-[#58C27D]' : ''}>
-                      {pricing.basePrice.toLocaleString()} SAR × {pricing.nightsCount} {t('nights')}
-                    </span>
                   </div>
                   <span className={`font-medium ${pricing.hasDiscount ? 'text-[#58C27D]' : 'text-[#23262F]'}`}>
-                    {pricing.baseTotal.toLocaleString()} SAR
+                    {isLoadingPricing ? (
+                      <div className="w-16 h-4 bg-gray-200 rounded animate-pulse"></div>
+                    ) : (
+                      `${pricing.baseTotal.toLocaleString()} SAR`
+                    )}
                   </span>
                 </div>
 
@@ -843,7 +993,13 @@ const PropertyDetailsSection = ({ listingData }) => {
 
                 <div className="flex justify-between font-semibold text-sm text-[#23262F] pt-3 bg-[#F4F5F6] px-3 py-2 rounded-lg">
                   <span>{t('Total')}</span>
-                  <span>{pricing.total.toLocaleString()} SAR</span>
+                  <span>
+                    {isLoadingPricing ? (
+                      <div className="w-20 h-4 bg-gray-200 rounded animate-pulse"></div>
+                    ) : (
+                      `${pricing.total.toLocaleString()} SAR`
+                    )}
+                  </span>
                 </div>
               </div>
 

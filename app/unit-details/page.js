@@ -2,6 +2,7 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
 import { useSearchParams } from "next/navigation";
+import { useTranslation } from "react-i18next";
 import PropertyDetailsSection from "../components/UnitDetailsComponents/PropertyDetailsSection";
 import PropertyListingUnitDetails from "../components/UnitDetailsComponents/PropertyListingUnitDetails";
 import ReviewsSection from "../components/UnitDetailsComponents/ReviewsSection";
@@ -14,19 +15,29 @@ import Loading from "../loading";
 const PropertyListing = () => {
   const searchParams = useSearchParams();
   const slug = searchParams.get('slug');
+  const { i18n } = useTranslation();
   const [listingData, setListingData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [similarProperties, setSimilarProperties] = useState(null);
   
-  const { isAuthenticated } = useAppSelector((state) => state.auth);
   const hasFetchedRef = useRef(false);
+  const lastLanguageRef = useRef(i18n.language || 'en');
 
   useEffect(() => {
-    // Prevent duplicate API calls
-    if (hasFetchedRef.current) {
+    // Ensure we have a valid language
+    const currentLanguage = i18n.language || 'en';
+    
+    // Check if language actually changed or if this is the first load
+    const languageChanged = lastLanguageRef.current !== currentLanguage;
+    const isFirstLoad = !hasFetchedRef.current;
+    
+    if (!languageChanged && !isFirstLoad) {
       return;
     }
+
+    // Update the last language
+    lastLanguageRef.current = currentLanguage;
 
     const fetchListingData = async () => {
       if (!slug) {
@@ -35,18 +46,17 @@ const PropertyListing = () => {
         return;
       }
 
-      hasFetchedRef.current = true;
-
-      const cacheKey = `listing_${slug}`;
-      const similarCacheKey = `similar_${slug}`;
+      // For language changes, don't use cache - always fetch fresh data
+      const cacheKey = `listing_${slug}_${currentLanguage}`;
+      const similarCacheKey = `similar_${slug}_${currentLanguage}`;
       const cachedData = localStorage.getItem(cacheKey);
       const similarCachedData = localStorage.getItem(similarCacheKey);
       const cacheTime = localStorage.getItem(`${cacheKey}_time`);
       const similarCacheTime = localStorage.getItem(`${similarCacheKey}_time`);
       const now = Date.now();
       
-      // Check if cached data exists and is less than 15 minutes old
-      if (cachedData && cacheTime && (now - parseInt(cacheTime)) < 900000) {
+      // Check if cached data exists and is less than 15 minutes old (only for same language)
+      if (cachedData && cacheTime && (now - parseInt(cacheTime)) < 900000 && !languageChanged) {
         setListingData(JSON.parse(cachedData));
         
         // Also load similar properties from cache if available
@@ -63,22 +73,26 @@ const PropertyListing = () => {
         
         // Add minimum loading time to ensure loader is visible
         const [data] = await Promise.all([
-          getListingBySlug(slug),
+          getListingBySlug(slug, currentLanguage),
           new Promise(resolve => setTimeout(resolve, 1000)) // Minimum 1 second loading
         ]);
         
         setListingData(data);
         
-        // Cache the listing data
+        // Cache the data with language-specific key
         localStorage.setItem(cacheKey, JSON.stringify(data));
         localStorage.setItem(`${cacheKey}_time`, now.toString());
         
         if (data?.data?.listing_id) {
-          const similarResponse = await fetch(`https://guku.ai/api/v1/get-similar-listings?listing_id=${data.data.listing_id}`);
+          const similarResponse = await fetch(`https://guku.ai/api/v1/get-similar-listings?listing_id=${data.data.listing_id}`, {
+            headers: {
+              'Accept-Language': currentLanguage
+            }
+          });
           const similarData = await similarResponse.json();
           setSimilarProperties(similarData);
           
-          // Cache the similar properties data
+          // Cache similar properties with language-specific key
           localStorage.setItem(similarCacheKey, JSON.stringify(similarData));
           localStorage.setItem(`${similarCacheKey}_time`, now.toString());
         }
@@ -87,11 +101,12 @@ const PropertyListing = () => {
         setError('Failed to load listing details');
       } finally {
         setLoading(false);
+        hasFetchedRef.current = true;
       }
     };
 
     fetchListingData();
-  }, [slug]);
+  }, [slug, i18n.language || 'en']);
 
   if (loading) {
     return <Loading />;
@@ -121,10 +136,10 @@ const PropertyListing = () => {
 
   return (
     <div className="">
-      <PropertyListingUnitDetails listingData={listingData} />
+      <PropertyListingUnitDetails listingData={listingData } slug={slug} />
       <PropertyDetailsSection listingData={listingData} />
-      { <ReviewsSection isAuthenticated={isAuthenticated} listingData={listingData} />}
-      {similarProperties && similarProperties.items?.records.length > 0 && (
+      <ReviewsSection listingData={listingData} />
+      {similarProperties && (
         <>
           {similarProperties.component_design_type === 'grid' ? (
             <JustForYouSection 

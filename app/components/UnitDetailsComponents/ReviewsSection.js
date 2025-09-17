@@ -45,6 +45,8 @@ const ReviewsSection = ({ listingData, isAuthenticated }) => {
   };
 
 
+  
+
   const [reviews, setReviews] = useState([
     {
       id: 1,
@@ -327,10 +329,13 @@ const ReviewsSection = ({ listingData, isAuthenticated }) => {
                     />
 
                     <div className="flex items-center gap-3 ml-4">
-                      <button className="text-gray-400 hover:text-gray-600 transition-colors">
+                      {/* Smile button for emojies*/}
+                      {/* <button className="text-gray-400 hover:text-gray-600 transition-colors">
                         <Smile size={20} />
-                      </button>
-
+                      </button> */}
+     <EmojiPickerDropdown
+        onEmojiSelect={(emoji) => setReviewText((prev) => prev + emoji)}
+      />
                       <button
                         onClick={handleSubmitReview}
                         disabled={!reviewText.trim()}
@@ -357,7 +362,7 @@ const ReviewsSection = ({ listingData, isAuthenticated }) => {
 
             {/* Reviews List */}
             {
-               isAuthenticated && (
+               true && (
  <div className="space-y-6">
               {/* Reviews List */}
               <div className="pb-6 px-6 ">

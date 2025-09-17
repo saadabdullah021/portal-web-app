@@ -24,11 +24,13 @@ i18n
         home: require("../locales/en/home.json"),
         hero: require("../locales/en/hero.json"),
         auth: require("../locales/en/auth.json"),
+        checkout: require("../locales/en/checkout.json"),
       },
       ar: {
         home: require("../locales/ar/home.json"),
         hero: require("../locales/ar/hero.json"),
         auth: require("../locales/ar/auth.json"),
+        checkout: require("../locales/ar/checkout.json"),
       },
     },
   });
