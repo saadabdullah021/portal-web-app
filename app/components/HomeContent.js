@@ -174,14 +174,14 @@ const renderedSections = useMemo(() => {
         )
       )}
 
-      <HowItWorks/>
-      <CuratedExperiences/>
-      <AdventureSection/>
-      <BrowseCategorySection/>
-      <ExploreNearby/>
-      <BestHostsSection/>
-      <WhyPortalSection/>
-      <PromotionalVideoSection/>
+      <HowItWorks key="how-it-works"/>
+      <CuratedExperiences key="curated-experiences"/>
+      <AdventureSection key="adventure-section"/>
+      <BrowseCategorySection key="browse-category"/>
+      <ExploreNearby key="explore-nearby"/>
+      <BestHostsSection key="best-hosts"/>
+      <WhyPortalSection key="why-portal"/>
+      <PromotionalVideoSection key="promotional-video"/>
     </div>
   );
 }

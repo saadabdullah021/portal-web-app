@@ -318,7 +318,7 @@ const LastMinuteDealsSection = ({ items , data }) => {
           onTransitionEnd={handleTransitionEnd}
         >
           {properties.map((property, index) => (
-            <div key={`${property?.listing?.listing_id ?? index}-${index}`} className="w-1/4 flex-shrink-0 px-2">
+            <div key={`desktop-${property?.listing?.listing_id ?? index}-${index}`} className="w-1/4 flex-shrink-0 px-2">
               <PropertyCard property={property} />
             </div>
           ))}
@@ -336,7 +336,7 @@ const LastMinuteDealsSection = ({ items , data }) => {
             onTransitionEnd={handleTransitionEnd}
           >
             {properties.map((property, index) => (
-              <div key={`${property?.listing?.listing_id ?? index}-${index}`} className="w-full  flex-shrink-0">
+              <div key={`mobile-${property?.listing?.listing_id ?? index}-${index}`} className="w-full  flex-shrink-0">
                 <PropertyCard property={property} />
               </div>
             ))}
