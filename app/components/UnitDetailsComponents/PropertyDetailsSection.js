@@ -673,7 +673,7 @@ const PropertyDetailsSection = ({ listingData }) => {
                                 )}
                                 <span className={pricing.hasDiscount ? 'text-[#58C27D]' : ''}>
                                   {pricing.isApiPricing ? (
-                                    `${pricing.nightsCount} ${pricing.nightsCount === 1 ? t('night') : t('nights')} (API pricing)`
+                                    `${pricing.nightsCount} ${pricing.nightsCount === 1 ? t('night') : t('nights')} `
                                   ) : (
                                     `${pricing.basePrice.toLocaleString()} SAR × ${pricing.nightsCount} ${t('nights')}`
                                   )}
@@ -964,7 +964,7 @@ const PropertyDetailsSection = ({ listingData }) => {
                         )}
                         <span className={pricing.hasDiscount ? 'text-[#58C27D]' : ''}>
                           {pricing.isApiPricing ? (
-                            `${pricing.nightsCount} ${pricing.nightsCount === 1 ? t('night') : t('nights')} (API pricing)`
+                            `${pricing.nightsCount} ${pricing.nightsCount === 1 ? t('night') : t('nights')} `
                           ) : (
                             `${pricing.basePrice.toLocaleString()} SAR × ${pricing.nightsCount} ${t('nights')}`
                           )}
