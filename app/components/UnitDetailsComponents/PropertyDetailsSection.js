@@ -22,13 +22,14 @@ import { HiOutlineFlag } from "react-icons/hi2";
 import DateInput from '../ui/DateInput';
 import { useTranslation } from 'react-i18next';
 import Shimmer from '../ui/Shimmer';
-import axios from 'axios';
+import axios from '../../../lib/axios';
 
 const PropertyDetailsSection = ({ listingData }) => {
   const { t, i18n } = useTranslation('hero');
   const [showAllAmenities, setShowAllAmenities] = useState(false);
   const [loadingAmenities, setLoadingAmenities] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
+  const [isWishlistLoading, setIsWishlistLoading] = useState(false);
   const [adults, setAdults] = useState(0);
   const [children, setChildren] = useState(0);
   const [infants, setInfants] = useState(0);
@@ -245,6 +246,67 @@ const PropertyDetailsSection = ({ listingData }) => {
 
   const toggleSave = () => {
     setIsSaved(!isSaved);
+  };
+
+  // Wishlist API functions
+  const addToWishlist = async (listingId) => {
+    try {
+      setIsWishlistLoading(true);
+      const formData = new FormData();
+      formData.append('listing_id', listingId.toString());
+
+      const response = await axios.post('/wishlist', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        }
+      });
+
+      if (response.data.success) {
+        setIsSaved(true);
+        console.log('Added to wishlist successfully');
+      }
+    } catch (error) {
+      console.error('Error adding to wishlist:', error);
+    } finally {
+      setIsWishlistLoading(false);
+    }
+  };
+
+  const removeFromWishlist = async (listingId) => {
+    try {
+      setIsWishlistLoading(true);
+      const formData = new FormData();
+      formData.append('listing_id', listingId.toString());
+
+      const response = await axios.post('/wishlist/delete', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        }
+      });
+
+      if (response.data.success) {
+        setIsSaved(false);
+        console.log('Removed from wishlist successfully');
+      }
+    } catch (error) {
+      console.error('Error removing from wishlist:', error);
+    } finally {
+      setIsWishlistLoading(false);
+    }
+  };
+
+  const handleWishlistToggle = async () => {
+    const listingId = listingData?.data?.listing_id;
+    if (!listingId) {
+      console.error('No listing ID found');
+      return;
+    }
+
+    if (isSaved) {
+      await removeFromWishlist(listingId);
+    } else {
+      await addToWishlist(listingId);
+    }
   };
 
   const travelersRef = useRef(null);
@@ -637,15 +699,22 @@ const PropertyDetailsSection = ({ listingData }) => {
                       {/* Action Buttons */}
                       <div className="flex gap-3">
                         <button
-                          onClick={toggleSave}
-                          className={`flex-shrink-0 px-6 py-2 border-2 border-[#E6E8EC] rounded-full font-medium transition-colors duration-200 ${isSaved
+                          onClick={handleWishlistToggle}
+                          disabled={isWishlistLoading}
+                          className={`flex-shrink-0 px-6 py-2 border-2 border-[#E6E8EC] rounded-full font-medium transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${isSaved
                             ? 'bg-gray-100 text-gray-700'
                             : 'hover:bg-gray-50 text-gray-700'
                             }`}
                         >
                           <div className="flex items-center gap-2">
-                            <span className='text-[16px] text-[#23262F] font-bold font-dm-sans'>{t('Save')}</span>
-                            <Plus size={16} className={isSaved ? 'rotate-45' : ''} />
+                            {isWishlistLoading ? (
+                              <div className="w-4 h-4 border-2 border-[#777E91] border-t-transparent rounded-full animate-spin"></div>
+                            ) : (
+                              <>
+                                <span className='text-[16px] text-[#23262F] font-bold font-dm-sans'>{t('Save')}</span>
+                                <Plus size={16} className={isSaved ? 'rotate-45' : ''} />
+                              </>
+                            )}
                           </div>
                         </button>
 
@@ -740,8 +809,8 @@ const PropertyDetailsSection = ({ listingData }) => {
                   {pricing.hasDiscount && (
                     <span className="text-[#B1B5C3] text-[32px] font-bold font-dm-sans line-through">{pricing.actualPrice.toLocaleString()}</span>
                   )}
-                  <span className={`text-2xl md:text-3xl font-bold font-dm-sans ${pricing.hasDiscount ? 'text-[#58C27D]' : 'text-[#23262F]'}`}>
-                    {pricing.basePrice.toLocaleString()} SAR
+                  <span className={`text-2xl md:text-3xl font-bold font-dm-sans ${pricing.hasDiscount ? 'text-[#23262F]' : 'text-[#23262F]'}`}>
+                    {pricing.basePrice.toLocaleString()} SAR  
                   </span>
                   <span className="text-[#777E90] text-[16px]">/ {t('night')}</span>
                 </div>
@@ -928,15 +997,22 @@ const PropertyDetailsSection = ({ listingData }) => {
               {/* Action Buttons */}
               <div className="flex gap-3">
                 <button
-                  onClick={toggleSave}
-                  className={`flex-shrink-0 px-6 py-2 border-2 border-[#E6E8EC] rounded-full font-medium transition-colors duration-200 ${isSaved
+                  onClick={handleWishlistToggle}
+                  disabled={isWishlistLoading}
+                  className={`flex-shrink-0 px-6 py-2 border-2 border-[#E6E8EC] rounded-full font-medium transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${isSaved
                     ? 'bg-gray-100 text-gray-700'
                     : 'hover:bg-gray-50 text-gray-700'
                     }`}
                 >
                   <div className="flex items-center gap-2">
-                    <span className='text-[16px] text-[#23262F] font-bold font-dm-sans'>{t('Save')}</span>
-                    <Plus size={16} className={isSaved ? 'rotate-45' : ''} />
+                    {isWishlistLoading ? (
+                      <div className="w-4 h-4 border-2 border-[#777E91] border-t-transparent rounded-full animate-spin"></div>
+                    ) : (
+                      <>
+                        <span className='text-[16px] text-[#23262F] font-bold font-dm-sans'>{t('Save')}</span>
+                        <Plus size={16} className={isSaved ? 'rotate-45' : ''} />
+                      </>
+                    )}
                   </div>
                 </button>
 
@@ -949,7 +1025,7 @@ const PropertyDetailsSection = ({ listingData }) => {
               {/* Price Breakdown */}
               <div className="space-y-4 pt-4 ">
                 <div className="flex justify-between text-[#777E90] text-sm">
-                  <div className="flex items-baseline gap-2">
+                  <div className="flex items-baseline">
                     {isLoadingPricing ? (
                       <span className="flex items-center gap-2">
                         <div className="w-4 h-4 border-2 border-[#3B71FE] border-t-transparent rounded-full animate-spin"></div>
@@ -959,10 +1035,10 @@ const PropertyDetailsSection = ({ listingData }) => {
                       <>
                         {pricing.hasDiscount && (
                           <span className="text-[#B1B5C3] line-through">
-                            {pricing.actualPrice.toLocaleString()} SAR × {pricing.nightsCount} {t('nights')}
+                            {/* {pricing.actualPrice.toLocaleString()} SAR × {pricing.nightsCount} {t('nights')} */}
                           </span>
                         )}
-                        <span className={pricing.hasDiscount ? 'text-[#58C27D]' : ''}>
+                        <span className={pricing.hasDiscount ? 'text-[#777E90]' : ''}>
                           {pricing.isApiPricing ? (
                             `${pricing.nightsCount} ${pricing.nightsCount === 1 ? t('night') : t('nights')} `
                           ) : (
