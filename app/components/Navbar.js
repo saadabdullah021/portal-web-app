@@ -128,7 +128,7 @@ const changeLanguage = (lng) => {
           <div className="flex items-center space-x-4" ref={dropdownRef}>
             {/* Support link */}
             <Link
-              href="/checkout"
+              href="/wishlist"
               className="text-[#777E90] hidden lg:block capitalize hover:text-blue-800 text-sm font-medium transition-colors duration-200"
             >
               {t("navbar.support")}
