@@ -740,8 +740,8 @@ const PropertyDetailsSection = ({ listingData }) => {
                   {pricing.hasDiscount && (
                     <span className="text-[#B1B5C3] text-[32px] font-bold font-dm-sans line-through">{pricing.actualPrice.toLocaleString()}</span>
                   )}
-                  <span className={`text-2xl md:text-3xl font-bold font-dm-sans ${pricing.hasDiscount ? 'text-[#58C27D]' : 'text-[#23262F]'}`}>
-                    {pricing.basePrice.toLocaleString()} SAR
+                  <span className={`text-2xl md:text-3xl font-bold font-dm-sans ${pricing.hasDiscount ? 'text-[#23262F]' : 'text-[#23262F]'}`}>
+                    {pricing.basePrice.toLocaleString()} SAR  
                   </span>
                   <span className="text-[#777E90] text-[16px]">/ {t('night')}</span>
                 </div>
@@ -949,7 +949,7 @@ const PropertyDetailsSection = ({ listingData }) => {
               {/* Price Breakdown */}
               <div className="space-y-4 pt-4 ">
                 <div className="flex justify-between text-[#777E90] text-sm">
-                  <div className="flex items-baseline gap-2">
+                  <div className="flex items-baseline">
                     {isLoadingPricing ? (
                       <span className="flex items-center gap-2">
                         <div className="w-4 h-4 border-2 border-[#3B71FE] border-t-transparent rounded-full animate-spin"></div>
@@ -959,10 +959,10 @@ const PropertyDetailsSection = ({ listingData }) => {
                       <>
                         {pricing.hasDiscount && (
                           <span className="text-[#B1B5C3] line-through">
-                            {pricing.actualPrice.toLocaleString()} SAR × {pricing.nightsCount} {t('nights')}
+                            {/* {pricing.actualPrice.toLocaleString()} SAR × {pricing.nightsCount} {t('nights')} */}
                           </span>
                         )}
-                        <span className={pricing.hasDiscount ? 'text-[#58C27D]' : ''}>
+                        <span className={pricing.hasDiscount ? 'text-[#777E90]' : ''}>
                           {pricing.isApiPricing ? (
                             `${pricing.nightsCount} ${pricing.nightsCount === 1 ? t('night') : t('nights')} `
                           ) : (
