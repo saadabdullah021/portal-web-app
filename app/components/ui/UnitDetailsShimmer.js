@@ -2,7 +2,7 @@ import Shimmer from './Shimmer';
 
 export default function UnitDetailsShimmer() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="fixed inset-0 h-screen w-full bg-white z-50 overflow-y-auto">
       {/* Hero Image Gallery Section */}
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-8">

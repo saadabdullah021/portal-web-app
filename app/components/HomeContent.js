@@ -21,6 +21,7 @@ import axios from '@/lib/axios';
 import Shimmer from './ui/Shimmer';
 import { useTranslation } from 'react-i18next';
 import { usePathname } from 'next/navigation';
+import Loading from '../loading';
 
 export default function HomeContent() {
   const [homeComponents, setHomeComponents] = useState([]);
