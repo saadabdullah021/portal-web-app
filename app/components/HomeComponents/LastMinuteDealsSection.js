@@ -99,12 +99,12 @@ const LastMinuteDealsSection = ({ items , data }) => {
     ...computedData.slice(0, itemsPerView),
   ] : computedData;
 
-  // ✅ Start from first real slide (after cloned items)
+  // ✅ Start from first real slide (after cloned items) - only on initial load
   useEffect(() => {
-    if (computedData.length > 0) {
+    if (computedData.length > 0 && currentSlide === 0) {
       setCurrentSlide(computedData.length > itemsPerView ? itemsPerView : 0);
     }
-  }, [itemsPerView, computedData.length]);
+  }, [itemsPerView]);
 
   // ✅ Handle transition end for seamless loop
   const handleTransitionEnd = () => {
@@ -139,7 +139,7 @@ const LastMinuteDealsSection = ({ items , data }) => {
         setAllItems(prev => [...prev, ...response.data.items.records]);
         setCurrentOffset(prev => prev + 1);
         
-        if (response.data.items.records.length < 1) {
+        if (response.data.items.totalRecords < 1) {
           setHasMore(false);
         }
       } else {
@@ -152,20 +152,25 @@ const LastMinuteDealsSection = ({ items , data }) => {
     }
   };
 
-  // ✅ Next Slide - infinite loop with load more
+  // ✅ Next Slide - always fetch one record from API
   const nextSlide = async () => {
     if (isTransitioning) return;
     
     setIsTransitioning(true);
     
-    const newSlide = currentSlide + 1;
-    const maxSlide = computedData.length > itemsPerView ? computedData.length + itemsPerView - 1 : computedData.length - 1;
-    
-    if (newSlide >= maxSlide && hasMore && computedData.length > itemsPerView) {
+    // Fetch new item if available
+    if (data?.items?.totalRecords > data?.items?.records?.length && hasMore) {
       await loadMoreItems();
     }
     
+    // Move to next slide smoothly
+    const newSlide = currentSlide + 1;
     setCurrentSlide(newSlide);
+    
+    // Reset transition after animation
+    setTimeout(() => {
+      setIsTransitioning(false);
+    }, 500);
   };
 
   // ✅ Previous Slide - infinite loop
@@ -342,6 +347,18 @@ const LastMinuteDealsSection = ({ items , data }) => {
             ))}
           </div>
         </div>
+
+        {data?.items?.totalRecords > computedData.length && hasMore && (
+          <div className="flex justify-center mt-8">
+            <button
+              onClick={loadMoreItems}
+              disabled={isLoadingMore}
+              className="bg-[#58C27D] text-white px-8 py-3 rounded-lg font-medium hover:bg-[#4a9f6a] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isLoadingMore ? 'Loading...' : 'Load More'}
+            </button>
+          </div>
+        )}
 
         {/* Mobile Navigation */}
         <div className="flex gap-4 items-center mt-6">

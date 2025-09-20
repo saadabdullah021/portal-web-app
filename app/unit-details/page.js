@@ -10,7 +10,7 @@ import LastMinuteDealsSection from "../components/HomeComponents/LastMinuteDeals
 import JustForYouSection from "../components/HomeComponents/JustForYouSection";
 import { getListingBySlug } from "../../lib/apiClient";
 import { useAppSelector } from "../../store/hooks";
-import Loading from "../loading";
+import UnitDetailsShimmer from "../components/ui/UnitDetailsShimmer";
 
 const PropertyListing = () => {
   const searchParams = useSearchParams();
@@ -109,7 +109,7 @@ const PropertyListing = () => {
   }, [slug, i18n.language || 'en']);
 
   if (loading) {
-    return <Loading />;
+    return <UnitDetailsShimmer />;
   }
 
   if (error) {

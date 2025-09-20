@@ -229,8 +229,7 @@ const JustForYouSection = ({ items, sectionData  }) => {
             <PropertyCard key={property?.listing?.listing_id ?? idx} property={property} />
           ))}
         </div>
-        
-        {hasMore && (
+        {sectionData.items.totalRecords>sectionData.items.perPage && hasMore && (
           <div className="flex justify-center mt-8">
             <button
               onClick={loadMoreItems}

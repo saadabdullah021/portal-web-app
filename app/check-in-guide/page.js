@@ -1,7 +1,7 @@
 // app/page.js
 'use client'
 import Image from 'next/image';
-import { ChevronRight, User, Star, Calendar, Tag, CreditCard, MoveLeft, MoveRight } from 'lucide-react';
+import { ChevronRight, User, Star, Calendar, Tag, CreditCard, MoveLeft, MoveRight, DollarSign } from 'lucide-react';
 import propertyImage from "../../public/images/justforyou.png"
 import propertyImage2 from "../../public/images/curatedImage.png"
 import { RiArrowDropLeftLine } from 'react-icons/ri';
@@ -20,12 +20,51 @@ export default function CheckInGuide() {
     const [isMobile, setIsMobile] = useState(false);
     const sliderRef = useRef(null);
 
+    // ✅ Pricing states
+    const [pricing, setPricing] = useState({
+        nightlyRate: 3200,
+        nights: 3,
+        cleaningFee: 150,
+        serviceFee: 235,
+        subtotal: 9600,
+        total: 9985
+    });
+    const [isLoadingPricing, setIsLoadingPricing] = useState(false);
+
     // ✅ Responsive check
     useEffect(() => {
         const checkIsMobile = () => setIsMobile(window.innerWidth < 768);
         checkIsMobile();
         window.addEventListener('resize', checkIsMobile);
         return () => window.removeEventListener('resize', checkIsMobile);
+    }, []);
+
+    // ✅ Fetch pricing function
+    const fetchPricing = async () => {
+        setIsLoadingPricing(true);
+        try {
+            // Simulate API call - replace with actual API endpoint
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            // Update pricing with fetched data
+            setPricing({
+                nightlyRate: 3200,
+                nights: 3,
+                cleaningFee: 150,
+                serviceFee: 235,
+                subtotal: 9600,
+                total: 9985
+            });
+        } catch (error) {
+            console.error('Error fetching pricing:', error);
+        } finally {
+            setIsLoadingPricing(false);
+        }
+    };
+
+    // ✅ Fetch pricing on component mount
+    useEffect(() => {
+        fetchPricing();
     }, []);
 
     const itemsPerView = isMobile ? 1 : 1; // show one image always
@@ -257,6 +296,59 @@ export default function CheckInGuide() {
                                 <span className="font-medium text-sm text-[#23262F] text-right lg:text-left">Lorem ipsum Road, Next to Loremis Land Mark <br /> Al Rawadh, Riyadh</span>
                             </div>
                         </div>
+                    </div>
+
+                    {/* Price Details */}
+                    <div className="mb-8">
+                        <h3 className="text-2xl font-semibold text-[#23262F] mb-6">{t('Price details')}</h3>
+                        {isLoadingPricing ? (
+                            <div className="space-y-4">
+                                <div className="animate-pulse">
+                                    <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                                    <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                                </div>
+                                <div className="animate-pulse">
+                                    <div className="h-4 bg-gray-200 rounded w-1/3 mb-2"></div>
+                                    <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+                                </div>
+                                <div className="animate-pulse">
+                                    <div className="h-4 bg-gray-200 rounded w-1/3 mb-2"></div>
+                                    <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+                                </div>
+                                <div className="animate-pulse bg-gray-200 p-3 rounded-lg">
+                                    <div className="h-4 bg-gray-300 rounded w-1/2"></div>
+                                </div>
+                            </div>
+                        ) : (
+                            <>
+                                <div className="space-y-5 px-3">
+                                    <div className="flex justify-between text-[#777E90] text-sm">
+                                        <span>{pricing.nightlyRate.toLocaleString()} SAR × {pricing.nights} {t('nights')}</span>
+                                        <span className="font-medium text-sm text-[#23262F]">{pricing.subtotal.toLocaleString()} SAR</span>
+                                    </div>
+                                    <div className="flex justify-between text-[#777E90] text-sm">
+                                        <span>{t('Cleaning Fee')}</span>
+                                        <span className="font-medium text-sm text-[#23262F]">{pricing.cleaningFee.toLocaleString()} SAR</span>
+                                    </div>
+                                    <div className="flex justify-between text-[#777E90] text-sm">
+                                        <span>{t('Service fee')}</span>
+                                        <span className="font-medium text-sm text-[#23262F]">{pricing.serviceFee.toLocaleString()} SAR</span>
+                                    </div>
+                                </div>
+                                <div className="flex justify-between font-medium mb-8 text-[#23262F] text-sm bg-[#F4F5F6] p-3 rounded-lg">
+                                    <span>{t('Total')}
+                                        <span className='text-[#777E90] text-sm pl-1'>
+                                            (SAR)
+                                        </span>
+                                    </span>
+                                    <span className="font-medium text-[#23262F] text-sm">{pricing.total.toLocaleString()} SAR</span>
+                                </div>
+                                <p className="text-xs mb-3 text-[#777E90] mt-4 flex items-center justify-center gap-1">
+                                    <DollarSign className="w-4 h-4" />
+                                    {t('Free cancellation until')} May 15, 2026
+                                </p>
+                            </>
+                        )}
                     </div>
 
                     <div className='flex flex-col lg:flex-row items-center gap-4'>
