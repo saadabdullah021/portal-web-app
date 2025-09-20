@@ -152,19 +152,17 @@ const LastMinuteDealsSection = ({ items , data }) => {
     }
   };
 
-  // ✅ Next Slide - infinite loop with load more
+  // ✅ Next Slide - always fetch one record from API
   const nextSlide = async () => {
     if (isTransitioning) return;
     
     setIsTransitioning(true);
     
-    const newSlide = currentSlide + 1;
-    const maxSlide = computedData.length > itemsPerView ? computedData.length + itemsPerView - 1 : computedData.length - 1;
-    
-    if (newSlide >= maxSlide && hasMore && computedData.length > itemsPerView) {
+    if (data?.items?.totalRecords > data?.items?.records?.length && hasMore) {
       await loadMoreItems();
     }
     
+    const newSlide = currentSlide + 1;
     setCurrentSlide(newSlide);
   };
 
@@ -342,6 +340,18 @@ const LastMinuteDealsSection = ({ items , data }) => {
             ))}
           </div>
         </div>
+
+        {data?.items?.totalRecords > computedData.length && hasMore && (
+          <div className="flex justify-center mt-8">
+            <button
+              onClick={loadMoreItems}
+              disabled={isLoadingMore}
+              className="bg-[#58C27D] text-white px-8 py-3 rounded-lg font-medium hover:bg-[#4a9f6a] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isLoadingMore ? 'Loading...' : 'Load More'}
+            </button>
+          </div>
+        )}
 
         {/* Mobile Navigation */}
         <div className="flex gap-4 items-center mt-6">
