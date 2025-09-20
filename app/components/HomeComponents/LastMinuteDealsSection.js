@@ -99,12 +99,12 @@ const LastMinuteDealsSection = ({ items , data }) => {
     ...computedData.slice(0, itemsPerView),
   ] : computedData;
 
-  // ✅ Start from first real slide (after cloned items)
+  // ✅ Start from first real slide (after cloned items) - only on initial load
   useEffect(() => {
-    if (computedData.length > 0) {
+    if (computedData.length > 0 && currentSlide === 0) {
       setCurrentSlide(computedData.length > itemsPerView ? itemsPerView : 0);
     }
-  }, [itemsPerView, computedData.length]);
+  }, [itemsPerView]);
 
   // ✅ Handle transition end for seamless loop
   const handleTransitionEnd = () => {
@@ -158,12 +158,19 @@ const LastMinuteDealsSection = ({ items , data }) => {
     
     setIsTransitioning(true);
     
+    // Fetch new item if available
     if (data?.items?.totalRecords > data?.items?.records?.length && hasMore) {
       await loadMoreItems();
     }
     
+    // Move to next slide smoothly
     const newSlide = currentSlide + 1;
     setCurrentSlide(newSlide);
+    
+    // Reset transition after animation
+    setTimeout(() => {
+      setIsTransitioning(false);
+    }, 500);
   };
 
   // ✅ Previous Slide - infinite loop
