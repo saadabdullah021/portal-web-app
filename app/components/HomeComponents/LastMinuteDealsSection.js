@@ -139,7 +139,7 @@ const LastMinuteDealsSection = ({ items , data }) => {
         setAllItems(prev => [...prev, ...response.data.items.records]);
         setCurrentOffset(prev => prev + 1);
         
-        if (response.data.items.records.length < 1) {
+        if (response.data.items.totalRecords < 1) {
           setHasMore(false);
         }
       } else {
