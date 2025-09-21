@@ -172,25 +172,28 @@ const PropertyDetailsSection = ({ listingData }) => {
       const serviceFee = parseFloat(listingData?.data?.listing_fee?.['Serive Fee']) || 99;
       const total = apiPricing.total_price + cleaningFee + serviceFee;
       
-      // Get the first day's price from daily breakdown for display
-      const firstDayPrice = apiPricing.daily_breakdown && apiPricing.daily_breakdown.length > 0 
-        ? parseFloat(apiPricing.daily_breakdown[0].price) 
-        : apiPricing.total_price / apiPricing.nights;
+      // Use listing API price instead of first day price
+      const actualPrice = parseFloat((listingData?.data?.actual_price || '').replace(/,/g, '')) || 0;
+      const discountedPrice = parseFloat((listingData?.data?.discounted_price || '').replace(/,/g, '')) || 0;
+      const basePrice = discountedPrice > 0 ? discountedPrice : actualPrice;
+      const hasDiscount = discountedPrice > 0;
       
       console.log('Pricing calculation:', {
         total_price: apiPricing.total_price,
         nights: apiPricing.nights,
-        firstDayPrice,
+        listingActualPrice: actualPrice,
+        listingDiscountedPrice: discountedPrice,
+        basePrice,
         cleaningFee,
         serviceFee,
         total
       });
       
       return {
-        actualPrice: 0,
-        discountedPrice: 0,
-        hasDiscount: false,
-        basePrice: firstDayPrice,
+        actualPrice,
+        discountedPrice,
+        hasDiscount,
+        basePrice,
         cleaningFee,
         serviceFee,
         nightsCount: apiPricing.nights,
