@@ -333,7 +333,7 @@ const PropertyDetailsSection = ({ listingData }) => {
   const [activeDropdown, setActiveDropdown] = useState(null);
 
   const apiAmenities = listingData?.data?.amenities?.map(amenity => ({
-    icon: Wifi, // Default icon, you can map based on amenity_name if needed
+    icon: amenity.amenity_icon, // Use the icon URL from API
     label: amenity.amenity_name,
     group: amenity.group_name
   })) || [];
@@ -422,7 +422,18 @@ const PropertyDetailsSection = ({ listingData }) => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {(showAllAmenities ? amenities : amenities.slice(0, 8)).map((amenity, index) => ( // new line
                 <div key={index} className="flex items-center gap-3 py-3">
-                  <amenity.icon size={20} className="text-gray-600 flex-shrink-0" />
+                  {typeof amenity.icon === 'string' ? (
+                    <img 
+                      src={amenity.icon} 
+                      alt={amenity.label}
+                      className="w-5 h-5 text-gray-600 flex-shrink-0"
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                      }}
+                    />
+                  ) : (
+                    <amenity.icon size={20} className="text-gray-600 flex-shrink-0" />
+                  )}
                   <span className="text-[#777E90] text-[16px] font-medium">{amenity.label}</span>
                 </div>
               ))}

@@ -19,6 +19,7 @@ const PropertyListing = () => {
   const { i18n } = useTranslation();
   const [listingData, setListingData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
   const [error, setError] = useState(null);
   const [similarProperties, setSimilarProperties] = useState(null);
   
@@ -138,7 +139,7 @@ const PropertyListing = () => {
     <div className="">
       <PropertyListingUnitDetails listingData={listingData } slug={slug} />
       <PropertyDetailsSection listingData={listingData} />
-      <ReviewsSection listingData={listingData} />
+      <ReviewsSection listingData={listingData} isAuthenticated={isAuthenticated} />
       {similarProperties && (
         <>
           {similarProperties.component_design_type === 'grid' ? (

@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import ShareModal from '../ui/ShareModal';
+import EmojiPickerDropdown from '../ui/EmojiPickerDropdown';
 import { FaXTwitter } from 'react-icons/fa6';
 import Shimmer from '../ui/Shimmer';
 
@@ -292,9 +293,9 @@ const ReviewsSection = ({ listingData, isAuthenticated }) => {
               </button>
             </div>
           </div>
-
-          {/* Right Side - Reviews */}
-         
+                {console.log(isAuthenticated,'is authenticated')
+                }
+            {/* Right Side - Reviews */}
           <div className="space-y-6 col-span-2">
             {/* Add Review */}
              {
