@@ -21,6 +21,7 @@ import ShareModal from '../ui/ShareModal';
 import EmojiPickerDropdown from '../ui/EmojiPickerDropdown';
 import { FaXTwitter } from 'react-icons/fa6';
 import Shimmer from '../ui/Shimmer';
+import EmojiPickerDropdown from "../ui/EmojiPickerDropdown";
 
 const ReviewsSection = ({ listingData, isAuthenticated }) => {
   const { t, i18n } = useTranslation("hero");
@@ -46,7 +47,7 @@ const ReviewsSection = ({ listingData, isAuthenticated }) => {
   };
 
 
-  
+
 
   const [reviews, setReviews] = useState([
     {
@@ -298,195 +299,195 @@ const ReviewsSection = ({ listingData, isAuthenticated }) => {
             {/* Right Side - Reviews */}
           <div className="space-y-6 col-span-2">
             {/* Add Review */}
-             {
-            isAuthenticated && (
-                  <div className=" px-2 py-6 lg:p-6 ">
-              <h3 className="text-2xl font-semibold text-[#23262F] mb-4">{t('Add a review')}</h3>
-
-              <div className='flex lg:flex-row flex-col items-start lg:items-center lg:justify-between'>
-
-                <p className="text-[#777E90] mb-4">
-                  {t('Be the first to review')} <span className="text-[#23262F] font-medium">{listingData?.data?.title || "Property"}</span>
-                </p>
-
-                {/* Star Rating */}
-                <div className="flex items-center gap-2 mb-4">
-                  {renderStars(selectedRating, true, 24)}
-                </div>
-              </div>
             {
-              isAuthenticated &&
-                <div className="w-full pt-2 lg:pt-6">
-                {/* Review Input */}
-                <div className="relative bg-gray-50 rounded-3xl border-2 border-[#E6E8EC] p-4">
-                  <div className="flex items-center justify-between">
-                    <textarea
-                      value={reviewText}
-                      onChange={(e) => setReviewText(e.target.value)}
-                      placeholder="Share your thoughts"
-                      rows={1}
-                      className="flex-1 bg-transparent resize-none focus:outline-none placeholder-[#777E90] text-gray-700"
-                      style={{ minHeight: '24px' }}
-                    />
+              isAuthenticated && (
+                <div className=" px-2 py-6 lg:p-6 ">
+                  <h3 className="text-2xl font-semibold text-[#23262F] mb-4">{t('Add a review')}</h3>
 
-                    <div className="flex items-center gap-3 ml-4">
-                      {/* Smile button for emojies*/}
-                      {/* <button className="text-gray-400 hover:text-gray-600 transition-colors">
-                        <Smile size={20} />
-                      </button> */}
-     <EmojiPickerDropdown
-        onEmojiSelect={(emoji) => setReviewText((prev) => prev + emoji)}
-      />
-                      <button
-                        onClick={handleSubmitReview}
-                        disabled={!reviewText.trim()}
-                        className="bg-[#3B71FE] hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white px-4 py-2.5 rounded-full font-bold font-dm-sans transition-colors flex items-center gap-2 text-sm"
-                      >
-                        {t('Post it')}!
+                  <div className='flex lg:flex-row flex-col items-start lg:items-center lg:justify-between'>
 
-                        {isRTL ? (
-                          <ArrowLeft size={14} />
-                        ) : (
-                          <ArrowRight size={14} />
-                        )}
-                      </button>
+                    <p className="text-[#777E90] mb-4">
+                      {t('Be the first to review')} <span className="text-[#23262F] font-medium">{listingData?.data?.title || "Property"}</span>
+                    </p>
+
+                    {/* Star Rating */}
+                    <div className="flex items-center gap-2 mb-4">
+                      {renderStars(selectedRating, true, 24)}
                     </div>
                   </div>
-                </div>
-              </div>
-            }
-            
-            </div>
-            )
-          }
-          
+                  {
+                    isAuthenticated &&
+                    <div className="w-full pt-2 lg:pt-6">
+                      {/* Review Input */}
+                      <div className="relative bg-gray-50 rounded-3xl border-2 border-[#E6E8EC] p-4">
+                        <div className="flex items-center justify-between">
+                          <textarea
+                            value={reviewText}
+                            onChange={(e) => setReviewText(e.target.value)}
+                            placeholder="Share your thoughts"
+                            rows={1}
+                            className="flex-1 bg-transparent resize-none focus:outline-none placeholder-[#777E90] text-gray-700"
+                            style={{ minHeight: '24px' }}
+                          />
 
-            {/* Reviews List */}
-            {
-               true && (
- <div className="space-y-6">
-              {/* Reviews List */}
-              <div className="pb-6 px-6 ">
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-2xl font-semibold text-[#23262F]">
-                    {listingData?.data?.reviews || reviews.length} {t('reviews')}
-                  </h3>
-
-                  <div className="relative">
-                    <select
-                      value={sortBy}
-                      onChange={(e) => setSortBy(e.target.value)}
-                      className="w-[120px] lg:w-[160px] h-[48px] appearance-none bg-transparent border-2 text-[#23262F] text-sm font-medium border-[#E6E8EC] rounded-xl px-4 py-2 pr-8 focus:outline-none focus:ring-none"
-                    >
-                      <option value="Newest">Newest</option>
-                      <option value="Oldest">Oldest</option>
-                      <option value="Highest">Highest</option>
-                      <option value="Lowest">Lowest</option>
-                    </select>
-                    <ChevronDown size={24} className="absolute right-2  top-1/2  border-2 border-[#E6E8EC] rounded-full -translate-y-1/2 text-gray-400 pointer-events-none" />
-                  </div>
-                </div>
-
-                <div className="space-y-6">
-                  {visibleReviews.map((review) => (
-                    <div key={review.id} className="pb-6 border-b border-gray-100 last:border-b-0">
-                      <div className="flex items-start gap-3">
-                        <img
-                          src={review.avatar}
-                          alt={review.name}
-                          className="w-10 h-10 rounded-full object-cover flex-shrink-0"
-                        />
-
-                        <div className="flex-1">
-                          <div className="flex items-center justify-between mb-2">
-                            <h4 className="font-medium text-sm text-[#141416]">{review.name}</h4>
-                            <div className="flex items-center gap-1">
-                              {renderStars(review.rating, false, 14)}
-                            </div>
-                          </div>
-
-                          <p className="text-[#353945] text-sm font-normal mb-3 leading-relaxed">{review.comment}</p>
-
-                          <div className="flex items-center gap-4 text-sm font-semibold text-[#23262F]">
-                            <span className='text-[#777E90] text-[12px] font-normal'>{review.timeAgo}</span>
+                          <div className="flex items-center gap-3 ml-4">
+                            {/* Smile button for emojies*/}
+                            {/* <button className="text-gray-400 hover:text-gray-600 transition-colors">
+                        <Smile size={20} />
+                      </button> */}
+                            <EmojiPickerDropdown
+                              onEmojiSelect={(emoji) => setReviewText((prev) => prev + emoji)}
+                            />
                             <button
-                              onClick={() => handleLikeReview(review.id)}
-                              className={`hover:text-gray-700 transition-colors ${review.isLiked ? 'text-blue-600 font-medium' : ''
-                                }`}
+                              onClick={handleSubmitReview}
+                              disabled={!reviewText.trim()}
+                              className="bg-[#3B71FE] hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white px-4 py-2.5 rounded-full font-bold font-dm-sans transition-colors flex items-center gap-2 text-sm"
                             >
-                              {t('Like')} {review.likes > 0 && `(${review.likes})`}
-                            </button>
-                            {/* Reploy button */}
-                            <button
-                              onClick={() => setActiveReplyId(activeReplyId === review.id ? null : review.id)}
-                              className="hover:text-gray-700 transition-colors">
-                              {t('Reply')}
-                            </button>
+                              {t('Post it')}!
 
-                            {/* Reply Box */}
-
+                              {isRTL ? (
+                                <ArrowLeft size={14} />
+                              ) : (
+                                <ArrowRight size={14} />
+                              )}
+                            </button>
                           </div>
-                          {activeReplyId === review.id && (
-                            <div className="mt-5 w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2">
-                              <textarea
-                                value={replyText}
-                                onChange={(e) => setReplyText(e.target.value)}
-                                placeholder="Write your reply..."
-                                rows={3}
-                                maxLength={300}
-                                className="w-full resize-none bg-transparent focus:outline-none text-sm text-gray-700 placeholder-gray-400"
-                              />
-                              <div className="flex justify-between items-center mt-2">
-                                <span className="text-xs text-gray-500">{replyText.length}/300</span>
-                                <button
-                                  onClick={() => {
-                                    if (replyText.trim()) {
-                                      // Reply submitted - implement save logic here
-                                      setReplyText("");
-                                      setActiveReplyId(null);
-                                    }
-                                  }}
-                                  className="px-4 py-2 bg-[#3B71FE] hover:bg-blue-700 text-white rounded-full text-xs font-medium transition-colors"
-                                >
-                                  {t('Send')}
-                                </button>
-                              </div>
-                            </div>
-                          )}
                         </div>
                       </div>
                     </div>
-                  ))}
+                  }
 
-                  {/* Load More Button */}
-                  {!showAllReviews && reviews.length > 3 && (
-                    <div className="flex justify-center pt-6">
-                      <button
-                        onClick={handleLoadMore}
-                        disabled={isLoadingMore}
-                        className="px-6 py-2 border-2 border-[#E6E8EC]  rounded-full text-[#23262F] text-sm font-bold font-dm-sans  inline-flex items-center gap-3  bg-white  hover:border-gray-300 hover:bg-gray-50 transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-                      >
-
-                        {isLoadingMore ? (
-                          <>
-                            <Shimmer type="card" count={1} />
-                            <span>{t('Loading comments')}...</span>
-                          </>
-                        ) : (
-                          <>
-                            <Loader size={16} />
-                            <span>{t('Loading comments')}</span>
-                          </>
-                        )}
-                      </button>
-                    </div>
-                  )}
                 </div>
-              </div>
-            </div>
-               )
+              )
             }
-           
+
+
+            {/* Reviews List */}
+            {
+              true && (
+                <div className="space-y-6">
+                  {/* Reviews List */}
+                  <div className="pb-6 px-6 ">
+                    <div className="flex items-center justify-between mb-6">
+                      <h3 className="text-2xl font-semibold text-[#23262F]">
+                        {listingData?.data?.reviews || reviews.length} {t('reviews')}
+                      </h3>
+
+                      <div className="relative">
+                        <select
+                          value={sortBy}
+                          onChange={(e) => setSortBy(e.target.value)}
+                          className="w-[120px] lg:w-[160px] h-[48px] appearance-none bg-transparent border-2 text-[#23262F] text-sm font-medium border-[#E6E8EC] rounded-xl px-4 py-2 pr-8 focus:outline-none focus:ring-none"
+                        >
+                          <option value="Newest">Newest</option>
+                          <option value="Oldest">Oldest</option>
+                          <option value="Highest">Highest</option>
+                          <option value="Lowest">Lowest</option>
+                        </select>
+                        <ChevronDown size={24} className="absolute right-2  top-1/2  border-2 border-[#E6E8EC] rounded-full -translate-y-1/2 text-gray-400 pointer-events-none" />
+                      </div>
+                    </div>
+
+                    <div className="space-y-6">
+                      {visibleReviews.map((review) => (
+                        <div key={review.id} className="pb-6 border-b border-gray-100 last:border-b-0">
+                          <div className="flex items-start gap-3">
+                            <img
+                              src={review.avatar}
+                              alt={review.name}
+                              className="w-10 h-10 rounded-full object-cover flex-shrink-0"
+                            />
+
+                            <div className="flex-1">
+                              <div className="flex items-center justify-between mb-2">
+                                <h4 className="font-medium text-sm text-[#141416]">{review.name}</h4>
+                                <div className="flex items-center gap-1">
+                                  {renderStars(review.rating, false, 14)}
+                                </div>
+                              </div>
+
+                              <p className="text-[#353945] text-sm font-normal mb-3 leading-relaxed">{review.comment}</p>
+
+                              <div className="flex items-center gap-4 text-sm font-semibold text-[#23262F]">
+                                <span className='text-[#777E90] text-[12px] font-normal'>{review.timeAgo}</span>
+                                <button
+                                  onClick={() => handleLikeReview(review.id)}
+                                  className={`hover:text-gray-700 transition-colors ${review.isLiked ? 'text-blue-600 font-medium' : ''
+                                    }`}
+                                >
+                                  {t('Like')} {review.likes > 0 && `(${review.likes})`}
+                                </button>
+                                {/* Reploy button */}
+                                <button
+                                  onClick={() => setActiveReplyId(activeReplyId === review.id ? null : review.id)}
+                                  className="hover:text-gray-700 transition-colors">
+                                  {t('Reply')}
+                                </button>
+
+                                {/* Reply Box */}
+
+                              </div>
+                              {activeReplyId === review.id && (
+                                <div className="mt-5 w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2">
+                                  <textarea
+                                    value={replyText}
+                                    onChange={(e) => setReplyText(e.target.value)}
+                                    placeholder="Write your reply..."
+                                    rows={3}
+                                    maxLength={300}
+                                    className="w-full resize-none bg-transparent focus:outline-none text-sm text-gray-700 placeholder-gray-400"
+                                  />
+                                  <div className="flex justify-between items-center mt-2">
+                                    <span className="text-xs text-gray-500">{replyText.length}/300</span>
+                                    <button
+                                      onClick={() => {
+                                        if (replyText.trim()) {
+                                          // Reply submitted - implement save logic here
+                                          setReplyText("");
+                                          setActiveReplyId(null);
+                                        }
+                                      }}
+                                      className="px-4 py-2 bg-[#3B71FE] hover:bg-blue-700 text-white rounded-full text-xs font-medium transition-colors"
+                                    >
+                                      {t('Send')}
+                                    </button>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+
+                      {/* Load More Button */}
+                      {!showAllReviews && reviews.length > 3 && (
+                        <div className="flex justify-center pt-6">
+                          <button
+                            onClick={handleLoadMore}
+                            disabled={isLoadingMore}
+                            className="px-6 py-2 border-2 border-[#E6E8EC]  rounded-full text-[#23262F] text-sm font-bold font-dm-sans  inline-flex items-center gap-3  bg-white  hover:border-gray-300 hover:bg-gray-50 transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                          >
+
+                            {isLoadingMore ? (
+                              <>
+                                <Shimmer type="card" count={1} />
+                                <span>{t('Loading comments')}...</span>
+                              </>
+                            ) : (
+                              <>
+                                <Loader size={16} />
+                                <span>{t('Loading comments')}</span>
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )
+            }
+
 
           </div>
         </div>
