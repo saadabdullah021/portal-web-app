@@ -45,9 +45,9 @@ export default function RootLayout({ children }) {
         <Providers>
           <I18nextProvider i18n={i18n}>
             <PopupProvider>
-              <div className="min-h-screen">
+              <div className="min-h-screen flex flex-col">
                 <Navbar isAuthenticated={isAuthenticated} />
-                <main>{children}</main>
+                <main className="flex-1">{children}</main>
                 <Footer />
               </div>
             </PopupProvider>

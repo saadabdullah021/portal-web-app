@@ -21,7 +21,6 @@ import ShareModal from '../ui/ShareModal';
 import EmojiPickerDropdown from '../ui/EmojiPickerDropdown';
 import { FaXTwitter } from 'react-icons/fa6';
 import Shimmer from '../ui/Shimmer';
-import EmojiPickerDropdown from "../ui/EmojiPickerDropdown";
 
 const ReviewsSection = ({ listingData, isAuthenticated }) => {
   const { t, i18n } = useTranslation("hero");
