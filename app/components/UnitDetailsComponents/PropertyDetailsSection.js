@@ -28,7 +28,7 @@ const PropertyDetailsSection = ({ listingData }) => {
   const { t, i18n } = useTranslation('hero');
   const [showAllAmenities, setShowAllAmenities] = useState(false);
   const [loadingAmenities, setLoadingAmenities] = useState(false);
-  const [isSaved, setIsSaved] = useState(false);
+  const [isSaved, setIsSaved] = useState(listingData?.data?.is_added_to_wishlist === 1);
   const [isWishlistLoading, setIsWishlistLoading] = useState(false);
   const [adults, setAdults] = useState(0);
   const [children, setChildren] = useState(0);
@@ -227,6 +227,13 @@ const PropertyDetailsSection = ({ listingData }) => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  // Update wishlist state when listingData changes
+  useEffect(() => {
+    if (listingData?.data?.is_added_to_wishlist !== undefined) {
+      setIsSaved(listingData.data.is_added_to_wishlist === 1);
+    }
+  }, [listingData?.data?.is_added_to_wishlist]);
 
   // Call API on initial load and when check-in/check-out dates change
   useEffect(() => {

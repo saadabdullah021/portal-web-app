@@ -11,6 +11,7 @@ import JustForYouSection from "../components/HomeComponents/JustForYouSection";
 import { getListingBySlug } from "../../lib/apiClient";
 import { useAppSelector } from "../../store/hooks";
 import UnitDetailsShimmer from "../components/ui/UnitDetailsShimmer";
+import axios from "../../lib/axios";
 
 const PropertyListing = () => {
   const searchParams = useSearchParams();
@@ -47,26 +48,26 @@ const PropertyListing = () => {
       }
 
       // For language changes, don't use cache - always fetch fresh data
-      const cacheKey = `listing_${slug}_${currentLanguage}`;
-      const similarCacheKey = `similar_${slug}_${currentLanguage}`;
-      const cachedData = localStorage.getItem(cacheKey);
-      const similarCachedData = localStorage.getItem(similarCacheKey);
-      const cacheTime = localStorage.getItem(`${cacheKey}_time`);
-      const similarCacheTime = localStorage.getItem(`${similarCacheKey}_time`);
-      const now = Date.now();
+      // const cacheKey = `listing_${slug}_${currentLanguage}`;
+      // const similarCacheKey = `similar_${slug}_${currentLanguage}`;
+      // const cachedData = localStorage.getItem(cacheKey);
+      // const similarCachedData = localStorage.getItem(similarCacheKey);
+      // const cacheTime = localStorage.getItem(`${cacheKey}_time`);
+      // const similarCacheTime = localStorage.getItem(`${similarCacheKey}_time`);
+      // const now = Date.now();
       
-      // Check if cached data exists and is less than 15 minutes old (only for same language)
-      if (cachedData && cacheTime && (now - parseInt(cacheTime)) < 900000 && !languageChanged) {
-        setListingData(JSON.parse(cachedData));
+      // // Check if cached data exists and is less than 15 minutes old (only for same language)
+      // if (cachedData && cacheTime && (now - parseInt(cacheTime)) < 900000 && !languageChanged) {
+      //   setListingData(JSON.parse(cachedData));
         
-        // Also load similar properties from cache if available
-        if (similarCachedData && similarCacheTime && (now - parseInt(similarCacheTime)) < 900000) {
-          setSimilarProperties(JSON.parse(similarCachedData));
-        }
+      //   // Also load similar properties from cache if available
+      //   if (similarCachedData && similarCacheTime && (now - parseInt(similarCacheTime)) < 900000) {
+      //     setSimilarProperties(JSON.parse(similarCachedData));
+      //   }
         
-        setLoading(false);
-        return;
-      }
+      //   setLoading(false);
+      //   return;
+      // }
 
       try {
         setLoading(true);
@@ -80,21 +81,20 @@ const PropertyListing = () => {
         setListingData(data);
         
         // Cache the data with language-specific key
-        localStorage.setItem(cacheKey, JSON.stringify(data));
-        localStorage.setItem(`${cacheKey}_time`, now.toString());
+        // localStorage.setItem(cacheKey, JSON.stringify(data));
+        // localStorage.setItem(`${cacheKey}_time`, now.toString());
         
         if (data?.data?.listing_id) {
-          const similarResponse = await fetch(`https://guku.ai/api/v1/get-similar-listings?listing_id=${data.data.listing_id}`, {
+          const similarResponse = await axios.get(`/get-similar-listings?listing_id=${data.data.listing_id}`, {
             headers: {
               'Accept-Language': currentLanguage
             }
           });
-          const similarData = await similarResponse.json();
-          setSimilarProperties(similarData);
+          setSimilarProperties(similarResponse.data);
           
           // Cache similar properties with language-specific key
-          localStorage.setItem(similarCacheKey, JSON.stringify(similarData));
-          localStorage.setItem(`${similarCacheKey}_time`, now.toString());
+          // localStorage.setItem(similarCacheKey, JSON.stringify(similarData));
+          // localStorage.setItem(`${similarCacheKey}_time`, now.toString());
         }
       } catch (err) {
         console.error('Error fetching listing:', err);
