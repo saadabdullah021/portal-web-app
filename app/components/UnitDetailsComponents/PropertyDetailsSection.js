@@ -102,27 +102,22 @@ const PropertyDetailsSection = ({ listingData }) => {
   };
 
   const shouldCallAPI = (checkInDate, checkOutDate) => {
-    const checkIn = new Date(checkInDate);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    
     const nightsCount = calculateNights(checkInDate, checkOutDate);
     
     console.log('shouldCallAPI Debug:', {
       checkInDate,
       checkOutDate,
-      checkIn: checkIn.toDateString(),
-      today: today.toDateString(),
-      isFuture: checkIn > today,
       nightsCount,
-      shouldCall: checkIn > today && nightsCount > 1
+      shouldCall: nightsCount > 0
     });
     
-    return  nightsCount > 1;
+    return nightsCount > 0;
   };
 
   const handleCheckInChange = (date) => {
     console.log('handleCheckInChange called with:', date);
+    console.log('Current checkOut before update:', checkOut);
+    
     setCheckIn(date);
     
     if (checkOut <= date) {
@@ -131,21 +126,14 @@ const PropertyDetailsSection = ({ listingData }) => {
       const nextDayStr = formatDate(nextDay);
       setCheckOut(nextDayStr);
       setNights(1);
-      setApiPricing(null); // Reset API pricing for single night
       console.log('Check-out adjusted to next day:', nextDayStr);
     } else {
       const newNights = calculateNights(date, checkOut);
       setNights(newNights);
       console.log('New nights calculated:', newNights);
-      
-      if (shouldCallAPI(date, checkOut)) {
-        console.log('Calling API from handleCheckInChange');
-        fetchPricingFromAPI(date, checkOut);
-      } else {
-        console.log('Not calling API from handleCheckInChange');
-        setApiPricing(null);
-      }
     }
+    
+    // API will be called automatically by useEffect when checkIn state updates
   };
 
   const handleCheckOutChange = (date) => {
@@ -155,14 +143,7 @@ const PropertyDetailsSection = ({ listingData }) => {
     setNights(newNights);
     console.log('New nights calculated:', newNights);
     
-    // Call API if conditions are met
-    if (shouldCallAPI(checkIn, date)) {
-      console.log('Calling API from handleCheckOutChange');
-      fetchPricingFromAPI(checkIn, date);
-    } else {
-      console.log('Not calling API from handleCheckOutChange');
-      setApiPricing(null);
-    }
+    // API will be called automatically by useEffect when checkOut state updates
   };
 
   const calculatePricing = () => {
@@ -172,25 +153,28 @@ const PropertyDetailsSection = ({ listingData }) => {
       const serviceFee = parseFloat(listingData?.data?.listing_fee?.['Serive Fee']) || 99;
       const total = apiPricing.total_price + cleaningFee + serviceFee;
       
-      // Get the first day's price from daily breakdown for display
-      const firstDayPrice = apiPricing.daily_breakdown && apiPricing.daily_breakdown.length > 0 
-        ? parseFloat(apiPricing.daily_breakdown[0].price) 
-        : apiPricing.total_price / apiPricing.nights;
+      // Use listing API price instead of first day price
+      const actualPrice = parseFloat((listingData?.data?.actual_price || '').replace(/,/g, '')) || 0;
+      const discountedPrice = parseFloat((listingData?.data?.discounted_price || '').replace(/,/g, '')) || 0;
+      const basePrice = discountedPrice > 0 ? discountedPrice : actualPrice;
+      const hasDiscount = discountedPrice > 0;
       
       console.log('Pricing calculation:', {
         total_price: apiPricing.total_price,
         nights: apiPricing.nights,
-        firstDayPrice,
+        listingActualPrice: actualPrice,
+        listingDiscountedPrice: discountedPrice,
+        basePrice,
         cleaningFee,
         serviceFee,
         total
       });
       
       return {
-        actualPrice: 0,
-        discountedPrice: 0,
-        hasDiscount: false,
-        basePrice: firstDayPrice,
+        actualPrice,
+        discountedPrice,
+        hasDiscount,
+        basePrice,
         cleaningFee,
         serviceFee,
         nightsCount: apiPricing.nights,
@@ -243,6 +227,27 @@ const PropertyDetailsSection = ({ listingData }) => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  // Call API on initial load and when check-in/check-out dates change
+  useEffect(() => {
+    console.log('useEffect triggered with dates:', { checkIn, checkOut });
+    
+    const callAPI = () => {
+      console.log('callAPI function called with dates:', { checkIn, checkOut });
+      if (shouldCallAPI(checkIn, checkOut)) {
+        console.log('Calling API on initial load or date change with dates:', { checkIn, checkOut });
+        fetchPricingFromAPI(checkIn, checkOut);
+      } else {
+        console.log('Not calling API - single night or invalid dates');
+        setApiPricing(null);
+      }
+    };
+
+    // Use setTimeout to ensure state is fully updated
+    const timeoutId = setTimeout(callAPI, 0);
+    
+    return () => clearTimeout(timeoutId);
+  }, [checkIn, checkOut]);
 
   const toggleSave = () => {
     setIsSaved(!isSaved);

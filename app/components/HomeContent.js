@@ -35,6 +35,7 @@ export default function HomeContent() {
   const pathname = usePathname();
   const hasFetchedHomeRef = useRef(false);
   const lastLanguageRef = useRef(i18n.language);
+  const loadMoreButtonRef = useRef(null);
 
 
   const isAnyPopupOpen = useMemo(() => {
@@ -106,6 +107,35 @@ export default function HomeContent() {
     lastLanguageRef.current = i18n.language;
     fetchHome();
   }, [i18n.language, isAnyPopupOpen, pathname, fetchHome, homeComponents.length]);
+
+  useEffect(() => {
+    const loadMoreButton = loadMoreButtonRef.current;
+    
+    if (!loadMoreButton || !hasMore || isLoadingMore) {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries;
+        if (entry.isIntersecting) {
+          loadMoreComponents();
+        }
+      },
+      {
+        threshold: 0.1,
+        rootMargin: '100px'
+      }
+    );
+
+    observer.observe(loadMoreButton);
+
+    return () => {
+      if (loadMoreButton) {
+        observer.unobserve(loadMoreButton);
+      }
+    };
+  }, [hasMore, isLoadingMore, loadMoreComponents]);
 
 
 const renderedSections = useMemo(() => {
@@ -216,6 +246,7 @@ const renderedSections = useMemo(() => {
           {hasMore && (
             <div className="flex justify-center py-12">
               <button
+                ref={loadMoreButtonRef}
                 onClick={loadMoreComponents}
                 disabled={isLoadingMore}
                 className="inline-flex items-center gap-3 px-4 py-3 bg-white border-2 border-gray-200 rounded-[90px] text-gray-700 font-medium hover:border-gray-300 hover:bg-gray-50 transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
