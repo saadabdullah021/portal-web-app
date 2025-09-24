@@ -141,13 +141,14 @@ const PropertyListing = () => {
       <PropertyDetailsSection listingData={listingData} />
       <ReviewsSection listingData={listingData} isAuthenticated={isAuthenticated} />
       {similarProperties && (
-        <>
-          {similarProperties.component_design_type === 'grid' ? (
+        <div className="mb-5">
+          {(similarProperties.items?.records || []).length < 5 ? (
             <JustForYouSection 
               items={similarProperties.items?.records || []} 
               sectionData={{
                 component_title: similarProperties.component_title || "Similar Properties Nearby",
-                component_description: similarProperties.component_description || "Discover similar properties in this area that match your preferences. Perfect for your next stay or booking."
+                component_description: similarProperties.component_description || "Discover similar properties in this area that match your preferences. Perfect for your next stay or booking.",
+                items: similarProperties.items || { totalRecords: 0, perPage: 0 }
               }} 
             />
           ) : (
@@ -159,7 +160,7 @@ const PropertyListing = () => {
               }} 
             />
           )}
-        </>
+        </div>
       )}
     </div>
   );
