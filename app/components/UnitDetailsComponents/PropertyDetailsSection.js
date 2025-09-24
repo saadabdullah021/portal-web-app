@@ -23,9 +23,11 @@ import DateInput from '../ui/DateInput';
 import { useTranslation } from 'react-i18next';
 import Shimmer from '../ui/Shimmer';
 import axios from '../../../lib/axios';
+import { useRouter } from 'next/navigation';
 
 const PropertyDetailsSection = ({ listingData }) => {
   const { t, i18n } = useTranslation('hero');
+  const router = useRouter();
   const [showAllAmenities, setShowAllAmenities] = useState(false);
   const [loadingAmenities, setLoadingAmenities] = useState(false);
   const [isSaved, setIsSaved] = useState(listingData?.data?.is_added_to_wishlist === 1);
@@ -34,6 +36,39 @@ const PropertyDetailsSection = ({ listingData }) => {
   const [children, setChildren] = useState(0);
   const [infants, setInfants] = useState(0);
   const [showMobileBooking, setShowMobileBooking] = useState(false);
+  
+  // Cache and redirect function
+  const handleReserve = () => {
+    // Validate dates are selected
+    if (!checkIn || !checkOut) {
+      alert('Please select check-in and check-out dates');
+      return;
+    }
+    
+    // Cache all unit details data
+    const cacheData = {
+      listingData: listingData?.data,
+      checkIn,
+      checkOut,
+      adults,
+      children,
+      infants,
+      pricing: calculatePricing(),
+      timestamp: Date.now()
+    };
+    
+    // Debug what's being cached
+    console.log('Caching data:', cacheData);
+    console.log('Listing data being cached:', listingData?.data);
+    console.log('Thumbnail being cached:', listingData?.data?.thumbnail);
+    
+    // Store in localStorage
+    localStorage.setItem('unitDetailsCache', JSON.stringify(cacheData));
+    
+    // Redirect to checkout with slug
+    const slug = listingData?.data?.unique_id;
+    router.push(`/checkout?slug=${slug}`);
+  };
   
   // Default dates: today for check-in, tomorrow for check-out
   const today = new Date();
@@ -494,7 +529,7 @@ const PropertyDetailsSection = ({ listingData }) => {
 
           {/* Reserve Button */}
           <button
-            // onClick={() => setShowMobileBooking(true)}
+            onClick={handleReserve}
             className="w-auto bg-[#3B71FE] hover:bg-blue-700 text-white py-4 px-6 rounded-full transition-colors duration-200 text-[16px] font-bold font-dm-sans">
             {t('Reserve')}
           </button>
@@ -741,7 +776,9 @@ const PropertyDetailsSection = ({ listingData }) => {
                           </div>
                         </button>
 
-                        <button className="flex-1 bg-[#3B71FE] hover:bg-blue-700 text-[16px]  font-bold font-dm-sans text-white  py-2 px-6 rounded-full transition-colors duration-200 flex items-center justify-center gap-2">
+                        <button 
+                          onClick={handleReserve}
+                          className="flex-1 bg-[#3B71FE] hover:bg-blue-700 text-[16px]  font-bold font-dm-sans text-white  py-2 px-6 rounded-full transition-colors duration-200 flex items-center justify-center gap-2">
                           <CalendarDays size={18} />
                           {t('Reserve')}
                         </button>
@@ -1039,7 +1076,9 @@ const PropertyDetailsSection = ({ listingData }) => {
                   </div>
                 </button>
 
-                <button className="flex-1 bg-[#3B71FE] hover:bg-blue-700 text-[16px]  font-bold font-dm-sans text-white  py-2 px-6 rounded-full transition-colors duration-200 flex items-center justify-center gap-2">
+                <button 
+                  onClick={handleReserve}
+                  className="flex-1 bg-[#3B71FE] hover:bg-blue-700 text-[16px]  font-bold font-dm-sans text-white  py-2 px-6 rounded-full transition-colors duration-200 flex items-center justify-center gap-2">
                   <CalendarDays size={18} />
                   {t('Reserve')}
                 </button>

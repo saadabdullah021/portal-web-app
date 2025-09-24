@@ -10,6 +10,16 @@ const DateRange = ({ label = "Dates", value = {}, onChange }) => {
   const [today, setToday] = useState(new Date());
   const [rangeStart, setRangeStart] = useState(value?.checkIn ? new Date(value.checkIn) : null);
   const [rangeEnd, setRangeEnd] = useState(value?.checkOut ? new Date(value.checkOut) : null);
+
+  // Sync internal state with value prop changes
+  useEffect(() => {
+    if (value?.checkIn) {
+      setRangeStart(new Date(value.checkIn));
+    }
+    if (value?.checkOut) {
+      setRangeEnd(new Date(value.checkOut));
+    }
+  }, [value?.checkIn, value?.checkOut]);
   const [hoveredDate, setHoveredDate] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
   const calendarRef = useRef(null);

@@ -1,4 +1,3 @@
-// app/checkout/page.js
 'use client'
 import Image from 'next/image';
 import { Calendar, User, Star, DollarSign, ChevronRight, ArrowDownNarrowWide, ArrowDown } from 'lucide-react';
@@ -11,8 +10,18 @@ import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
 import { Edit, Plus, Minus } from "lucide-react";
 import DateRange from '../components/ui/DateRange';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { useAppSelector } from '../../store/hooks';
+import { usePopup } from '../contexts/PopupContext';
 
 export default function CheckoutPage() {
+    const searchParams = useSearchParams();
+    const router = useRouter();
+    const slug = searchParams.get('slug');
+    
+    const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
+    const { openPopup } = usePopup();
+    
     const [cardHolder, setCardHolder] = useState("Mohamed Ghanem");
     const { t, i18n } = useTranslation('checkout');
     const [selectedRange, setSelectedRange] = useState({
@@ -24,12 +33,54 @@ export default function CheckoutPage() {
     const [children, setChildren] = useState(0);
     const [infants, setInfants] = useState(0);
     const [activeDropdown, setActiveDropdown] = useState(false);
+    
+    const [cachedData, setCachedData] = useState(null);
 
     const travelersRef = useRef(null);
 
     const totalTravelers = adults + children + infants;
 
-    // bahir click pe band karna
+    const handleConfirmAndPay = () => {
+        if (!isAuthenticated) {
+            openPopup('signup');
+            return;
+        }
+        
+        console.log('User is authenticated, proceeding with checkout...');
+    };
+
+    useEffect(() => {
+        const loadCachedData = () => {
+            try {
+                const cached = localStorage.getItem('unitDetailsCache');
+                if (cached) {
+                    const data = JSON.parse(cached);
+                    setCachedData(data);
+                    
+                    if (data.checkIn && data.checkOut) {
+                        console.log('Loading cached dates:', data.checkIn, data.checkOut);
+                        setSelectedRange({
+                            checkIn: data.checkIn,
+                            checkOut: data.checkOut
+                        });
+                    }
+                    
+                    console.log('Full cached data:', data);
+                    console.log('Listing data:', data.listingData);
+                    console.log('Thumbnail data:', data.listingData?.thumbnail);
+                    
+                    if (data.adults !== undefined) setAdults(data.adults);
+                    if (data.children !== undefined) setChildren(data.children);
+                    if (data.infants !== undefined) setInfants(data.infants);
+                }
+            } catch (error) {
+                console.error('Error loading cached data:', error);
+            }
+        };
+        
+        loadCachedData();
+    }, []);
+
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (travelersRef.current && !travelersRef.current.contains(event.target)) {
@@ -54,7 +105,7 @@ export default function CheckoutPage() {
                     </Link>
 
                     <div className="flex items-center gap-1 text-sm text-[#777E90] font-dm-sans font-bold">
-                        <span>2-Bed Villa in Al-Rawdah</span>
+                        <span>{cachedData?.listingData?.title || 'Property'}</span>
                         <ChevronRight size={16} />
                         <span className='text-[#B1B5C3]'> Confirm and pay</span>
                     </div>
@@ -86,7 +137,6 @@ export default function CheckoutPage() {
                     <div className="w-full lg:w-1/2 order-2 lg:order-1 mb-12 lg:mb-0">
                         <h1 className="text-4xl lg:text-5xl font-bold text-[#23262F] font-dm-sans mb-6">{t('Confirm and pay')}</h1>
 
-                        {/* Your Trip (mobile hidden, desktop visible) */}
                         <div className="  block border-t border-gray-200 pt-6">
                             <h2 className="text-2xl font-semibold text-[#23262F] mb-6">{t('Your trip')}</h2>
                             <div className="flex flex-col lg:flex-row  gap-2 mb-8">
@@ -94,17 +144,15 @@ export default function CheckoutPage() {
                                 <DateRange
                                     value={selectedRange}
                                     onChange={(range) => {
-                                        console.log("Selected Range:", range);
+                                        console.log("DateRange onChange - New Range:", range);
                                         setSelectedRange(range);
                                     }}
                                 />
 
 
 
-                                {/* Add Guest Dropdown selction */}
 
                                 <div className="relative w-full" ref={travelersRef}>
-                                    {/* Trigger Box */}
                                     <div
                                         onClick={() => setActiveDropdown(!activeDropdown)}
                                         className="flex flex-col items-start p-4 bg-[#F4F5F6] rounded-xl w-full cursor-pointer"
@@ -120,7 +168,6 @@ export default function CheckoutPage() {
                                         </div>
                                     </div>
 
-                                    {/* Popup */}
                                     <div
                                         onClick={(e) => e.stopPropagation()}
                                         className={`
@@ -130,7 +177,6 @@ export default function CheckoutPage() {
           ${activeDropdown ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"}
         `}
                                     >
-                                        {/* Adults */}
                                         <div className="flex items-center justify-between border-b pb-3 border-gray-200">
                                             <div>
                                                 <p className="font-medium text-[16px] text-gray-900">{t('Adults')}</p>
@@ -158,7 +204,6 @@ export default function CheckoutPage() {
                                             </div>
                                         </div>
 
-                                        {/* Children */}
                                         <div className="flex items-center justify-between border-b pb-3 border-gray-200">
                                             <div>
                                                 <p className="font-medium text-[16px] text-gray-900">{t('Children')}</p>
@@ -186,7 +231,6 @@ export default function CheckoutPage() {
                                             </div>
                                         </div>
 
-                                        {/* Infants */}
                                         <div className="flex items-center justify-between">
                                             <div>
                                                 <p className="font-medium text-[16px] text-gray-900">{t('Infants')}</p>
@@ -221,11 +265,9 @@ export default function CheckoutPage() {
                             </div>
                         </div>
                         <hr className='text-gray-200 mb-8' />
-                        {/* Payment Section */}
                         <div className="space-y-6">
                             <h2 className="text-2xl font-semibold text-[#23262F]">{t('Add a payment method')}</h2>
 
-                            {/* Card Number */}
                             <div className="relative">
                                 <label className="block text-xs uppercase font-bold text-[#B1B5C3] mb-2">{t('CARD NUMBER')}</label>
                                 <div className="relative">
@@ -235,6 +277,7 @@ export default function CheckoutPage() {
                                     <input
                                         type="text"
                                         value="9224 1111 2222 3333"
+                                        readOnly
                                         className="w-full pl-14 pr-10 py-3 border-2 border-[#58C27D] rounded-xl focus:outline-none "
 
                                     />
@@ -250,7 +293,6 @@ export default function CheckoutPage() {
                                 </div>
                             </div>
 
-                            {/* Card Holder */}
                             <div>
                                 <label className="block text-xs uppercase font-bold text-[#B1B5C3] mb-2">{t('CARD HOLDER')}</label>
                                 <input
@@ -261,7 +303,6 @@ export default function CheckoutPage() {
                                 />
                             </div>
 
-                            {/* Expiration Date & CVC */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-xs uppercase font-bold text-[#B1B5C3] mb-2">{t('EXPIRATION DATE')}</label>
@@ -281,7 +322,6 @@ export default function CheckoutPage() {
                                 </div>
                             </div>
 
-                            {/* Save Card */}
                             <div className="flex items-center gap-1">
                                 <input
                                     type="checkbox"
@@ -295,7 +335,6 @@ export default function CheckoutPage() {
                             </div>
                         </div>
 
-                        {/* Message Host */}
                         <div className="mt-8">
                             <h2 className="text-2xl font-semibold text-[#23262F] mb-4">{t('Message the host')}</h2>
                             <textarea
@@ -305,24 +344,30 @@ export default function CheckoutPage() {
                             ></textarea>
                         </div>
 
-                        {/* Confirm Button */}
-                        <button className="mt-8 w-auto lg:w-48 whitespace-nowrap py-3 px-8 lg:px-2 bg-[#3B71FE] hover:bg-blue-700 text-white font-medium rounded-full shadow-md transition-colors duration-200">
+                        <button 
+                            onClick={handleConfirmAndPay}
+                            className="mt-8 w-auto lg:w-48 whitespace-nowrap py-3 px-8 lg:px-2 bg-[#3B71FE] hover:bg-blue-700 text-white font-medium rounded-full shadow-md transition-colors duration-200">
                             {t('Confirm and pay')}
                         </button>
                     </div>
 
-                    {/* Right Column - Property Info */}
                     <div className="w-full lg:w-1/2 order-1 lg:order-2">
                         <div className="bg-[#FCFCFD] rounded-3xl border border-[#E6E8EC] shadow-lg p-4 lg:p-8">
-                            {/* Property Image + Info */}
                             <div className="flex flex-col md:flex-row gap-6 mb-6">
                                 <div className="w-full md:w-1/2">
                                     <div className="relative rounded-2xl w-full h-[180px]  lg:w-[180px] lg:h-[180px] overflow-hidden aspect-[3/4] md:aspect-square">
-                                        <Image src={propertyImage} alt="Luxury Villa" fill className="object-cover" />
+                                        <Image 
+                                            src={cachedData?.listingData?.listing_images?.[0]?.url || propertyImage} 
+                                            alt={cachedData?.listingData?.title || "Property"} 
+                                            fill 
+                                            className="object-cover" 
+                                        />
                                     </div>
                                 </div>
                                 <div className="md:w-full space-y-2">
-                                    <h3 className="text-[16px] font-medium whitespace-nowrap text-[#23262F]">2-Bed Luxury Villa in Al-Rawdah</h3>
+                                    <h3 className="text-[16px] font-medium whitespace-nowrap text-[#23262F]">
+                                        {cachedData?.listingData?.title || 'Property'}
+                                    </h3>
                                     <div className="flex items-center gap-3 my-3">
                                         <span className="text-[#777E90] text-sm">{t('hosted_by')}</span>
                                         <div className="flex items-center gap-2 w-6 h-6 rounded-full">
@@ -333,24 +378,27 @@ export default function CheckoutPage() {
                                                 loading="lazy"
                                             />
                                         </div>
-                                        <span className='text-[16px] text-[#23262F] font-medium'>Faisal A.</span>
+                                        <span className='text-[16px] text-[#23262F] font-medium'>Host</span>
                                     </div>
-                                    <p className="text-[#777E90] text-xs">2 {t('bed')} •
-
-                                        <span> 3 {t('bath')} </span></p>
+                                    <p className="text-[#777E90] text-xs">
+                                        {cachedData?.listingData?.bedrooms || 2} {t('bed')} • 
+                                        <span> {cachedData?.listingData?.bathrooms || 3} {t('bath')} </span>
+                                    </p>
 
                                     <hr className='my-8 lg:my-6 text-gray-300' />
                                     <div className="flex items-center mb-4 lg:mb-0 lg:mt-3">
                                         <Star size={20} fill="#FFD700" stroke="#FFD700" />
-                                        <span className="ml-2 text-sm font-medium text-[#23262F]">4.8</span>
-                                        <span className="text-[#777E90] text-sm ml-2">(256 {t('reviews')})</span>
+                                        <span className="ml-2 text-sm font-medium text-[#23262F]">
+                                            {cachedData?.listingData?.rating || '4.8'}
+                                        </span>
+                                        <span className="text-[#777E90] text-sm ml-2">
+                                            ({cachedData?.listingData?.reviews || 256} {t('reviews')})
+                                        </span>
                                     </div>                                </div>
                             </div>
 
-                            {/* Booking Info */}
                             <div className="bg-[#F4F5F6] px-8 py-6 rounded-3xl mb-6 lg:block hidden">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-4">
-                                    {/* Check-in */}
                                     <div className="flex items-center gap-2 justify-between">
                                         <div className="flex items-start gap-4">
                                             <svg width="24" height="24"  viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -362,11 +410,7 @@ export default function CheckoutPage() {
                                                 <p className="text-xs text-[#777E90]">{t('checkIn')}</p>
                                                 <p className="font-medium text-[16px] text-[#23262F]">
                                                     {selectedRange.checkIn
-                                                        ? `2pm, ${new Date(
-                                                            new Date(selectedRange.checkIn).setDate(
-                                                                new Date(selectedRange.checkIn).getDate() + 1
-                                                            )
-                                                        ).toLocaleDateString("en-GB", {
+                                                        ? `2pm, ${new Date(selectedRange.checkIn).toLocaleDateString("en-GB", {
                                                             month: "short",
                                                             day: "numeric",
                                                         })}`
@@ -380,7 +424,6 @@ export default function CheckoutPage() {
                                        
                                     </div>
 
-                                    {/* Check-out */}
                                     <div className="flex items-center gap-2 justify-between">
                                         <div className="flex items-start gap-4">
                                             <svg width="24" height="24"  viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -392,11 +435,7 @@ export default function CheckoutPage() {
                                                 <p className="text-xs text-[#777E90]">{t('checkOut')}</p>
                                                 <p className="font-medium text-[16px] text-[#23262F]">
                                                     {selectedRange.checkOut
-                                                        ? `10am, ${new Date(
-                                                            new Date(selectedRange.checkOut).setDate(
-                                                                new Date(selectedRange.checkOut).getDate() + 1
-                                                            )
-                                                        ).toLocaleDateString("en-GB", {
+                                                        ? `10am, ${new Date(selectedRange.checkOut).toLocaleDateString("en-GB", {
                                                             month: "short",
                                                             day: "numeric",
                                                         })}`
@@ -430,32 +469,40 @@ export default function CheckoutPage() {
                                 </div>
                             </div>
 
-                            {/* Price Details */}
                             <div className="space-y-4">
                                 <h3 className="text-2xl font-semibold text-[#23262F] lg:mb-8">{t('Price details')}</h3>
                                 <div className="space-y-5 px-3">
                                     <div className="flex justify-between text-[#777E90] text-sm">
-                                        <span>3,200 SAR × 3 {t('nights')}</span>
-                                        <span className="font-medium text-sm text-[#23262F]">9,000 SAR</span>
+                                        <span>
+                                            {cachedData?.pricing?.basePrice || ''} SAR × {cachedData?.pricing?.nightsCount || 3} {t('nights')}
+                                        </span>
+                                        <span className="font-medium text-sm text-[#23262F]">
+                                            {cachedData?.pricing?.baseTotal || ''} SAR
+                                        </span>
                                     </div>
                                     <div className="flex justify-between text-[#777E90] text-sm">
                                         <span>{t('Cleaning Fee')}</span>
-                                        <span className="font-medium text-sm text-[#23262F]">150 SAR</span>
+                                        <span className="font-medium text-sm text-[#23262F]">
+                                            {cachedData?.pricing?.cleaningFee || ''} SAR
+                                        </span>
                                     </div>
                                     <div className="flex justify-between text-[#777E90] text-sm">
                                         <span>{t('Service fee')}</span>
-                                        <span className="font-medium text-sm text-[#23262F]">235 SAR</span>
+                                        <span className="font-medium text-sm text-[#23262F]">
+                                            {cachedData?.pricing?.serviceFee || ''} SAR
+                                        </span>
                                     </div>
 
                                 </div>
                                 <div className="flex justify-between font-medium mb-8 text-[#23262F] text-sm bg-[#F4F5F6] p-3 rounded-lg">
                                     <span>{t('Total')}
                                         <span className='text-[#777E90] text-sm pl-1'>
-
-                                            (USD)
+                                            (SAR)
                                         </span>
                                     </span>
-                                    <span className="font-medium text-[#23262F] text-sm">9,985 SAR</span>
+                                    <span className="font-medium text-[#23262F] text-sm">
+                                        {cachedData?.pricing?.total || '9,985'} SAR
+                                    </span>
                                 </div>
                                 <p className="text-xs mb-3 text-[#777E90] mt-4 flex items-center justify-center gap-1">
                                     <DollarSign className="w-4 h-4" />
@@ -466,6 +513,7 @@ export default function CheckoutPage() {
                     </div>
                 </div>
             </div>
+            
         </div>
     );
 }
