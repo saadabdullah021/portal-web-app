@@ -13,6 +13,7 @@ import DateRange from '../components/ui/DateRange';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useAppSelector } from '../../store/hooks';
 import { usePopup } from '../contexts/PopupContext';
+import axios from '../../lib/axios';
 
 export default function CheckoutPage() {
     const searchParams = useSearchParams();
@@ -35,10 +36,114 @@ export default function CheckoutPage() {
     const [activeDropdown, setActiveDropdown] = useState(false);
     
     const [cachedData, setCachedData] = useState(null);
+    const [apiPricing, setApiPricing] = useState(null);
+    const [isLoadingPricing, setIsLoadingPricing] = useState(false);
 
     const travelersRef = useRef(null);
 
     const totalTravelers = adults + children + infants;
+
+    const calculateNights = (checkInDate, checkOutDate) => {
+        const start = new Date(checkInDate);
+        const end = new Date(checkOutDate);
+        const diffTime = end - start;
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        return diffDays > 0 ? diffDays : 1;
+    };
+
+    const fetchPricingFromAPI = async (checkInDate, checkOutDate) => {
+        try {
+            setIsLoadingPricing(true);
+            const listingId = cachedData?.listingData?.listing_id || 1;
+            
+            console.log('Checkout API call details:', {
+                listingId,
+                checkInDate,
+                checkOutDate,
+                cachedData: cachedData?.listingData
+            });
+                
+            const response = await axios.get('https://guku.ai/api/v1/get-unit-pricing', {
+                params: {
+                    listing_id: listingId,
+                    check_in_date: checkInDate,
+                    check_out_date: checkOutDate
+                }
+            });
+            
+            console.log('Checkout API Response:', response.data);
+            
+            if (response.data.success) {
+                setApiPricing(response.data.data);
+                console.log('Checkout API pricing set:', response.data.data);
+            }
+        } catch (error) {
+            console.error('Error fetching pricing in checkout:', error);
+            setApiPricing(null);
+        } finally {
+            setIsLoadingPricing(false);
+        }
+    };
+
+    const shouldCallAPI = (checkInDate, checkOutDate) => {
+        const nightsCount = calculateNights(checkInDate, checkOutDate);
+        return nightsCount > 0;
+    };
+
+    const calculatePricing = () => {
+        if (apiPricing) {
+            const cleaningFee = parseFloat(cachedData?.listingData?.listing_fee?.['Cleaning Fee']) || 19;
+            const serviceFee = parseFloat(cachedData?.listingData?.listing_fee?.['Serive Fee']) || 99;
+            const total = apiPricing.total_price + cleaningFee + serviceFee;
+            
+            const actualPrice = parseFloat((cachedData?.listingData?.actual_price || '').replace(/,/g, '')) || 0;
+            const discountedPrice = parseFloat((cachedData?.listingData?.discounted_price || '').replace(/,/g, '')) || 0;
+            const basePrice = discountedPrice > 0 ? discountedPrice : actualPrice;
+            const hasDiscount = discountedPrice > 0;
+            
+            return {
+                actualPrice,
+                discountedPrice,
+                hasDiscount,
+                basePrice,
+                cleaningFee,
+                serviceFee,
+                nightsCount: apiPricing.nights,
+                baseTotal: apiPricing.total_price,
+                total,
+                isApiPricing: true,
+                dailyBreakdown: apiPricing.daily_breakdown
+            };
+        }
+        
+        const actualPrice = parseFloat((cachedData?.listingData?.actual_price || '').replace(/,/g, '')) || 0;
+        const discountedPrice = parseFloat((cachedData?.listingData?.discounted_price || '').replace(/,/g, '')) || 0;
+        
+        const basePrice = discountedPrice > 0 ? discountedPrice : actualPrice;
+        const hasDiscount = discountedPrice > 0;
+        
+        const cleaningFee = parseFloat(cachedData?.listingData?.listing_fee?.['Cleaning Fee']) || 19;
+        const serviceFee = parseFloat(cachedData?.listingData?.listing_fee?.['Serive Fee']) || 99;
+        const nightsCount = selectedRange.checkIn && selectedRange.checkOut ? calculateNights(selectedRange.checkIn, selectedRange.checkOut) : 1;
+        
+        const baseTotal = basePrice * nightsCount;
+        const total = baseTotal + cleaningFee + serviceFee;
+        
+        return {
+            actualPrice,
+            discountedPrice,
+            hasDiscount,
+            basePrice,
+            cleaningFee,
+            serviceFee,
+            nightsCount,
+            baseTotal,
+            total,
+            isApiPricing: false
+        };
+    };
+
+    const pricing = calculatePricing();
 
     const handleConfirmAndPay = () => {
         if (!isAuthenticated) {
@@ -90,6 +195,20 @@ export default function CheckoutPage() {
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
+
+    useEffect(() => {
+        const callAPI = () => {
+            if (selectedRange.checkIn && selectedRange.checkOut && shouldCallAPI(selectedRange.checkIn, selectedRange.checkOut)) {
+                fetchPricingFromAPI(selectedRange.checkIn, selectedRange.checkOut);
+            } else {
+                setApiPricing(null);
+            }
+        };
+
+        const timeoutId = setTimeout(callAPI, 0);
+        
+        return () => clearTimeout(timeoutId);
+    }, [selectedRange.checkIn, selectedRange.checkOut]);
 
     return (
         <div className="">
@@ -472,27 +591,45 @@ export default function CheckoutPage() {
                             <div className="space-y-4">
                                 <h3 className="text-2xl font-semibold text-[#23262F] lg:mb-8">{t('Price details')}</h3>
                                 <div className="space-y-5 px-3">
-                                    <div className="flex justify-between text-[#777E90] text-sm">
-                                        <span>
-                                            {cachedData?.pricing?.basePrice || ''} SAR × {cachedData?.pricing?.nightsCount || 3} {t('nights')}
-                                        </span>
-                                        <span className="font-medium text-sm text-[#23262F]">
-                                            {cachedData?.pricing?.baseTotal || ''} SAR
-                                        </span>
-                                    </div>
-                                    <div className="flex justify-between text-[#777E90] text-sm">
-                                        <span>{t('Cleaning Fee')}</span>
-                                        <span className="font-medium text-sm text-[#23262F]">
-                                            {cachedData?.pricing?.cleaningFee || ''} SAR
-                                        </span>
-                                    </div>
-                                    <div className="flex justify-between text-[#777E90] text-sm">
-                                        <span>{t('Service fee')}</span>
-                                        <span className="font-medium text-sm text-[#23262F]">
-                                            {cachedData?.pricing?.serviceFee || ''} SAR
-                                        </span>
-                                    </div>
-
+                                    {isLoadingPricing ? (
+                                        <>
+                                            <div className="flex justify-between">
+                                                <div className="w-32 h-4 bg-gray-200 rounded animate-pulse"></div>
+                                                <div className="w-16 h-4 bg-gray-200 rounded animate-pulse"></div>
+                                            </div>
+                                            <div className="flex justify-between">
+                                                <div className="w-20 h-4 bg-gray-200 rounded animate-pulse"></div>
+                                                <div className="w-12 h-4 bg-gray-200 rounded animate-pulse"></div>
+                                            </div>
+                                            <div className="flex justify-between">
+                                                <div className="w-24 h-4 bg-gray-200 rounded animate-pulse"></div>
+                                                <div className="w-12 h-4 bg-gray-200 rounded animate-pulse"></div>
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <div className="flex justify-between text-[#777E90] text-sm">
+                                                <span>
+                                                    {pricing.basePrice} SAR × {pricing.nightsCount} {t('nights')}
+                                                </span>
+                                                <span className="font-medium text-sm text-[#23262F]">
+                                                    {pricing.baseTotal} SAR
+                                                </span>
+                                            </div>
+                                            <div className="flex justify-between text-[#777E90] text-sm">
+                                                <span>{t('Cleaning Fee')}</span>
+                                                <span className="font-medium text-sm text-[#23262F]">
+                                                    {pricing.cleaningFee} SAR
+                                                </span>
+                                            </div>
+                                            <div className="flex justify-between text-[#777E90] text-sm">
+                                                <span>{t('Service fee')}</span>
+                                                <span className="font-medium text-sm text-[#23262F]">
+                                                    {pricing.serviceFee} SAR
+                                                </span>
+                                            </div>
+                                        </>
+                                    )}
                                 </div>
                                 <div className="flex justify-between font-medium mb-8 text-[#23262F] text-sm bg-[#F4F5F6] p-3 rounded-lg">
                                     <span>{t('Total')}
@@ -501,7 +638,11 @@ export default function CheckoutPage() {
                                         </span>
                                     </span>
                                     <span className="font-medium text-[#23262F] text-sm">
-                                        {cachedData?.pricing?.total || '9,985'} SAR
+                                        {isLoadingPricing ? (
+                                            <div className="w-16 h-4 bg-gray-200 rounded animate-pulse"></div>
+                                        ) : (
+                                            `${pricing.total} SAR`
+                                        )}
                                     </span>
                                 </div>
                                 <p className="text-xs mb-3 text-[#777E90] mt-4 flex items-center justify-center gap-1">

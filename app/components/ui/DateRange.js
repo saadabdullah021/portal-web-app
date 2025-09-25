@@ -80,6 +80,13 @@ const DateRange = ({ label = "Dates", value = {}, onChange }) => {
     return date < t;
   };
 
+  const formatDate = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
   const handleDateClick = (date) => {
     if (!date || isDateDisabled(date)) return;
 
@@ -91,8 +98,8 @@ const DateRange = ({ label = "Dates", value = {}, onChange }) => {
       if (date >= rangeStart) {
         setRangeEnd(date);
         onChange?.({
-          checkIn: rangeStart.toISOString().split("T")[0],
-          checkOut: date.toISOString().split("T")[0],
+          checkIn: formatDate(rangeStart),
+          checkOut: formatDate(date),
         });
         setIsOpen(false);
       } else {
