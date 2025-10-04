@@ -120,6 +120,16 @@ body {
 }
 
 
+button{
+  cursor: pointer;
+}
+Link{
+  cursor:pointer;
+}
+a{
+  cursor:pointer;
+}
+
 /* react-international-phone ke default borders/outline remove karne ke liye */
 .react-international-phone-input-container {
   border: none !important;
@@ -443,3 +453,7 @@ body {
             transform: scale(1);
           }
         }
+
+
+
+        

@@ -256,7 +256,9 @@ const ReviewsSection = ({ listingData, isAuthenticated }) => {
                 </button>
 
                 {/* ✅ Share Modal */}
-                <ShareModal host_share_code={listingData?.data?.host_details?.host_share_code} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+                <ShareModal host_share_code={listingData?.data?.host_details?.host_share_code} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} 
+                  title='Share This Profile'
+                  />
                 <button className="p-2 hover:bg-gray-100 flex items-center rounded-full border-2 border-[#E6E8EC] transition-colors">
                   <MoreHorizontal size={20} color='#777E90' />
                 </button>

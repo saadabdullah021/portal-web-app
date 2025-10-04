@@ -2,16 +2,8 @@
 
 import React, { useState } from 'react';
 import {
-  Send,
-  Calendar,
-  Users,
   Star,
-  Bed,
-  Bath,
-  Camera,
   ArrowLeft,
-  MoreHorizontal,
-  Paperclip
 } from 'lucide-react';
 
 const MessagesCenter = () => {
@@ -173,9 +165,9 @@ const MessagesCenter = () => {
   }, []);
 
   return (
-    <div className="flex max-w-6xl 2xl:max-w-[1450px] mx-auto  px-8 lg:px-6 2xl:px-8 ">
+    <div className="flex max-w-6xl 2xl:max-w-[1450px] mx-auto  px-8 lg:px-6 2xl:px-8  pb-8 lg:pb-12">
       {/* Mobile View */}
-      <div className="md:hidden w-full bg-white flex flex-col">
+      <div className="lg:hidden w-full bg-white flex flex-col">
         {!selectedMessage ? (
           <>
             {/* Mobile Booking Card Header */}
@@ -274,7 +266,7 @@ const MessagesCenter = () => {
                     {msg.time && (
                       <span className={`text-xs block mt-1 ${msg.sender === 'me' ? 'text-blue-100' : 'text-gray-500'
                         }`}>
-                        
+
                       </span>
                     )}
                   </div>
@@ -319,7 +311,7 @@ const MessagesCenter = () => {
       </div>
 
       {/* Desktop Messages List Column */}
-      <div className={`hidden md:flex ${showBookingCard ? 'w-1/3' : 'w-1/2'} bg-white border-r border-gray-200 flex-col`}>
+      <div className={`hidden lg:flex ${showBookingCard ? 'w-1/3' : 'w-1/2'} bg-white border-r border-gray-200 flex-col`}>
         <div className=" mt-12 mb-6">
           <h1 className="text-2xl font-semibold text-[#23262F]">Messages center</h1>
         </div>
@@ -349,7 +341,7 @@ const MessagesCenter = () => {
       </div>
 
       {/* Desktop Conversation Column */}
-      <div className={`hidden md:flex ${showBookingCard ? 'w-1/3' : 'w-1/2'} bg-white flex-col`}>
+      <div className={`hidden lg:flex ${showBookingCard ? 'w-[40%]' : 'w-1/2'} bg-white flex-col`}>
         {selectedMessage ? (
           <>
             {/* Desktop Header */}
@@ -396,46 +388,55 @@ const MessagesCenter = () => {
 
 
             {/* Desktop Messages */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            <div className="flex-1 max-h-screen custom-scrollbar-hide overflow-y-auto p-4 space-y-4">
               {selectedMessage.conversation.map((msg) => (
-                <div
-                  key={msg.id}
-                  className={`flex ${msg.sender === 'me' ? 'justify-end' : 'justify-start'}`}
-                >
-                  {msg.sender === 'other' && (
-                    <img
-                      src={selectedMessage.avatar}
-                      alt={selectedMessage.name}
-                      className="w-[38px] h-[38px] rounded-full mr-2 "
-                    />
-                  )}
+                <div>
+
                   <div
-                    className={`max-w-xs lg:max-w-md  ${msg.sender === 'me'
-                      ? 'bg-[#3B71FE] px-6 py-4 text-white rounded-4xl'
-                      : 'bg-[#F4F5F6] p-4 text-[#141416]  rounded-2xl'
-                      }`}
+                    key={msg.id}
+                    className={`flex ${msg.sender === 'me' ? 'justify-end' : 'justify-start'}`}
                   >
-                    <p className="text-sm">{msg.message}</p>
+                    {msg.sender === 'other' && (
+                      <img
+                        src={selectedMessage.avatar}
+                        alt={selectedMessage.name}
+                        className="w-[38px] h-[38px] rounded-full mr-2 "
+                      />
+                    )}
+                    <div
+                      className={`max-w-xs lg:max-w-md  ${msg.sender === 'me'
+                        ? 'bg-[#3B71FE] px-6 py-4 text-white rounded-4xl'
+                        : 'bg-[#F4F5F6] p-4 text-[#141416]  rounded-2xl'
+                        }`}
+                    >
+                      <p className="text-sm">{msg.message}</p>
+
+                    </div>
+
+                  </div>
+                  <div className='text-end'>
                     {msg.time && (
-                      <span className={`text-xs block mt-1 ${msg.sender === 'me' ? 'text-blue-100' : 'text-gray-500'
+                      <span className={`text-xs font-semibold block mt-1 ${msg.sender === 'me' ? 'text-[0px]' : 'text-[#B1B5C3]'
                         }`}>
-                        {/* {msg.time} */}
+                        {msg.time}
                       </span>
                     )}
                   </div>
                 </div>
               ))}
+
             </div>
 
-{/* Desktop message input */}
+            {/* Desktop message input */}
             <div className=" p-4">
               <div className="w-full max-w-2xl">
                 {/* Message Input Container */}
                 <div className="flex items-center space-x-3 p-2 rounded-[90px] border-2 border-[#E6E8EC]">
                   {/* Attachment Button */}
                   <button className="flex-shrink-0 p-2 text-gray-400 hover:text-gray-600 transition-colors">
-                    <svg width="16" height="20" viewBox="0 0 16 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path fillRule="evenodd" clipRule="evenodd" d="M0.5 4.16671C0.5 2.32576 1.99238 0.833374 3.83333 0.833374H10.786C11.67 0.833374 12.5179 1.18456 13.143 1.80968L14.5237 3.1904C15.1488 3.81552 15.5 4.66336 15.5 5.54742V15.8334C15.5 17.6743 14.0076 19.1667 12.1667 19.1667H3.83333C1.99238 19.1667 0.5 17.6743 0.5 15.8334V4.16671ZM13.8333 6.66671V15.8334C13.8333 16.7538 13.0871 17.5 12.1667 17.5H3.83333C2.91286 17.5 2.16667 16.7538 2.16667 15.8334V4.16671C2.16667 3.24623 2.91286 2.50004 3.83333 2.50004H9.66667V4.16671C9.66667 5.54742 10.786 6.66671 12.1667 6.66671H13.8333ZM13.7409 5.00004C13.659 4.7647 13.5247 4.54844 13.3452 4.36891L11.9645 2.9882C11.7849 2.80867 11.5687 2.67433 11.3333 2.59249V4.16671C11.3333 4.62694 11.7064 5.00004 12.1667 5.00004H13.7409Z" fill="#B1B5C4" />
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path fillRule="evenodd" clipRule="evenodd" d="M2.5 4.16671C2.5 2.32576 3.99238 0.833374 5.83333 0.833374H12.786C13.67 0.833374 14.5179 1.18456 15.143 1.80968L16.5237 3.1904C17.1488 3.81552 17.5 4.66336 17.5 5.54742V15.8334C17.5 17.6743 16.0076 19.1667 14.1667 19.1667H5.83333C3.99238 19.1667 2.5 17.6743 2.5 15.8334V4.16671ZM15.8333 6.66671V15.8334C15.8333 16.7538 15.0871 17.5 14.1667 17.5H5.83333C4.91286 17.5 4.16667 16.7538 4.16667 15.8334V4.16671C4.16667 3.24623 4.91286 2.50004 5.83333 2.50004H11.6667V4.16671C11.6667 5.54742 12.786 6.66671 14.1667 6.66671H15.8333ZM15.7409 5.00004C15.659 4.7647 15.5247 4.54844 15.3452 4.36891L13.9645 2.9882C13.7849 2.80867 13.5687 2.67433 13.3333 2.59249V4.16671C13.3333 4.62694 13.7064 5.00004 14.1667 5.00004H15.7409Z" fill="#B1B5C4" />
+                      <path d="M10.8327 9.16671C10.8327 8.70647 10.4596 8.33337 9.99935 8.33337C9.53911 8.33337 9.16602 8.70647 9.16602 9.16671V10.8334H7.49935C7.03911 10.8334 6.66602 11.2065 6.66602 11.6667C6.66602 12.1269 7.03911 12.5 7.49935 12.5H9.16602V14.1667C9.16602 14.6269 9.53911 15 9.99935 15C10.4596 15 10.8327 14.6269 10.8327 14.1667V12.5H12.4993C12.9596 12.5 13.3327 12.1269 13.3327 11.6667C13.3327 11.2065 12.9596 10.8334 12.4993 10.8334H10.8327V9.16671Z" fill="#B1B5C4" />
                     </svg>
 
                   </button>
@@ -472,7 +473,7 @@ const MessagesCenter = () => {
 
       {/* Desktop Booking Card Column */}
       {showBookingCard && (
-        <div className="w-1/3 bg-white  pt-16 pb-4 hidden md:block">
+        <div className="w-[27%] bg-white  pt-16 pb-4 hidden lg:block">
           <div className="  border border-[#E6E8EC] rounded-3xl">
             {/* Property Image */}
             <div className="relative">
@@ -493,8 +494,8 @@ const MessagesCenter = () => {
             </div>
 
             {/* Property Details */}
-            <div className='px-8 pt-12 pb-2'>
-              <h3 className="text-2xl font-semibold text-[#23262F]  mb-2">
+            <div className='px-4 pt-12 pb-2'>
+              <h3 className="text-2xl  font-semibold text-[#23262F]  mb-2">
                 {bookingData.title}
               </h3>
 
@@ -519,7 +520,7 @@ const MessagesCenter = () => {
 
                   <div>
                     <p className="text-xs text-[#777E90]">Date</p>
-                    <p className="text-[16px] text-[#23262F] font-medium">{bookingData.date}</p>
+                    <p className="text-[13px] text-[#23262F] font-semibold">{bookingData.date}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-1">
@@ -530,7 +531,7 @@ const MessagesCenter = () => {
 
                   <div>
                     <p className="text-xs text-[#777E90]">Guests</p>
-                    <p className="text-[16px] text-[#23262F] font-medium">{bookingData.guests}</p>
+                    <p className="text-[13px] text-[#23262F] font-semibold">{bookingData.guests}</p>
                   </div>
                 </div>
               </div>

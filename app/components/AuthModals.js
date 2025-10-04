@@ -447,7 +447,7 @@ const AuthModals = () => {
             <h2 className="text-[32px] lg:text-[40px] font-dm-sans text-[#141416] font-bold text-center mb-2">
               {t('signup.title') || 'Sign up to Portal'}
             </h2>
-            <p className="text-[#777E90] text-center text-[16px] mb-6">
+            <p className="text-[#777E90] text-center text-[18px] mb-6">
               {t('signup.subtitle') || 'Lorem ipsum dolor imit'}
             </p>
 
@@ -474,7 +474,7 @@ const AuthModals = () => {
               </button>
             </div>
 
-            <div className="text-center text-[#777E90] text-xs mb-4">
+            <div className="text-center text-[#777E90] text-sm mb-4">
               {t('signup.or_continue') || 'Or continue with phone'}
             </div>
 
@@ -482,7 +482,7 @@ const AuthModals = () => {
               <PhoneInput
                 value={signupPhoneData}
                 onChange={handleSignupPhoneChange}
-                placeholder="your phone number"
+   
                 className="w-full"
                 error={!!signupFieldErrors.phone}
                 errorMessage={signupFieldErrors.phone}
@@ -496,11 +496,11 @@ const AuthModals = () => {
               </div>
             )}
 
-            <div className="text-center mt-6 text-[#353945] text-xs">
+            <div className="text-center mt-6 text-[#353945] text-sm">
               {t('signup.already_account') || 'Already have an account?'} {" "}
               <button 
                 onClick={handleSignupLoginClick}
-                className="text-[#3B71FE] text-xs hover:underline font-semibold cursor-pointer"
+                className="text-[#3B71FE] text-sm hover:underline font-semibold cursor-pointer "
               >
                 {t('signup.login') || 'Login'}
               </button>
@@ -529,7 +529,7 @@ const AuthModals = () => {
             <h2 className="text-[32px] lg:text-[40px] font-dm-sans text-[#141416] font-bold text-center">
               {t('login.title')}
             </h2>
-            <p className="text-[#777E90] text-center text-[16px] mt-2">
+            <p className="text-[#777E90] text-center text-[18px] mt-2">
               {t('login.subtitle')}
             </p>
 
@@ -537,7 +537,7 @@ const AuthModals = () => {
               <PhoneInput
                 value={loginPhoneData}
                 onChange={handleLoginPhoneChange}
-                placeholder="Enter your phone number"
+          
                 className="w-full"
                 error={!!loginFieldErrors.phone}
                 errorMessage={loginFieldErrors.phone}
@@ -550,6 +550,23 @@ const AuthModals = () => {
                 {loginError}
               </div>
             )}
+            
+            <div className="text-center mt-6 text-[#353945] text-sm">
+              
+              {t('login.no_account') || "Don't have an account?"} {" "}
+              <button 
+                onClick={() => {
+                  // Clear signup state before opening signup modal
+                  clearSignupState(); 
+                  closePopup('login');
+                  openPopup('signup');
+                }}
+                className="text-[#3B71FE] text-sm hover:underline font-semibold cursor-pointer"
+              >
+                {t('login.signup') || 'Sign up'}
+              </button>
+              </div>
+
           </div>
         </div>
       )}

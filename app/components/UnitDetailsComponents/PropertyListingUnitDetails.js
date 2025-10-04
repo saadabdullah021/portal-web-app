@@ -26,7 +26,10 @@ import { useTranslation } from 'react-i18next';
 import { useAppSelector } from '../../../store/hooks';
 import Link from 'next/link';
 import axios from '../../../lib/axios';
-const PropertyListingUnitDetails = ({ listingData, slug }) => {
+import { useParams } from 'next/navigation';
+const PropertyListingUnitDetails = ({ listingData}) => {
+    const params = useParams();
+  const slug = params.slug;
   const { t } = useTranslation("home");
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
@@ -266,7 +269,7 @@ const PropertyListingUnitDetails = ({ listingData, slug }) => {
             <ShareModal 
               isOpen={isModalOpen} 
               onClose={() => setIsModalOpen(false)} 
-              slug={true}
+            title="Share This Place"
               host_share_code={slug}
             />
               {

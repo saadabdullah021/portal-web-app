@@ -146,7 +146,7 @@ const OtpInput = ({
                     <button
                         onClick={() => handleSubmit(otp.join(''))}
                         disabled={loading || otp.some(digit => digit === '')}
-                        className="bg-gray-200 text-gray-600 font-medium py-3 px-8 rounded-lg hover:bg-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                        className="bg-[#3B71FE] text-white font-semibold py-3 px-8 rounded-full hover:bg-blue-700 transition-colors text-[16px]  disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                     >
                         Continue
                     </button>

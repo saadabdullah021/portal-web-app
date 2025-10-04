@@ -1,26 +1,44 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Facebook, Instagram, Share2, Copy, Check, X, Linkedin,} from "lucide-react";
+import { Facebook, Instagram, Share2, Copy, Check, X, Linkedin, QrCode } from "lucide-react";
 import { FaWhatsapp, FaTelegram, FaXTwitter } from "react-icons/fa6";
+import { usePathname, useSearchParams } from "next/navigation";
 
-const ShareModal = ({ isOpen, onClose, host_share_code = null, slug }) => {
+// QR Code component
+const QRCodeGenerator = ({ url, size = 120 }) => {
+    const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent(url)}`;
+    return (
+        <div className="flex justify-center">
+            <img
+                src={qrCodeUrl}
+                alt="QR Code"
+                width={size}
+                height={size}
+                className="rounded-lg border-2 border-gray-200"
+            />
+        </div>
+    );
+};
+
+const ShareModal = ({ isOpen, onClose, host_share_code, title }) => {
     const [pageUrl, setPageUrl] = useState("");
     const [copied, setCopied] = useState(false);
+ const pathname = usePathname();
+  const searchParams = useSearchParams();
+  
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const domain = window.location.origin;
 
-    useEffect(() => {
-        if (typeof window !== "undefined") {
-            if (host_share_code) {
-                const domain = window.location.origin;
-                const url = `${domain}/host/${host_share_code}`;
-                setPageUrl(url);
-            } 
-            if(slug){
-                 const domain = window.location.origin;
-                const url = `${domain}/s/${host_share_code}`;
-                setPageUrl(url);
-            }
-        }
-    }, [host_share_code,slug]);
+      if (host_share_code) {
+        setPageUrl(`${domain}/host/${host_share_code}`);
+      } else {
+        // 👇 pathname + query params dono add ho jayein
+        const query = searchParams.toString();
+        setPageUrl(`${domain}${pathname}${query ? `?${query}` : ""}`);
+      }
+    }
+  }, [host_share_code, pathname, searchParams]);
 
     const copyToClipboard = () => {
         navigator.clipboard.writeText(pageUrl);
@@ -100,74 +118,98 @@ const ShareModal = ({ isOpen, onClose, host_share_code = null, slug }) => {
                                 <Share2 className="w-5 h-5 text-gray-600" />
                             </div>
                             <div>
-                                <h2 className="text-lg font-semibold text-gray-900">Share</h2>
+                                <h2 className="text-lg font-semibold text-gray-900">
+                                    {title || "Share"}
+                                </h2>
                                 <p className="text-sm text-gray-500">Share this content with others</p>
                             </div>
                         </div>
                     </div>
 
-                    {/* Social platforms */}
-                    <div className="px-6 pb-4">
-                        <div className="grid grid-cols-3 md:grid-cols-6 lg:flex  lg:items-center lg:justify-center gap-4">
-                            {socialPlatforms.map((platform) => (
-                                <a
-                                    key={platform.name}
-                                    href={platform.url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="group flex flex-col items-center p-4 rounded-xl hover:bg-gray-50 
-                                             transition-all duration-200 hover:scale-105"
-                                >
-                                    <div className={`w-12 h-12 rounded-full ${platform.bgColor} ${platform.shadowColor}
+                    <div className="flex flex-col lg:flex-row items-center w-full lg:gap-4">
+
+
+
+                        <div className="flex flex-col w-full  lg:w-[70%]">
+
+
+
+                            {/* Copy link */}
+                            <div className="p-6 pt-4 w-full">
+                                <div className="flex items-center gap-2 bg-gray-50 rounded-xl p-3 border border-gray-100">
+                                    <div className="flex-1 min-w-0">
+                                        <input
+                                            type="text"
+                                            value={pageUrl}
+                                            readOnly
+                                            className="w-full bg-transparent text-sm text-gray-600 outline-none truncate font-mono"
+                                        />
+                                    </div>
+                                    <button
+                                        onClick={copyToClipboard}
+                                        className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium 
+                                         transition-all duration-200 ${copied
+                                                ? "bg-green-500 text-white"
+                                                : "bg-gray-900 text-white hover:bg-gray-800 active:scale-95"
+                                            }`}
+                                    >
+                                        {copied ? (
+                                            <>
+                                                <Check className="w-4 h-4" />
+                                                Copied
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Copy className="w-4 h-4" />
+                                                Copy
+                                            </>
+                                        )}
+                                    </button>
+                                </div>
+                            </div>
+                            {/* Social platforms */}
+                            <div className="px-3 pb-4">
+                                <div className="flex items-center justify-center gap-6 flex-wrap">
+                                    {socialPlatforms.map((platform, index) => (
+                                        <a
+                                            key={index}
+                                            href={platform.url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+
+                                        >
+                                            <div className={`w-12 h-12 rounded-full ${platform.bgColor} ${platform.shadowColor}
                                                    flex items-center justify-center shadow-lg mb-0 
                                                    transition-all duration-200 group-hover:shadow-xl group-hover:-translate-y-0.5`}>
-                                        <div className="text-white">
-                                            {platform.icon}
-                                        </div>
-                                    </div>
-
-                                </a>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Divider */}
-                    <div className="mx-6 border-t border-gray-100"></div>
-
-                    {/* Copy link */}
-                    <div className="p-6 pt-0">
-                        <div className="flex items-center gap-2 bg-gray-50 rounded-xl p-3 border border-gray-100">
-                            <div className="flex-1 min-w-0">
-                                <input
-                                    type="text"
-                                    value={pageUrl}
-                                    readOnly
-                                    className="w-full bg-transparent text-sm text-gray-600 outline-none truncate font-mono"
-                                />
+                                                <div className="text-white">
+                                                    {platform.icon}
+                                                </div>
+                                            </div>
+                                        </a>
+                                    ))}
+                                </div>
                             </div>
-                            <button
-                                onClick={copyToClipboard}
-                                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium 
-                                         transition-all duration-200 ${copied
-                                        ? "bg-green-500 text-white"
-                                        : "bg-gray-900 text-white hover:bg-gray-800 active:scale-95"
-                                    }`}
-                            >
-                                {copied ? (
-                                    <>
-                                        <Check className="w-4 h-4" />
-                                        Copied
-                                    </>
-                                ) : (
-                                    <>
-                                        <Copy className="w-4 h-4" />
-                                        Copy
-                                    </>
-                                )}
-                            </button>
+
                         </div>
+
+
+
+                        {/* QR Code Section */}
+                        <div className="px-6 py-4 w-full  lg:w-[30%]">
+
+                            <div className="mt-4 p-4 bg-gray-50 rounded-xl border border-gray-100 animate-in fade-in slide-in-from-top-2 duration-300">
+                                <QRCodeGenerator url={pageUrl} size={150} />
+                                <p className="text-xs text-gray-500 text-center mt-3">Scan to open link</p>
+                            </div>
+
+                        </div>
+
+
                     </div>
                 </div>
+
+
+
             </div>
 
             {/* Toast notification */}
@@ -183,5 +225,4 @@ const ShareModal = ({ isOpen, onClose, host_share_code = null, slug }) => {
         </>
     );
 };
-
 export default ShareModal;

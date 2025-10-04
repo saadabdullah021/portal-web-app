@@ -222,7 +222,7 @@ const SearchBar = ({ onSearch }) => {
   };
 
   return (
-    <div className="relative rounded-3xl bg-white/80 backdrop-blur-sm p-4 lg:p-6 shadow-lg lg:absolute lg:left-1/2 lg:top-[98%] lg:transform lg:-translate-x-1/2 lg:-translate-y-1/2 lg:w-full" style={{ zIndex: 999999 }}>
+    <div className="relative rounded-3xl bg-white/80 backdrop-blur-sm p-4 lg:p-6 shadow-lg lg:absolute lg:left-1/2 lg:top-[98%] lg:transform lg:-translate-x-1/2 lg:-translate-y-1/2 lg:w-full" style={{ zIndex: 999 }}>
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr_1fr_1fr_auto] gap-4">
 
         {/* Location */}
@@ -293,7 +293,7 @@ const SearchBar = ({ onSearch }) => {
               [&::-webkit-scrollbar-thumb:hover]:bg-gray-400
               pr-2
             `}
-            style={{ zIndex: 9999999 }}
+            style={{ zIndex: 999 }}
           >
             <div className="p-4 pb-6">
               {filteredLocations.length > 0 && (
