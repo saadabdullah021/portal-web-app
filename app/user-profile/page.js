@@ -91,7 +91,7 @@ export default function ProfilePage() {
                     src={coverImage}
                     alt="Cover Background"
                     fill
-                    className="object-cover object-center"
+                    className="object-fill object-center"
                     priority
                 />
                 {/* Edit Cover Button */}
@@ -303,11 +303,11 @@ export default function ProfilePage() {
 
             {/* Edit Cover Modal */}
             {showEditCoverModal && (
-                <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-[32px] p-8 lg:p-12 max-w-[600px] w-full relative">
+                <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4 pt-16">
+                    <div className="bg-white rounded-[24px] p-8  max-w-[600px] w-full relative">
                         <button
                             onClick={() => setShowEditCoverModal(false)}
-                            className="absolute top-6 right-6 w-10 h-10 flex items-center justify-center hover:bg-gray-100 rounded-full transition-colors"
+                            className="absolute -top-5 -right-4 w-10 h-10 flex items-center justify-center bg-gray-100 rounded-full transition-colors"
                         >
                             <X className="w-5 h-5 text-gray-500" />
                         </button>
@@ -315,17 +315,19 @@ export default function ProfilePage() {
                         {/* Upload Area */}
                         <div
                             onClick={() => coverInputRef.current?.click()}
-                            className="border-2 border-dashed border-gray-300 rounded-[24px] p-12 lg:p-16 mb-8 text-center hover:border-gray-400 transition-colors cursor-pointer"
+                            className="border-2 border-dashed border-gray-300 rounded-[24px] p-8  mb-8 text-center hover:border-gray-400 transition-colors cursor-pointer"
                         >
                             <div className="flex justify-center mb-5">
-                                <div className="w-16 h-16 bg-blue-50 rounded-[20px] flex items-center justify-center">
-                                    <Upload className="w-7 h-7 text-blue-500" />
-                                </div>
+                              <svg width="49" height="48" viewBox="0 0 49 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fillRule="evenodd" clipRule="evenodd" d="M6.5 10.002C6.5 5.58368 10.0817 2.00195 14.5 2.00195H31.1863C33.308 2.00195 35.3429 2.84481 36.8431 4.3451L40.1569 7.65881C41.6571 9.1591 42.5 11.1939 42.5 13.3157V38.002C42.5 42.4202 38.9183 46.002 34.5 46.002H14.5C10.0817 46.002 6.5 42.4202 6.5 38.002V10.002ZM38.5 16.002V38.002C38.5 40.2111 36.7091 42.002 34.5 42.002H14.5C12.2909 42.002 10.5 40.2111 10.5 38.002V10.002C10.5 7.79281 12.2909 6.00195 14.5 6.00195H28.5V10.002C28.5 13.3157 31.1863 16.002 34.5 16.002H38.5ZM38.2781 12.002C38.0817 11.4371 37.7593 10.9181 37.3284 10.4872L34.0147 7.17353C33.5839 6.74266 33.0648 6.42024 32.5 6.22383V10.002C32.5 11.1065 33.3954 12.002 34.5 12.002H38.2781Z" fill="#3B71FE"/>
+<path d="M23.7344 18.1537C23.4985 18.2513 23.2775 18.396 23.0858 18.5877L17.0858 24.5877C16.3047 25.3688 16.3047 26.6351 17.0858 27.4162C17.8668 28.1972 19.1332 28.1972 19.9142 27.4162L22.5 24.8304V34.002C22.5 35.1065 23.3954 36.002 24.5 36.002C25.6046 36.002 26.5 35.1065 26.5 34.002V24.8304L29.0858 27.4162C29.8668 28.1972 31.1332 28.1972 31.9142 27.4162C32.6953 26.6351 32.6953 25.3688 31.9142 24.5877L25.9142 18.5877C25.3249 17.9984 24.4594 17.8538 23.7344 18.1537Z" fill="#3B71FE"/>
+</svg>
+
                             </div>
-                            <h3 className="text-[20px] lg:text-[22px] font-semibold text-gray-900 mb-2">
+                            <h3 className="text-[20px] lg:text-[24px] font-semibold text-[#23262F] mb-2">
                                 Drag and drop your photo here
                             </h3>
-                            <p className="text-[14px] text-gray-500">or click to browse</p>
+                            <p className="text-[16px] text-[#777E90]">or click to browse</p>
                         </div>
                         <input
                             ref={coverInputRef}
@@ -337,7 +339,7 @@ export default function ProfilePage() {
 
                         {/* Default Photos */}
                         <div className="text-center">
-                            <p className="text-[14px] text-gray-500 mb-5">Or use Portal's default photos</p>
+                            <p className="text-[12px] text-[#777E90] mb-5">Or use Portal's default photos</p>
                             <div className="flex justify-center gap-3 lg:gap-4 flex-wrap">
                                 {defaultPhotos.map((photo, index) => (
                                     <button
