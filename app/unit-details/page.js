@@ -1,4 +1,3 @@
-
 "use client";
 import { useEffect, useState, useRef } from "react";
 import { useSearchParams } from "next/navigation";
@@ -15,25 +14,25 @@ import axios from "../../lib/axios";
 
 const PropertyListing = () => {
   const searchParams = useSearchParams();
-  const slug = searchParams.get('slug');
+  const slug = searchParams.get("slug");
   const { i18n } = useTranslation();
   const [listingData, setListingData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
+  const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
   const [error, setError] = useState(null);
   const [similarProperties, setSimilarProperties] = useState(null);
-  
+
   const hasFetchedRef = useRef(false);
-  const lastLanguageRef = useRef(i18n.language || 'en');
+  const lastLanguageRef = useRef(i18n.language || "en");
 
   useEffect(() => {
     // Ensure we have a valid language
-    const currentLanguage = i18n.language || 'en';
-    
+    const currentLanguage = i18n.language || "en";
+
     // Check if language actually changed or if this is the first load
     const languageChanged = lastLanguageRef.current !== currentLanguage;
     const isFirstLoad = !hasFetchedRef.current;
-    
+
     if (!languageChanged && !isFirstLoad) {
       return;
     }
@@ -43,7 +42,7 @@ const PropertyListing = () => {
 
     const fetchListingData = async () => {
       if (!slug) {
-        setError('No slug provided');
+        setError("No slug provided");
         setLoading(false);
         return;
       }
@@ -56,50 +55,53 @@ const PropertyListing = () => {
       // const cacheTime = localStorage.getItem(`${cacheKey}_time`);
       // const similarCacheTime = localStorage.getItem(`${similarCacheKey}_time`);
       // const now = Date.now();
-      
+
       // // Check if cached data exists and is less than 15 minutes old (only for same language)
       // if (cachedData && cacheTime && (now - parseInt(cacheTime)) < 900000 && !languageChanged) {
       //   setListingData(JSON.parse(cachedData));
-        
+
       //   // Also load similar properties from cache if available
       //   if (similarCachedData && similarCacheTime && (now - parseInt(similarCacheTime)) < 900000) {
       //     setSimilarProperties(JSON.parse(similarCachedData));
       //   }
-        
+
       //   setLoading(false);
       //   return;
       // }
 
       try {
         setLoading(true);
-        
+
         // Add minimum loading time to ensure loader is visible
         const [data] = await Promise.all([
           getListingBySlug(slug, currentLanguage),
-          new Promise(resolve => setTimeout(resolve, 1000)) // Minimum 1 second loading
+          new Promise((resolve) => setTimeout(resolve, 1000)), // Minimum 1 second loading
         ]);
-        
+
         setListingData(data);
-        
+
         // Cache the data with language-specific key
         // localStorage.setItem(cacheKey, JSON.stringify(data));
         // localStorage.setItem(`${cacheKey}_time`, now.toString());
-        
+
         if (data?.data?.listing_id) {
-          const similarResponse = await axios.get(`/get-similar-listings?listing_id=${data.data.listing_id}`, {
-            headers: {
-              'Accept-Language': currentLanguage
+          const similarResponse = await axios.get(
+            `/get-similar-listings?listing_id=${data.data.listing_id}`,
+            {
+              headers: {
+                "Accept-Language": currentLanguage,
+              },
             }
-          });
+          );
           setSimilarProperties(similarResponse.data);
-          
+
           // Cache similar properties with language-specific key
           // localStorage.setItem(similarCacheKey, JSON.stringify(similarData));
           // localStorage.setItem(`${similarCacheKey}_time`, now.toString());
         }
       } catch (err) {
-        console.error('Error fetching listing:', err);
-        setError('Failed to load listing details');
+        console.error("Error fetching listing:", err);
+        setError("Failed to load listing details");
       } finally {
         setLoading(false);
         hasFetchedRef.current = true;
@@ -107,7 +109,7 @@ const PropertyListing = () => {
     };
 
     fetchListingData();
-  }, [slug, i18n.language || 'en']);
+  }, [slug, i18n.language || "en"]);
 
   if (loading) {
     return <UnitDetailsShimmer />;
@@ -128,36 +130,54 @@ const PropertyListing = () => {
     return (
       <div className="flex justify-center items-center min-h-screen">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Listing Not Found</h2>
-          <p className="text-gray-600">The requested listing could not be found.</p>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">
+            Listing Not Found
+          </h2>
+          <p className="text-gray-600">
+            The requested listing could not be found.
+          </p>
         </div>
       </div>
     );
-    }
+  }
 
   return (
     <div className="">
-      <PropertyListingUnitDetails listingData={listingData } slug={slug} />
+      <PropertyListingUnitDetails listingData={listingData} slug={slug} />
       <PropertyDetailsSection listingData={listingData} />
-      <ReviewsSection listingData={listingData} isAuthenticated={isAuthenticated} />
-      {similarProperties && (
+      <ReviewsSection
+        listingData={listingData}
+        isAuthenticated={isAuthenticated}
+      />
+      {similarProperties?.items?.records?.length > 0 && (
         <div className="mb-5">
-          {(similarProperties.items?.records || []).length < 5 ? (
-            <JustForYouSection 
-              items={similarProperties.items?.records || []} 
+          {similarProperties.items.records.length < 5 ? (
+            <JustForYouSection
+              items={similarProperties.items.records}
               sectionData={{
-                component_title: similarProperties.component_title || "Similar Properties Nearby",
-                component_description: similarProperties.component_description || "Discover similar properties in this area that match your preferences. Perfect for your next stay or booking.",
-                items: similarProperties.items || { totalRecords: 0, perPage: 0 }
-              }} 
+                component_title:
+                  similarProperties.component_title ||
+                  "Similar Properties Nearby",
+                component_description:
+                  similarProperties.component_description ||
+                  "Discover similar properties in this area that match your preferences. Perfect for your next stay or booking.",
+                items: similarProperties.items || {
+                  totalRecords: 0,
+                  perPage: 0,
+                },
+              }}
             />
           ) : (
-            <LastMinuteDealsSection 
-              items={similarProperties.items?.records || []} 
+            <LastMinuteDealsSection
+              items={similarProperties.items.records}
               data={{
-                component_title: similarProperties.component_title || "Similar Properties Nearby",
-                component_description: similarProperties.component_description || "Discover similar properties in this area that match your preferences. Perfect for your next stay or booking."
-              }} 
+                component_title:
+                  similarProperties.component_title ||
+                  "Similar Properties Nearby",
+                component_description:
+                  similarProperties.component_description ||
+                  "Discover similar properties in this area that match your preferences. Perfect for your next stay or booking.",
+              }}
             />
           )}
         </div>

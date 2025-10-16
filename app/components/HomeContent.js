@@ -91,22 +91,28 @@ export default function HomeContent() {
     }
   }, [isLoadingMore, hasMore, currentOffset, fetchHome]);
 
-  useEffect(() => {
-    if (pathname !== '/') {
-      return;
-    }
+useEffect(() => {
+  if (pathname !== "/") return;
+  if (isAnyPopupOpen) return;
 
-    if (isAnyPopupOpen) {
-      return;
-    }
+  // Prevent duplicate API calls (even in dev Strict Mode)
+  if (hasFetchedHomeRef.current) return;
 
-    if (lastLanguageRef.current === i18n.language && homeComponents.length > 0) {
-      return;
-    }
+  hasFetchedHomeRef.current = true;
+  lastLanguageRef.current = i18n.language;
 
-    lastLanguageRef.current = i18n.language;
+  // Defer execution to avoid Strict Mode double-call
+  const timer = setTimeout(() => {
     fetchHome();
-  }, [i18n.language, isAnyPopupOpen, pathname, fetchHome, homeComponents.length]);
+  }, 0);
+
+  return () => clearTimeout(timer);
+}, [pathname, isAnyPopupOpen, i18n.language, fetchHome]);
+
+
+
+
+
 
   useEffect(() => {
     const loadMoreButton = loadMoreButtonRef.current;

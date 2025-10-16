@@ -27,18 +27,19 @@ const ShareModal = ({ isOpen, onClose, host_share_code, title }) => {
   const searchParams = useSearchParams();
   
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const domain = window.location.origin;
+  if (typeof window === "undefined") return;
 
-      if (host_share_code) {
-        setPageUrl(`${domain}/host/${host_share_code}`);
-      } else {
-        // 👇 pathname + query params dono add ho jayein
-        const query = searchParams.toString();
-        setPageUrl(`${domain}${pathname}${query ? `?${query}` : ""}`);
-      }
-    }
-  }, [host_share_code, pathname, searchParams]);
+  const domain = window.location.origin;
+
+  if (host_share_code) {
+    // ✅ Updated: Use short link pattern `/s/{shortcode}`
+    setPageUrl(`${domain}/s/${host_share_code}`);
+  } else {
+    const query = searchParams.toString();
+    setPageUrl(`${domain}${pathname}${query ? `?${query}` : ""}`);
+  }
+}, [host_share_code, pathname, searchParams]);
+
 
     const copyToClipboard = () => {
         navigator.clipboard.writeText(pageUrl);

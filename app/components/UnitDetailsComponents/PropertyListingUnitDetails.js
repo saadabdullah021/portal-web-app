@@ -542,6 +542,7 @@ const PropertyListingUnitDetails = ({ listingData}) => {
           </button>
 
           {images[currentImageIndex] && (
+            
             <img
               src={images[currentImageIndex]}
               alt={`${listingData?.data?.title || "Property"} - Image ${currentImageIndex + 1}`}
@@ -551,8 +552,8 @@ const PropertyListingUnitDetails = ({ listingData}) => {
                 e.target.style.display = 'none';
               }}
             />
+            
           )}
-
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white text-lg">
             {currentImageIndex + 1} / {images.length}
           </div>
