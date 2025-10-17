@@ -267,11 +267,11 @@ const PropertyListingUnitDetails = ({ listingData}) => {
 
             {/* ✅ Share Modal */}
             <ShareModal 
-              isOpen={isModalOpen} 
-              onClose={() => setIsModalOpen(false)} 
-            title="Share This Place"
-              host_share_code={slug}
-            />
+  isOpen={isModalOpen} 
+  onClose={() => setIsModalOpen(false)} 
+  title="Share This Place"
+  listing_share_code={listingData?.data?.listing_share_code} // ✅ use API field
+/>
               {
                 isAuthenticated && (
                   <>

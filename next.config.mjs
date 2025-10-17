@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: false,
-  output: 'export',
+  output: 'standalone', // ✅ must be standalone, not export
   images: {
     unoptimized: true,
     domains: ['guku.ai'],

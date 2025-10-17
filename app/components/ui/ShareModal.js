@@ -20,7 +20,7 @@ const QRCodeGenerator = ({ url, size = 120 }) => {
     );
 };
 
-const ShareModal = ({ isOpen, onClose, host_share_code, title }) => {
+const ShareModal = ({ isOpen, onClose, host_share_code, title, listing_share_code }) => {
     const [pageUrl, setPageUrl] = useState("");
     const [copied, setCopied] = useState(false);
  const pathname = usePathname();
@@ -31,14 +31,15 @@ const ShareModal = ({ isOpen, onClose, host_share_code, title }) => {
 
   const domain = window.location.origin;
 
-  if (host_share_code) {
-    // ✅ Updated: Use short link pattern `/s/{shortcode}`
-    setPageUrl(`${domain}/s/${host_share_code}`);
+  if (listing_share_code) {
+    // ✅ Use short link pattern `/s/{listing_share_code}`
+    setPageUrl(`${domain}/s/${listing_share_code}`);
   } else {
     const query = searchParams.toString();
     setPageUrl(`${domain}${pathname}${query ? `?${query}` : ""}`);
   }
-}, [host_share_code, pathname, searchParams]);
+}, [listing_share_code, pathname, searchParams]);
+
 
 
     const copyToClipboard = () => {

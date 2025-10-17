@@ -80,6 +80,13 @@ const PropertyListing = () => {
 
         setListingData(data);
 
+        // ✅ Update tab title dynamically
+        if (data?.data?.title) {
+          document.title = `PORTAL | Unit Details | ${data.data.title}`;
+        } else {
+          document.title = "PORTAL | Unit Details";
+        }
+
         // Cache the data with language-specific key
         // localStorage.setItem(cacheKey, JSON.stringify(data));
         // localStorage.setItem(`${cacheKey}_time`, now.toString());
