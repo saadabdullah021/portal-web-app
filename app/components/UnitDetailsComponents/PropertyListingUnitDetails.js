@@ -27,9 +27,12 @@ import { useAppSelector } from '../../../store/hooks';
 import Link from 'next/link';
 import axios from '../../../lib/axios';
 import { useParams } from 'next/navigation';
+import MapLocationPopup from '../ui/MapLocationPopup';
+import { useSearchParams, useRouter } from 'next/navigation';
 const PropertyListingUnitDetails = ({ listingData}) => {
-    const params = useParams();
-  const slug = params.slug;
+  const Router = useRouter(); 
+const searchParams = useSearchParams();
+const slug = searchParams.get('slug');
   const { t } = useTranslation("home");
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
@@ -38,7 +41,8 @@ const PropertyListingUnitDetails = ({ listingData}) => {
   const [imageLoadingStates, setImageLoadingStates] = useState({});
   const sliderRef = useRef(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  
+  const [isMapOpen, setIsMapOpen] = useState(false);
+
   // Check if user is logged in
   const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
 
@@ -249,10 +253,19 @@ const PropertyListingUnitDetails = ({ listingData}) => {
           <hr className='text-gray-300' />
           {/* Action Buttons */}
           <div className="flex items-center justify-center lg:justify-start gap-8 lg:gap-2 lg:ml-4">
-            <button className="p-2 hover:bg-gray-100 flex items-center rounded-full border-2 border-[#E6E8EC] transition-colors">
-              <TiLocationArrowOutline size={24} color='#777E90' />
+    {/* Location Button */}
+      <button 
+        onClick={() => setIsMapOpen(true)}
+        className="p-2 hover:bg-gray-100 flex items-center rounded-full border-2 border-[#E6E8EC] transition-colors"
+      >
+        <TiLocationArrowOutline size={24} color='#777E90' />
+      </button>
 
-            </button>
+      {/* Map Popup Component */}
+      <MapLocationPopup 
+        isOpen={isMapOpen} 
+        onClose={() => setIsMapOpen(false)} 
+      />
 
             {/* ✅ Share button */}
             <button
@@ -507,13 +520,13 @@ const PropertyListingUnitDetails = ({ listingData}) => {
           </div>
 
           {/* Show All Photos Button */}
-          <button
-            onClick={() => openGallery()}
-            className="absolute -bottom-90 left-4 bg-white border border-gray-300 px-4 py-2 rounded-full items-center gap-2 hover:bg-gray-50 transition-colors shadow-sm hidden lg:flex"
-          >
-            <Camera size={16} />
-            <span className="text-sm font-bold text-[#23262F] font-dm-sans">{t('buttons.show_all_photos')} </span>
-          </button>
+    <button
+onClick={() => Router.push(`/gallery?slug=${slug || ''}`)}
+  className="absolute -bottom-90 left-4 bg-white border border-gray-300 px-4 py-2 rounded-full items-center gap-2 hover:bg-gray-50 transition-colors shadow-sm hidden lg:flex"
+>
+  <Camera size={16} />
+  <span className="text-sm font-bold text-[#23262F]">{t('buttons.show_all_photos')}</span>
+</button>
         </div>
       </main>
 
