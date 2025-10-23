@@ -2,13 +2,13 @@
 
 import "./globals.css";
 import { I18nextProvider } from "react-i18next";
-import i18n from "../i18n/i18n";
+import i18n from "../../../i18n/i18n";
 import { useEffect, useState } from "react";
-import Navbar from "./components/Navbar";
-import Footer from "./components/Footer";
-import { PopupProvider } from "./contexts/PopupContext";
-import { Providers } from './providers';
-import Loading from './loading';
+import Navbar from "../../components/Navbar";
+import Footer from "../../components/Footer";
+import { PopupProvider } from "../../contexts/PopupContext";
+import { Providers } from "../../providers";
+import Loading from "../../loading";
 
 export default function RootLayout({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(true);
@@ -17,24 +17,22 @@ export default function RootLayout({ children }) {
   useEffect(() => {
     const loggedIn = localStorage.getItem("isLoggedIn") === "true";
     setIsAuthenticated(loggedIn);
-    
+
     const savedLanguage = localStorage.getItem("i18nextLng") || "en";
     document.documentElement.dir = savedLanguage === "ar" ? "rtl" : "ltr";
     document.documentElement.lang = savedLanguage;
-    
+
     if (i18n.language !== savedLanguage) {
       i18n.changeLanguage(savedLanguage);
     }
-    
+
     setIsHydrated(true);
   }, []);
 
   if (!isHydrated) {
     return (
       <html lang="en">
-        <body>
-          {/* <Loading /> */}
-        </body>
+        <body>{/* <Loading /> */}</body>
       </html>
     );
   }
