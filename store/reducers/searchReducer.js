@@ -1,18 +1,22 @@
-import { createSlice } from '@reduxjs/toolkit';
+// TODO: remove this file after testing Redux Starter Kit
+import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   selectedLocation: null,
 };
 
 const searchSlice = createSlice({
-  name: 'search',
+  name: "search",
   initialState,
   reducers: {
     setSelectedLocation(state, action) {
       state.selectedLocation = action.payload;
-      if (typeof window !== 'undefined') {
+      if (typeof window !== "undefined") {
         try {
-          localStorage.setItem('selectedLocation', JSON.stringify(action.payload));
+          localStorage.setItem(
+            "selectedLocation",
+            JSON.stringify(action.payload)
+          );
         } catch {}
       }
     },
@@ -21,4 +25,3 @@ const searchSlice = createSlice({
 
 export const { setSelectedLocation } = searchSlice.actions;
 export default searchSlice.reducer;
-

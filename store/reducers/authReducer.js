@@ -1,3 +1,5 @@
+//TODO: remove this file after testing Redux Starter Kit
+
 import {
   LOGIN_START,
   LOGIN_SUCCESS,
@@ -6,8 +8,8 @@ import {
   LOGOUT_SUCCESS,
   LOGOUT_FAILURE,
   CLEAR_ERROR,
-  SET_CREDENTIALS
-} from '../actions/authActions';
+  SET_CREDENTIALS,
+} from "../actions/authActions";
 
 const initialState = {
   user: null,
@@ -23,9 +25,9 @@ const authReducer = (state = initialState, action) => {
       return {
         ...state,
         loading: true,
-        error: null
+        error: null,
       };
-    
+
     case LOGIN_SUCCESS:
       return {
         ...state,
@@ -33,23 +35,23 @@ const authReducer = (state = initialState, action) => {
         user: action.payload.user,
         token: action.payload.token,
         isAuthenticated: true,
-        error: null
+        error: null,
       };
-    
+
     case LOGIN_FAILURE:
       return {
         ...state,
         loading: false,
         error: action.payload,
-        isAuthenticated: false
+        isAuthenticated: false,
       };
-    
+
     case LOGOUT_START:
       return {
         ...state,
-        loading: true
+        loading: true,
       };
-    
+
     case LOGOUT_SUCCESS:
       return {
         ...state,
@@ -57,30 +59,30 @@ const authReducer = (state = initialState, action) => {
         user: null,
         token: null,
         isAuthenticated: false,
-        error: null
+        error: null,
       };
-    
+
     case LOGOUT_FAILURE:
       return {
         ...state,
         loading: false,
-        error: action.payload
+        error: action.payload,
       };
-    
+
     case CLEAR_ERROR:
       return {
         ...state,
-        error: null
+        error: null,
       };
-    
+
     case SET_CREDENTIALS:
       return {
         ...state,
         user: action.payload.user,
         token: action.payload.token,
-        isAuthenticated: true
+        isAuthenticated: true,
       };
-    
+
     default:
       return state;
   }
