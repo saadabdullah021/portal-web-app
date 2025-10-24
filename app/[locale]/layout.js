@@ -7,8 +7,6 @@ import { Providers } from "./providers";
 import { cookies } from "next/headers";
 import I18nProvider from "../components/I18nProvider";
 
-export const dynamic = "force-static";
-
 export async function generateMetadata({ params: { locale } }) {
   return {
     title: "PORTAL | Book Luxury Chalets | Reserve Your Perfect Getaway Today",
@@ -19,7 +17,6 @@ export async function generateMetadata({ params: { locale } }) {
 export default function RootLayout({ children, params: { locale } }) {
   const dir = locale === "ar" ? "rtl" : "ltr";
   // Optional: read auth on server (delete if you don’t need it here)
-  const isAuthenticated = cookies().get("isLoggedIn")?.value === "true";
 
   return (
     <html lang={locale} dir={dir}>
@@ -28,7 +25,7 @@ export default function RootLayout({ children, params: { locale } }) {
           <I18nProvider locale={locale}>
             <PopupProvider>
               <div className="min-h-screen flex flex-col">
-                <Navbar isAuthenticated={isAuthenticated} />
+                <Navbar />
                 <main className="flex-1">{children}</main>
                 <Footer />
               </div>
