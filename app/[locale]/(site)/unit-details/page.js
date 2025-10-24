@@ -2,15 +2,15 @@
 import { useEffect, useState, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { useTranslation } from "react-i18next";
-import PropertyDetailsSection from "../components/UnitDetailsComponents/PropertyDetailsSection";
-import PropertyListingUnitDetails from "../components/UnitDetailsComponents/PropertyListingUnitDetails";
-import ReviewsSection from "../components/UnitDetailsComponents/ReviewsSection";
-import LastMinuteDealsSection from "../components/HomeComponents/LastMinuteDealsSection";
-import JustForYouSection from "../components/HomeComponents/JustForYouSection";
-import { getListingBySlug } from "../../lib/apiClient";
-import { useAppSelector } from "../../store/hooks";
-import UnitDetailsShimmer from "../components/ui/UnitDetailsShimmer";
-import axios from "../../lib/axios";
+import PropertyDetailsSection from "@/app/components/UnitDetailsComponents/PropertyDetailsSection";
+import PropertyListingUnitDetails from "@/app/components/UnitDetailsComponents/PropertyListingUnitDetails";
+import ReviewsSection from "@/app/components/UnitDetailsComponents/ReviewsSection";
+import LastMinuteDealsSection from "@/app/components/HomeComponents/LastMinuteDealsSection";
+import JustForYouSection from "@/app/components/HomeComponents/JustForYouSection";
+import { getListingBySlug } from "@/lib/apiClient";
+import { useAppSelector } from "@/store/hooks";
+import UnitDetailsShimmer from "@/app/components/ui/UnitDetailsShimmer";
+import axios from "@/lib/axios";
 
 const PropertyListing = () => {
   const searchParams = useSearchParams();

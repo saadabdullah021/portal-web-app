@@ -1,4 +1,3 @@
-
 "use client";
 
 import AdventureSection from "./HomeComponents/AdventureSection";
@@ -17,11 +16,10 @@ import { useEffect, useMemo, useState, useRef, useCallback } from "react";
 import { usePopup } from "../contexts/PopupContext";
 
 import WhyPortalSection from "./HomeComponents/WhyPortalSection";
-import axios from '@/lib/axios';
-import Shimmer from './ui/Shimmer';
-import { useTranslation } from 'react-i18next';
-import { usePathname } from 'next/navigation';
-import Loading from '../loading';
+import axios from "@/lib/axios";
+import Shimmer from "./ui/Shimmer";
+import { useTranslation } from "react-i18next";
+import { usePathname } from "next/navigation";
 
 export default function HomeContent() {
   const [homeComponents, setHomeComponents] = useState([]);
@@ -37,53 +35,73 @@ export default function HomeContent() {
   const lastLanguageRef = useRef(i18n.language);
   const loadMoreButtonRef = useRef(null);
 
-
   const isAnyPopupOpen = useMemo(() => {
-    return popups.login || popups.signup || popups.verification || popups.confirmIdentity;
-  }, [popups.login, popups.signup, popups.verification, popups.confirmIdentity]);
+    return (
+      popups.login ||
+      popups.signup ||
+      popups.verification ||
+      popups.confirmIdentity
+    );
+  }, [
+    popups.login,
+    popups.signup,
+    popups.verification,
+    popups.confirmIdentity,
+  ]);
 
-  const fetchHome = useCallback(async (offset = 0, append = false) => {
-    try {
-      if (append) {
-        setIsLoadingMore(true);
-      } else {
-        setIsLoading(true);
-      }
-      
-      const { data } = await axios.get(`/get-home-components?offsetComponents=${offset}&perPageComponents=1`, {
-        params: {
-          language: i18n.language
+  const fetchHome = useCallback(
+    async (offset = 0, append = false) => {
+      try {
+        if (append) {
+          setIsLoadingMore(true);
+        } else {
+          setIsLoading(true);
         }
-      });
-      
-      const components = Array.isArray(data?.data?.records) ? data.data?.records : [];
-      const totalRecords = data?.data?.total || 0;
-      const perPage = 1;
-      
-      if (append) {
-        setHomeComponents(prev => [...prev, ...components]);
-        setCurrentOffset(prev => prev + perPage);
-      } else {
-        setHomeComponents(components);
-        setCurrentOffset(perPage);
-      }
-      
-      setHasMore(data?.data?.totalRecords > perPage && (offset + perPage) < data?.data?.totalRecords);
-      
-      if (append) {
-        setIsLoadingMore(false);
-      } else {
+
+        const { data } = await axios.get(
+          `/get-home-components?offsetComponents=${offset}&perPageComponents=1`,
+          {
+            params: {
+              language: i18n.language,
+            },
+          }
+        );
+
+        const components = Array.isArray(data?.data?.records)
+          ? data.data?.records
+          : [];
+        const totalRecords = data?.data?.total || 0;
+        const perPage = 1;
+
+        if (append) {
+          setHomeComponents((prev) => [...prev, ...components]);
+          setCurrentOffset((prev) => prev + perPage);
+        } else {
+          setHomeComponents(components);
+          setCurrentOffset(perPage);
+        }
+
+        setHasMore(
+          data?.data?.totalRecords > perPage &&
+            offset + perPage < data?.data?.totalRecords
+        );
+
+        if (append) {
+          setIsLoadingMore(false);
+        } else {
+          setIsLoading(false);
+        }
+      } catch (error) {
+        console.error("HomeContent - API error:", error);
+        if (!append) {
+          setHomeComponents([]);
+        }
         setIsLoading(false);
+        setIsLoadingMore(false);
       }
-    } catch (error) {
-      console.error('HomeContent - API error:', error);
-      if (!append) {
-        setHomeComponents([]);
-      }
-      setIsLoading(false);
-      setIsLoadingMore(false);
-    }
-  }, [i18n.language]);
+    },
+    [i18n.language]
+  );
 
   const loadMoreComponents = useCallback(() => {
     if (!isLoadingMore && hasMore) {
@@ -91,32 +109,27 @@ export default function HomeContent() {
     }
   }, [isLoadingMore, hasMore, currentOffset, fetchHome]);
 
-useEffect(() => {
-  if (pathname !== "/") return;
-  if (isAnyPopupOpen) return;
+  useEffect(() => {
+    if (pathname !== "/") return;
+    if (isAnyPopupOpen) return;
 
-  // Prevent duplicate API calls (even in dev Strict Mode)
-  if (hasFetchedHomeRef.current) return;
+    // Prevent duplicate API calls (even in dev Strict Mode)
+    if (hasFetchedHomeRef.current) return;
 
-  hasFetchedHomeRef.current = true;
-  lastLanguageRef.current = i18n.language;
+    hasFetchedHomeRef.current = true;
+    lastLanguageRef.current = i18n.language;
 
-  // Defer execution to avoid Strict Mode double-call
-  const timer = setTimeout(() => {
-    fetchHome();
-  }, 0);
+    // Defer execution to avoid Strict Mode double-call
+    const timer = setTimeout(() => {
+      fetchHome();
+    }, 0);
 
-  return () => clearTimeout(timer);
-}, [pathname, isAnyPopupOpen, i18n.language, fetchHome]);
-
-
-
-
-
+    return () => clearTimeout(timer);
+  }, [pathname, isAnyPopupOpen, i18n.language, fetchHome]);
 
   useEffect(() => {
     const loadMoreButton = loadMoreButtonRef.current;
-    
+
     if (!loadMoreButton || !hasMore || isLoadingMore) {
       return;
     }
@@ -130,7 +143,7 @@ useEffect(() => {
       },
       {
         threshold: 0.1,
-        rootMargin: '100px'
+        rootMargin: "100px",
       }
     );
 
@@ -143,67 +156,68 @@ useEffect(() => {
     };
   }, [hasMore, isLoadingMore, loadMoreComponents]);
 
+  const renderedSections = useMemo(() => {
+    if (homeComponents.length === 0) {
+      return null;
+    }
 
-const renderedSections = useMemo(() => {
-  if (homeComponents.length === 0) {
-    return null;
-  }
-  
-  return homeComponents
-    .map((section, idx) => {
-      let Comp = null;
-      const uniqueKey = `section-${section.component_id || `fallback-${idx}`}`;
+    return homeComponents
+      .map((section, idx) => {
+        let Comp = null;
+        const uniqueKey = `section-${
+          section.component_id || `fallback-${idx}`
+        }`;
 
-      if (section.component_design_type === 'grid') {
-        Comp = (
-          <JustForYouSection
-            key={`grid-${uniqueKey}`}
-            items={section.items?.records || []}
-            sectionData={section}
-          />
-        );
-      }
-      if (
-        section.component_design_type === 'slider' 
-      ) {
-        Comp = (
-          <LastMinuteDealsSection
-            data={section}
-            key={`slider-${uniqueKey}`}
-            items={section.items?.records || []}
-          />
-        );
-      }
+        if (section.component_design_type === "grid") {
+          Comp = (
+            <JustForYouSection
+              key={`grid-${uniqueKey}`}
+              items={section.items?.records || []}
+              sectionData={section}
+            />
+          );
+        }
+        if (section.component_design_type === "slider") {
+          Comp = (
+            <LastMinuteDealsSection
+              data={section}
+              key={`slider-${uniqueKey}`}
+              items={section.items?.records || []}
+            />
+          );
+        }
 
-      if (!Comp) return null;
+        if (!Comp) return null;
 
-      // check position
-      const isFirst = idx === 0;
-      const isLast = idx === homeComponents.length - 1;
+        // check position
+        const isFirst = idx === 0;
+        const isLast = idx === homeComponents.length - 1;
 
-      return (
-        <div
-          key={`wrapper-${uniqueKey}`}
-          className={`
+        return (
+          <div
+            key={`wrapper-${uniqueKey}`}
+            className={`
             ${isFirst ? "pt-8  lg:pt-16 pb-0" : ""}
             ${isLast ? "lg:pt-16 pt-8 pb-8 lg:pb-16" : ""}
             ${!isFirst && !isLast ? "lg:pt-16 pt-8 pb-0" : ""}
           `}
-        >
-          {Comp}
-        </div>
-      );
-    })
-    .filter(Boolean);
-}, [homeComponents]);
+          >
+            {Comp}
+          </div>
+        );
+      })
+      .filter(Boolean);
+  }, [homeComponents]);
 
   return (
-    <div 
-      className={`max-w-7xl 2xl:max-w-[1400px] mx-auto px-4 ${i18n.language === 'ar' ? 'rtl' : 'ltr'}`}
-      dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}
+    <div
+      className={`max-w-7xl 2xl:max-w-[1400px] mx-auto px-4 ${
+        i18n.language === "ar" ? "rtl" : "ltr"
+      }`}
+      dir={i18n.language === "ar" ? "rtl" : "ltr"}
     >
-      <HeroSection/>
-      
+      <HeroSection />
+
       {isLoading ? (
         <div className="space-y-16">
           <div className="pt-8 lg:pt-16">
@@ -213,7 +227,7 @@ const renderedSections = useMemo(() => {
             </div>
             <Shimmer type="grid" count={4} />
           </div>
-          
+
           <div className="pt-8 lg:pt-16">
             <div className="animate-pulse mb-8">
               <div className="bg-gray-200 h-8 w-64 rounded mb-4"></div>
@@ -221,7 +235,7 @@ const renderedSections = useMemo(() => {
             </div>
             <Shimmer type="slider" count={4} />
           </div>
-          
+
           <div className="pt-8 lg:pt-16">
             <div className="animate-pulse mb-8">
               <div className="bg-gray-200 h-8 w-64 rounded mb-4"></div>
@@ -234,11 +248,13 @@ const renderedSections = useMemo(() => {
         <>
           {renderedSections || (
             <div className="text-center py-16">
-              <h3 className="text-xl font-semibold text-gray-600 mb-2">No content available</h3>
+              <h3 className="text-xl font-semibold text-gray-600 mb-2">
+                No content available
+              </h3>
               <p className="text-gray-500">Please try refreshing the page</p>
             </div>
           )}
-          
+
           {isLoadingMore && (
             <div className="pt-8 lg:pt-16">
               <div className="animate-pulse mb-8">
@@ -248,7 +264,7 @@ const renderedSections = useMemo(() => {
               <Shimmer type="grid" count={4} />
             </div>
           )}
-          
+
           {hasMore && (
             <div className="flex justify-center py-12">
               <button
@@ -265,8 +281,8 @@ const renderedSections = useMemo(() => {
                 ) : (
                   <>
                     <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full"></div>
-                    <span className='font-bold text-sm text-black'>
-                      Load More 
+                    <span className="font-bold text-sm text-black">
+                      Load More
                     </span>
                   </>
                 )}
@@ -276,15 +292,14 @@ const renderedSections = useMemo(() => {
         </>
       )}
 
-      <HowItWorks key="how-it-works"/>
-      <CuratedExperiences key="curated-experiences"/>
-      <AdventureSection key="adventure-section"/>
-      <BrowseCategorySection key="browse-category"/>
-      <ExploreNearby key="explore-nearby"/>
-      <BestHostsSection key="best-hosts"/>
-      <WhyPortalSection key="why-portal"/>
-      <PromotionalVideoSection key="promotional-video"/>
+      <HowItWorks key="how-it-works" />
+      <CuratedExperiences key="curated-experiences" />
+      <AdventureSection key="adventure-section" />
+      <BrowseCategorySection key="browse-category" />
+      <ExploreNearby key="explore-nearby" />
+      <BestHostsSection key="best-hosts" />
+      <WhyPortalSection key="why-portal" />
+      <PromotionalVideoSection key="promotional-video" />
     </div>
   );
 }
-

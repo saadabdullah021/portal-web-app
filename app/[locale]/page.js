@@ -1,4 +1,4 @@
-import HomeContent from "./components/HomeContent";
+import HomeContent from "@/app/components/HomeContent";
 
 export const metadata = {
   title: "PORTAL | Book Luxury Chalets | Reserve Your Perfect Getaway Today",
