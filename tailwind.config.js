@@ -9,14 +9,14 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-          sans: ["var(--font-dm-sans)", "sans-serif"], // default
-        dm: ["DM Sans", "sans-serif"],               // custom class
-        poppins: ["Poppins", "sans-serif"],    
+        sans: ["var(--font-dm-sans)", "sans-serif"], // default
+        dm: ["DM Sans", "sans-serif"], // custom class
+        poppins: ["Poppins", "sans-serif"],
       },
       colors: {
-       text: "#23262F", 
+        text: "#23262F",
       },
     },
   },
-  plugins: [],
+  plugins: [require("tailwindcss-logical")],
 };

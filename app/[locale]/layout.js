@@ -4,8 +4,10 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { PopupProvider } from "../contexts/PopupContext";
 import { Providers } from "./providers";
-import { cookies } from "next/headers";
-import I18nProvider from "../components/I18nProvider";
+import { NextIntlClientProvider, hasLocale } from "next-intl";
+import { routing } from "@/src/i18n/routing";
+import { getMessages } from "next-intl/server";
+import { notFound } from "next/navigation";
 
 export async function generateMetadata({ params: { locale } }) {
   return {
@@ -14,15 +16,19 @@ export async function generateMetadata({ params: { locale } }) {
   };
 }
 
-export default function RootLayout({ children, params: { locale } }) {
-  const dir = locale === "ar" ? "rtl" : "ltr";
-  // Optional: read auth on server (delete if you don’t need it here)
+export default async function RootLayout({ children, params }) {
+  const { locale } = await params;
+
+  if (!hasLocale(routing.locales, locale)) {
+    notFound();
+  }
+  const messages = await getMessages();
 
   return (
-    <html lang={locale} dir={dir}>
+    <html lang={locale} dir={locale === "ar" ? "rtl" : "ltr"}>
       <body>
         <Providers>
-          <I18nProvider locale={locale}>
+          <NextIntlClientProvider locale={locale} messages={messages}>
             <PopupProvider>
               <div className="min-h-screen flex flex-col">
                 <Navbar />
@@ -30,7 +36,7 @@ export default function RootLayout({ children, params: { locale } }) {
                 <Footer />
               </div>
             </PopupProvider>
-          </I18nProvider>
+          </NextIntlClientProvider>
         </Providers>
       </body>
     </html>
