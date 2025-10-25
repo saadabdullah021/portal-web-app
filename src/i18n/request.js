@@ -11,9 +11,6 @@ export default getRequestConfig(async ({ requestLocale }) => {
 
   const messages = {
     home: (await import(`../../locales/${locale}/home.json`)).default,
-    hero: (await import(`../../locales/${locale}/hero.json`)).default,
-    auth: (await import(`../../locales/${locale}/auth.json`)).default,
-    checkout: (await import(`../../locales/${locale}/checkout.json`)).default,
   };
   return {
     locale,

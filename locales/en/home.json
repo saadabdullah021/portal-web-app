@@ -8,60 +8,77 @@
     "login": "Login",
     "language": "Language",
     "signup": "Sign Up",
-    "English":"English",
-    "Arabic":"Arabic"
+    "english": "English",
+    "arabic": "Arabic"
   },
 
   "buttons": {
-    "book_now": "Book Now",
-    "learn_more": "Learn More",
+    "bookNow": "Book Now",
+    "learnMore": "Learn More",
     "search": "Search",
     "submit": "Submit",
     "cancel": "Cancel",
-    "load more": "Load More",
-    "Start your search": "Start your search",
+    "loadMore": "Load More",
+    "startYourSearch": "Start your search",
     "messages": "Messages",
-    "Bookings": "Bookings",
-    "Wishlist": "Wishlist",
-    "Settings": "Settings",
-    "Logout": "Logout",
-    "Support": "Support",
-    "go_Home" :"Go Home",
-    "show_all_photos": "Show all photos",
-      "reviews": "reviews",
-            "Superhost":"Superhost"
- 
+    "bookings": "Bookings",
+    "wishlist": "Wishlist",
+    "settings": "Settings",
+    "logout": "Logout",
+    "support": "Support",
+    "goHome": "Go Home",
+    "showAllPhotos": "Show all photos",
+    "reviews": "reviews",
+    "superhost": "Superhost"
   },
+
+  "hero": {
+    "title": "Book, stay, wander",
+    "subtitle": "Find your next stay from our 1 million+ listings in over 200 countries.",
+    "locationLabel": "Location",
+    "locationPlaceholderMobile": "Location",
+    "locationPlaceholderDesktop": "Where are you going?",
+    "checkIn": "Check in",
+    "checkOut": "Check out",
+    "travelers": "Travelers",
+    "guestsPlaceholder": "Guests",
+    "search": "Search"
+  },
+
   "search": {
     "where": "Where are you going?",
-    "checkin": "Check-in",
-    "checkout": "Check-out",
+    "checkIn": "Check-in",
+    "checkOut": "Check-out",
     "guests": "Guests",
-    "Add_date":"Add date"
+    "addDate": "Add date"
   },
+
   "messages": {
     "loading": "Loading...",
     "no_results": "No results found.",
     "error": "Something went wrong. Please try again."
   },
+
   "justForYou": {
     "title": "Just For You",
     "subtitle": "Discover properties tailored to your preferences",
     "view_all": "View All",
-    "reviews" :"reviews"
-
+    "reviews": "reviews"
   },
+
   "lastMinuteDeals": {
     "title": "Last Minute Deals",
     "subtitle": "Grab these exclusive offers before they're gone!",
     "view_all": "View All Deals",
-    "night":"night"
+    "night": "night"
   },
+
   "nationalDayDeals": {
     "title": "National Day Specials",
     "subtitle": "Celebrate with exclusive offers and discounts",
     "view_all": "View All Specials"
   },
+
   "howItWorks": {
     "title": "How It Works",
     "subtitle": "Keep calm & travel on",
@@ -78,78 +95,81 @@
       "description": "Experience a memorable stay with top-notch amenities."
     }
   },
+
   "curatedExperiences": {
     "title": "Curated Experiences",
     "subtitle": "Handpicked stays for unique experiences",
     "properties": "Properties"
   },
-  "advanture": {
+
+  "adventure": {
     "title": "Let's go on an adventure",
     "subtitle": "Find and book a great memorable stay",
     "view_all": "Explore All Adventures"
   },
-  "Browse": {
+
+  "browse": {
     "title": "Browse by category",
     "subtitle": "Find the perfect stay that suits your style",
     "view_all": "View All Property Types"
   },
+
   "explore": {
     "title": "Explore Nearby",
     "subtitle": "beautiful places to go",
     "view_all": "See All"
   },
-"besthost": {
-  "title": "Best hosts of the",
-  "subtitle": "{{period}}", 
-  "view_all": "Learn More",
-  "options": {
-    "month": "Month",
-    "year": "Year"
-  }
-},
-"whyportal": {
-  "title": "Why Portal?",
-  "subtitle": "Experience the difference with Portal",
-  "reasons": {
-    "step1": {
-      "title": "Tailored for Flexible Living",
-      "description": "Portal helps you unearth incredible trips that adapt to your schedule and preferences, making spontaneity a breeze."
-    },
-    "step2": {
-      "title": "Assured Travel Experiences",
-      "description": "With genuine reviews and secure bookings, we empower you to explore with peace of mind, every time."
-    },
-    "step3": {
-      "title": "Always Transparent",
-      "description": "We lay out every detail upfront, so you know exactly what you are getting and can focus purely on enjoying your adventure."
+
+  "bestHost": {
+    "title": "Best hosts of the",
+    "subtitle": "{period}",
+    "view_all": "Learn More",
+    "options": {
+      "month": "Month",
+      "year": "Year"
     }
-  }
-
-
   },
-  "promotionalvideo": {
+
+  "whyPortal": {
+    "title": "Why Portal?",
+    "subtitle": "Experience the difference with Portal",
+    "reasons": {
+      "step1": {
+        "title": "Tailored for Flexible Living",
+        "description": "Portal helps you unearth incredible trips that adapt to your schedule and preferences, making spontaneity a breeze."
+      },
+      "step2": {
+        "title": "Assured Travel Experiences",
+        "description": "With genuine reviews and secure bookings, we empower you to explore with peace of mind, every time."
+      },
+      "step3": {
+        "title": "Always Transparent",
+        "description": "We lay out every detail upfront, so you know exactly what you are getting and can focus purely on enjoying your adventure."
+      }
+    }
+  },
+
+  "promotionalVideo": {
     "title": "Promotional video goes here",
     "subtitle": "SUBTITLE"
   },
-  "footer":{
 
+  "footer": {
     "meta_title": "Portal - Your Gateway to Unforgettable Stays",
     "description": "We offer a curated selection of luxury chalets for unforgettable getaways. From stunning views to premium amenities, each stay promises comfort and elegance. Booking is simple, secure, and tailored to your needs.",
-      "rights": "Copyright © 2025 Portal LLC.",
+    "rights": "Copyright © 2025 Portal LLC.",
     "privacy": "Privacy Policy",
     "terms": "Terms & Conditions",
-    "cancle_policy": "Cancellation Policy",
+    "cancelPolicy": "Cancellation Policy",
     "contact": "Contact us",
     "quick_links": "Quick Links",
     "payment_method": "Payment Methods"
-
   },
-    "auth_navbar": {
+
+  "auth_navbar": {
     "help_center": "Help Center",
     "become_host": "Become a Host",
     "become_host_desc": "Share your space and start earning.",
     "login_signup": "Login / Sign Up"
   }
-
-
 }
